@@ -33,4 +33,6 @@ Refer to <i>config.yml</i> comments for more infos on the parameters.
 <b>easycarts.admin</b>: Enables execution of the above commands. Granted to <i>OPs</i> by default. 
 
 <br>
-<b>Have fun with the plugin!</b>
+I highly recommend installing CraftBook and enabling the <b>MinecartTemporaryCart</b> feature. This allows you to right click a rail with an empty hand to instantly spawn a minecart. Just make sure to set <i>RemoveMinecartOnExit: true</i> in <i>config.yml</i> to correctly remove carts when doing so.
+
+<br><b>Have fun with the plugin!</b>
