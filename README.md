@@ -31,3 +31,6 @@ Refer to <i>config.yml</i> comments for more infos on the parameters.
 
 <h4>Permissions:</h4>
 <b>easycarts.admin</b>: Enables execution of the above commands. Granted to <i>OPs</i> by default. 
+
+<br>
+<b>Have fun with the plugin!</b>
