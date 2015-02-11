@@ -1,0 +1,26 @@
+# Configuration for EasyCarts
+# Author: Xericore
+
+# When players stop at an intersection, show an info message to the player.
+ShowIntersectionMessage: true
+IntersectionMessageText: 'Look in the desired direction and push minecart to continue.'
+
+# Enable this if you want to remove the minecart when the player exits it.
+# This should also be true if you are using CraftBook's TemporaryCart feature, which I highly recommend. 
+# When the player passes an intersection, a new cart is spawned and the old one is deleted.
+# The new cart also has a new id, thus CraftBook's TemporaryCart will not remove the newly created cart.
+RemoveMinecartOnExit: true
+
+# The maximum speed minecarts can have. 100 = default Minecraft max minecart speed on boosted rails.
+# Note: 400 seems to be the limit, because Minecraft caps the value. Setting it to a higher value had no effect when testing on Minecraft 1.8 (Spigot).
+MaxSpeedPercent: 400
+
+# Player can push the minecart up to this speed. 100 = default Minecraft max minecart speed when pushing the cart on normal rails.
+MaxPushSpeedPercent: 180
+
+# Boosts the current speed of the minecart to this value. 
+# Setting it to 100 means no boost will be applied. Setting it to 0 will stop the cart at a powered rail.
+# Note that depending on how often the server executes the VehicleMoveEvent, one booster block might boost the cart multiple times.
+# I could implement a mechanism to avoid that, but that would cost some performance.
+# Thus I recommend to use values between 120 and 200 to get well working boosts. 
+PoweredRailBoostPercent: 150
