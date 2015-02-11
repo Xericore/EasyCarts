@@ -10,7 +10,7 @@ This plugin has been tested with Spigot 1.8, but it should work on older Bukkit 
 <br>No special blocks are needed to stop the cart at intersections though.
 
 <h4>Features:</h4>
-All speed values can be configured in the config.yml.
+All speed values can be changed in the <i>config.yml</i>.
 <ul>
   <li>Minecarts will stop at intersections. Continue simply by looking in the desired direction and pressing forward.</li>
   <li>Minecarts will automatically slow down before curves or slopes to avoid derailing or crashing into upward slope block. Carts speed up again after curve or slope.</li>
