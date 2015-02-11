@@ -6,6 +6,8 @@ EasyCarts is a Bukkit/Spigot plugin for Minecraft Servers that enables hassle-fr
 transportation for Minecarts with players in them. 
 This plugin has been tested with Spigot 1.8, but it should work on older Bukkit versions as well. 
 </p>
+<b>Important note</b>: In order for intersections to work correctly, they must be built with straight rails only (like a <b>+</b>). Building them with a curve in the center will disable minecarts from stopping at intersections. <b>T</b>-Intersections work as well.
+<br>No special blocks are needed to stop the cart at intersections though.
 
 <h4>Features:</h4>
 All speed values can be configured in the config.yml.
