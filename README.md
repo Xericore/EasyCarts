@@ -34,5 +34,7 @@ Refer to <i>config.yml</i> comments for more infos on the parameters.
 
 <br>
 I highly recommend installing CraftBook and enabling the <b>MinecartTemporaryCart</b> feature. This allows you to right click a rail with an empty hand to instantly spawn a minecart. Just make sure to set <i>RemoveMinecartOnExit: true</i> in <i>config.yml</i> to correctly remove carts when doing so.
+<br>
+Thanks also to Surfdudeboy as his forum post <a href="https://bukkit.org/threads/any-tips-on-preventing-minecart-derail-during-high-speed-turns.274365/">here</a> helped me solve an issue.
 
 <br><b>Have fun with the plugin!</b>
