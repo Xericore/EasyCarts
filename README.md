@@ -8,6 +8,7 @@ This plugin has been tested with Spigot 1.8, but it should work on older Bukkit 
 </p>
 <b>Important note</b>: In order for intersections to work correctly, they must be built with straight rails only (like a <b>+</b>). Building them with a curve in the center will disable minecarts from stopping at intersections. <b>T</b>-Intersections work as well.
 <br>No special blocks are needed to stop the cart at intersections though.
+<br>EasyCarts doesn't affect Carts with Chests, Furnaces, Hoppers TNT or mobs in them.
 
 <h4>Features:</h4>
 All speed values can be changed in the <i>config.yml</i>.
@@ -31,6 +32,13 @@ Refer to <i>config.yml</i> comments for more infos on the parameters.
 
 <h4>Permissions:</h4>
 <b>easycarts.admin</b>: Enables execution of the above commands. Granted to <i>OPs</i> by default. 
+
+<h4>Known caveats:</h4>
+<ul>
+  <li>Minecarts will still derail if curves are placed two or less blocks after powered rails.</li>
+  <li>Carts will derail after start if spawned directly on a curve.</li>
+  <li>Carts will only stop at intersections with flat rails. Curves or slopes intersections were not implemented on purpose.</li>
+</ul>
 
 <br>
 I highly recommend installing CraftBook and enabling the <b>MinecartTemporaryCart</b> feature. This allows you to right click a rail with an empty hand to instantly spawn a minecart. Just make sure to set <i>RemoveMinecartOnExit: true</i> in <i>config.yml</i> to correctly remove carts when doing so.
