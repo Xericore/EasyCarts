@@ -35,7 +35,6 @@ Refer to <i>config.yml</i> comments for more infos on the parameters.
 
 <h4>Known caveats:</h4>
 <ul>
-  <li>Minecarts will still derail if curves are placed two or less blocks after powered rails.</li>
   <li>Carts will derail after start if spawned directly on a curve.</li>
   <li>Carts will only stop at intersections with flat rails. Curves or slopes intersections were not implemented on purpose.</li>
 </ul>
