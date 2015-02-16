@@ -55,6 +55,8 @@ public class EasyCartsListener implements Listener {
 		RideableMinecart cart = getValidMineCart(event.getVehicle(), false);
 		if (cart == null)
 			return;
+		
+		if(eCarts.getConfig().getBoolean("RemoveMinecartOnExit")) removeOnExitMinecartIds.add(cart.getUniqueId());
 
 		if (eCarts.getConfig().getDouble("MaxSpeedPercent") > 0) {
 			cart.setMaxSpeed(MINECART_VANILLA_MAX_SPEED * eCarts.getConfig().getDouble("MaxSpeedPercent") / 100);
@@ -68,7 +70,7 @@ public class EasyCartsListener implements Listener {
 			RideableMinecart cart = getValidMineCart(event.getVehicle(), true);
 			if (cart == null)
 				return;
-
+			
 			Vector cartVelocity = cart.getVelocity();
 			Double currentSpeed = cartVelocity.length();
 
@@ -160,7 +162,9 @@ public class EasyCartsListener implements Listener {
 
 			// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ 		Boost minecart when it passes over a powered rail ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~  
 			boolean isPowered = (blockUnderCart.getData() & 8) != 0;
-			if (isPowered) {
+			// Only boost carts if they have not been slowed down by slopes already.
+			// This disables boosters that are placed within BLOCKS_LOOK_AHEAD blocks before slopes or curves. 
+			if (isPowered && !slowedCarts.contains(id)) {
 				cartVelocity.multiply(eCarts.getConfig().getDouble("PoweredRailBoostPercent") / 100);
 				cart.setMaxSpeed(MINECART_VANILLA_MAX_SPEED * eCarts.getConfig().getDouble("MaxSpeedPercent") / 100);
 				cart.setVelocity(cartVelocity);
@@ -286,8 +290,11 @@ public class EasyCartsListener implements Listener {
 		}
 		toCart.getLocation().setYaw(cart.getLocation().getYaw());
 		toCart.getLocation().setPitch(cart.getLocation().getPitch());
-		toCart.setVelocity(cart.getVelocity()); // speed of newly spawned minecart will be speed of old cart before the stop
+		toCart.setVelocity(cart.getVelocity()); // speed of newly spawned minecart will be speed of old cart before the stop.
+		// Make sure newly spawned cart after intesection will be correctly removed.
 		if(eCarts.getConfig().getBoolean("RemoveMinecartOnExit")) removeOnExitMinecartIds.add(toCart.getUniqueId());
+		// Old cart must be removed from list as well, otherwise it will stay in memory.
+		removeOnExitMinecartIds.remove(cart.getUniqueId());
 		cart.remove();
 	}
 
@@ -303,19 +310,15 @@ public class EasyCartsListener implements Listener {
 		slowedCarts.remove(cartId);
 		stoppedCarts.remove(cartId);
 
-		if (!removeOnExitMinecartIds.contains(event.getVehicle().getUniqueId()))
-			return;
-		
-		if(!eCarts.getConfig().getBoolean("RemoveMinecartOnExit"))
-			return;
-
-		Bukkit.getScheduler().runTaskLater(eCarts, new Runnable() {
-			@Override
-			public void run() {
-				removeOnExitMinecartIds.remove(event.getVehicle().getUniqueId());
-				event.getVehicle().remove();
-			}
-		}, 2L);
+		if (removeOnExitMinecartIds.contains(cartId) && eCarts.getConfig().getBoolean("RemoveMinecartOnExit")) {
+			Bukkit.getScheduler().runTaskLater(eCarts, new Runnable() {
+				@Override
+				public void run() {
+					event.getVehicle().remove();
+					removeOnExitMinecartIds.remove(event.getVehicle().getUniqueId());
+				}
+			}, 2L);
+		}
 	}
 
 }
