@@ -9,6 +9,9 @@ This plugin has been tested with Spigot 1.8, but it should work on older Bukkit 
 <b>Important note</b>: In order for intersections to work correctly, they must be built with straight rails only (like a <b>+</b>). Building them with a curve in the center will disable minecarts from stopping at intersections. <b>T</b>-Intersections work as well.
 <br>No special blocks are needed to stop the cart at intersections though.
 <br>EasyCarts doesn't affect Carts with Chests, Furnaces, Hoppers TNT or mobs in them.
+<br>
+<br><b>Hint:</b> EasyCarts has no slowdown blocks. If you want to slow down your cart on a certain part of the track and then boost it again, build the following rails:
+<img src="http://kratanien.com/wp-content/uploads/2015/02/slowrails.png" alt="Rails setup that slows down the cart.">
 
 <h4>Features:</h4>
 All speed values can be changed in the <i>config.yml</i>.
