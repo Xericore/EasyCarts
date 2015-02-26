@@ -1,5 +1,5 @@
 <img src="http://xericore.com/files/img/EasyCarts_Logo_V2.png" alt="EasyCarts Logo">
-<br><b>Travel quickly and easily using Minecarts!</b>
+<br><b>Travel quickly and easily with minecarts!</b>
 
 <p>
 EasyCarts is a Bukkit/Spigot plugin for Minecraft Servers that enables hassle-free and reliable 
