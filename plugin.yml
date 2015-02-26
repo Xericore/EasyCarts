@@ -1,6 +1,6 @@
 name: EasyCarts
 main: com.github.xericore.easycarts.EasyCarts
-version: 1.0
+version: 1.2
 
 commands:
    easycarts:

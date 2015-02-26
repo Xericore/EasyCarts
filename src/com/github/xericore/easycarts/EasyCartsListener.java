@@ -21,6 +21,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.material.PoweredRail;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
@@ -33,7 +34,7 @@ public class EasyCartsListener implements Listener {
 	private static final double MINECART_VANILLA_MAX_SPEED = 0.4D;
 	
 	// Max speed that a minecart can have before it derails in curves or stops on upward slopes
-	private static final double MAX_SAFE_DERAIL_SPEED = 0.499D;
+	private static final double MAX_SAFE_DERAIL_SPEED = 0.4D;
 	// Max speed that a minecart can have before it detection of intersection fails
 	private static final double MAX_SAFE_INTERSECTION_SPEED = 1.0D;
 	private static final int BLOCKS_LOOK_AHEAD = 3;
@@ -45,6 +46,8 @@ public class EasyCartsListener implements Listener {
 	private HashSet<UUID> removeOnExitMinecartIds = new HashSet<UUID>();
 	
 	private HashMap<UUID, SpeedAndYaw> stoppedCarts = new HashMap<UUID, SpeedAndYaw>();
+	
+	private int tempCount = 0;
 
 	public EasyCartsListener(EasyCarts theInstance) {
 		eCarts = theInstance;
@@ -104,6 +107,12 @@ public class EasyCartsListener implements Listener {
 								// Detects falling slope
 								testRail = (Rails) testLocUnder.getBlock().getState().getData();
 							}
+							else if (testLoc.getBlock().getType() == Material.POWERED_RAIL) {
+								testRail = (PoweredRail) testLoc.getBlock().getState().getData();
+							}
+							else if (testLocUnder.getBlock().getType() == Material.POWERED_RAIL) {
+								testRail = (PoweredRail) testLocUnder.getBlock().getState().getData();
+							}
 						} catch (ClassCastException e) {
 							break;
 						}
@@ -137,9 +146,7 @@ public class EasyCartsListener implements Listener {
 				if (railUnderCart.isCurve() || railUnderCart.isOnSlope()) {
 					// Speed up carts on slopes so they don't slow down as quickly. 
 					cart.setVelocity(cartVelocity.multiply(eCarts.getConfig().getDouble("MaxPushSpeedPercent")));
-					if (slowedCarts.contains(id)) {
-						slowedCarts.remove(id);
-					}
+					slowedCarts.remove(id);
 					return;
 				} else if (!slowedCarts.contains(id) && originalSpeed != null) {
 					// If it is passed, set it back to its original speed
@@ -165,10 +172,9 @@ public class EasyCartsListener implements Listener {
 			// Only boost carts if they have not been slowed down by slopes already.
 			// This disables boosters that are placed within BLOCKS_LOOK_AHEAD blocks before slopes or curves. 
 			if (isPowered && !slowedCarts.contains(id)) {
-				cartVelocity.multiply(eCarts.getConfig().getDouble("PoweredRailBoostPercent") / 100);
 				cart.setMaxSpeed(MINECART_VANILLA_MAX_SPEED * eCarts.getConfig().getDouble("MaxSpeedPercent") / 100);
+				cartVelocity.multiply(eCarts.getConfig().getDouble("PoweredRailBoostPercent") / 100);
 				cart.setVelocity(cartVelocity);
-				return;
 			}
 			
 			// _/\__/\__/\__/\__/\__/\__/\__/\_		STOP MINECARTS AT INTERSECTIONS		_/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\_
