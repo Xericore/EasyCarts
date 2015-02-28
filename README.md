@@ -33,6 +33,7 @@ All speed values can be changed in the <i>config.yml</i>.
   <li><b>/easycarts push: </b>Sets the value of <b>MaxPushSpeedPercent</b> in <i>config.yml</i> and saves config.</li>
   <li><b>/easycarts boost: </b>Sets the value of <b>PoweredRailBoostPercent</b> in <i>config.yml</i> and saves config.</li>
   <li><b>/easycarts maxspeed: </b>Sets the value of <b>MaxPushSpeedPercent</b> in <i>config.yml</i> and saves config.</li>
+  <li><b>/easycarts slowwhenempty: </b>Sets the value of <b>SlowWhenEmpty</b> in <i>config.yml</i> and saves config.</li>
 </ul>
 Refer to <i>config.yml</i> comments for more infos on the parameters.
 
