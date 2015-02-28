@@ -1,12 +1,12 @@
 name: EasyCarts
 main: com.github.xericore.easycarts.EasyCarts
-version: 1.2
+version: 1.3
 
 commands:
    easycarts:
       description: Sets new minecart speed limit.
       usage: |
-         /easycarts reload OR push|boost|maxspeed <multiplier>
+         /easycarts reload|slowwhenempty OR push|boost|maxspeed <value>
 permissions:
     easycarts.admin:
       description: Gives access to all easycarts features. 

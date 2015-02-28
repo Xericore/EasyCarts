@@ -64,6 +64,8 @@ public class EasyCartsListener implements Listener {
 		if (eCarts.getConfig().getDouble("MaxSpeedPercent") > 0) {
 			cart.setMaxSpeed(MINECART_VANILLA_MAX_SPEED * eCarts.getConfig().getDouble("MaxSpeedPercent") / 100);
 		}
+		
+		cart.setSlowWhenEmpty(eCarts.getConfig().getBoolean("SlowWhenEmpty"));
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

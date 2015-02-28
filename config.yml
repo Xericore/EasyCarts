@@ -1,5 +1,5 @@
 # Configuration for EasyCarts
-# Version: 1.1
+# Version: 1.3
 # Author: Xericore
 
 # When players stop at an intersection, show an info message to the player.
@@ -25,3 +25,6 @@ MaxPushSpeedPercent: 180
 # I could implement a mechanism to avoid that, but that would cost some performance.
 # Thus I recommend to use values between 120 and 200 to get well working boosts. 
 PoweredRailBoostPercent: 150
+
+# If true, cart will slow down quicker when empty.
+SlowWhenEmpty: true
