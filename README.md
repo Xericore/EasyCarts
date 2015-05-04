@@ -25,6 +25,7 @@ All speed values can be changed in the <i>config.yml</i>.
   <li>Increases maximum speed of minecarts.</li>
   <li>Powered Rails can boost the minecart more.</li>
   <li>Ops can change the speed values via commands.</li>
+  <li>Minecarts will push entities on a collision course out of the way to avoid collision.</li>
 </ul>
 
 <h4>Commands:</h4>
