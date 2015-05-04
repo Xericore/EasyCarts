@@ -10,8 +10,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.entity.minecart.RideableMinecart;
@@ -19,6 +23,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
+import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.material.PoweredRail;
@@ -32,7 +37,7 @@ public class EasyCartsListener implements Listener {
 
 	private static final double MINECART_VANILLA_PUSH_SPEED = 0.2D;
 	private static final double MINECART_VANILLA_MAX_SPEED = 0.4D;
-	
+
 	// Max speed that a minecart can have before it derails in curves or stops on upward slopes
 	private static final double MAX_SAFE_DERAIL_SPEED = 0.4D;
 	// Max speed that a minecart can have before it detection of intersection fails
@@ -44,10 +49,8 @@ public class EasyCartsListener implements Listener {
 
 	// Needed to automatically delete newly created carts on intersections.
 	private HashSet<UUID> removeOnExitMinecartIds = new HashSet<UUID>();
-	
+
 	private HashMap<UUID, SpeedAndYaw> stoppedCarts = new HashMap<UUID, SpeedAndYaw>();
-	
-	private int tempCount = 0;
 
 	public EasyCartsListener(EasyCarts theInstance) {
 		eCarts = theInstance;
@@ -58,13 +61,13 @@ public class EasyCartsListener implements Listener {
 		RideableMinecart cart = getValidMineCart(event.getVehicle(), false);
 		if (cart == null)
 			return;
-		
+
 		if(eCarts.getConfig().getBoolean("RemoveMinecartOnExit")) removeOnExitMinecartIds.add(cart.getUniqueId());
 
 		if (eCarts.getConfig().getDouble("MaxSpeedPercent") > 0) {
 			cart.setMaxSpeed(MINECART_VANILLA_MAX_SPEED * eCarts.getConfig().getDouble("MaxSpeedPercent") / 100);
 		}
-		
+
 		cart.setSlowWhenEmpty(eCarts.getConfig().getBoolean("SlowWhenEmpty"));
 	}
 
@@ -75,13 +78,54 @@ public class EasyCartsListener implements Listener {
 			RideableMinecart cart = getValidMineCart(event.getVehicle(), true);
 			if (cart == null)
 				return;
-			
+
 			Vector cartVelocity = cart.getVelocity();
 			Double currentSpeed = cartVelocity.length();
 
 			UUID id = cart.getUniqueId();
 			Location cartLocation = cart.getLocation();
 			Block blockUnderCart = cartLocation.getBlock();
+			
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 		HANDLE ENTITY COLLISIONS 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			
+			if(!eCarts.getConfig().getBoolean("MinecartCollisions")) {
+				// To avoid collision, the entity must be located at least 1.0 block away from the cart.
+				// The entities will be moved to this distance if they are within the search box when the cart is moving.
+				// We actually move the entity a little bit further, to avoid it moving right back into the search box. 
+
+    			// Adjust size of box to be between 1-2, depending on movement direction
+				for (Entity entity : cart.getNearbyEntities(1, 1, 1)) {
+	                if (((entity instanceof Monster) || (entity instanceof Animals) || (entity instanceof NPC))) {
+	                	// Only move monsters, animals and npcs, not players
+	                	if (!entity.isInsideVehicle()) {
+	                		// Entity is not in a minecart, thus we can move it
+	                		
+	            			// We cannot use cart.getVelocity() because on diagonal rails, this returns +x,0,0 then 0,0,+z and then diagonal (depending on movement direction).
+	            			// Then it looks like we are moving e.g. left, then right, then diagonal and we cannot distinguish between this and a real straight movement.
+	            			// Luckily, the getLocation().getDirection() is unaffected by this. However, for some unknown reason we have to rotate that vector 90° clockwise to get the correct direction.
+	            			Vector cartVector = (new Vector(-cart.getLocation().getDirection().getZ(), 0, cart.getLocation().getDirection().getX())).normalize();
+	                		
+	                		Vector velocityNormalRight = new Vector(-cartVector.getZ(), 0 , cartVector.getX());
+	                		Vector velocityNormalLeft = new Vector(cartVector.getZ(), 0 , -cartVector.getX());
+	                		
+	                		Location entityLocation = entity.getLocation();
+	                		
+	                		// The vector between the current cart location and the entity location, needed to determine which direction to move the entity to. 
+	                		Vector cartToEntity = new Vector(entityLocation.getX() - cartLocation.getX(), 0, entityLocation.getZ() - cartLocation.getZ());
+
+	                		// The cross product vector will point up- or downwards depending on the location of the second vector
+	                		if(cartVector.crossProduct(cartToEntity).getY() > 0) {
+	                			entity.teleport(entityLocation.add(velocityNormalLeft.multiply(0.5)));
+	                		} else {
+	                			entity.teleport(entityLocation.add(velocityNormalRight.multiply(0.5)));
+	                		}
+		                } else if ((entity instanceof Minecart) && entity.isEmpty()) {
+		                	// Remove empty minecarts still on track
+		                	entity.remove();
+		                }
+	                }
+	        	}
+			}
 
 			// ------------------------------- 	SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE 	-----------------------------
 
@@ -178,7 +222,7 @@ public class EasyCartsListener implements Listener {
 				cartVelocity.multiply(eCarts.getConfig().getDouble("PoweredRailBoostPercent") / 100);
 				cart.setVelocity(cartVelocity);
 			}
-			
+
 			// _/\__/\__/\__/\__/\__/\__/\__/\_		STOP MINECARTS AT INTERSECTIONS		_/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\_
 
 			if (Double.isNaN(cartVelocity.length()))
@@ -192,7 +236,7 @@ public class EasyCartsListener implements Listener {
 				// Desired direction is player look direction
 				SpeedAndYaw beforeStop = stoppedCarts.get(cart.getUniqueId());
 				Vector locationOffset = Utils.getUnitVectorFromYaw(cart.getPassenger().getLocation().getYaw());
-				
+
 				// The new cart location will be the old location +1 block in the player look direction.
 				Location newCartLocation = cart.getLocation().clone().add(locationOffset);
 
@@ -311,7 +355,7 @@ public class EasyCartsListener implements Listener {
 
 		if (!(event.getVehicle() instanceof RideableMinecart))
 			return;
-		
+
 		UUID cartId = event.getVehicle().getUniqueId();
 		// Clean up data to avoid having dead entries in the maps when user dismounts at intersections or on slopes
 		previousSpeed.remove(cartId);
@@ -326,6 +370,32 @@ public class EasyCartsListener implements Listener {
 					removeOnExitMinecartIds.remove(event.getVehicle().getUniqueId());
 				}
 			}, 2L);
+		}
+	}
+
+	/**
+	 * Unfortunately, at this point the cart's speed is already 0.
+	 * Thus it isn't possible to determine the speed of the cart before the collision 
+	 * (at least not without resource intense saving of speed every tick in VehicleMoveEvent).
+	 * 
+	 * The work around is to move the entities before they collide with the cart.
+	 * Other players will not be moved. However, if a player blocks the path, the cart will come to a stop.
+	 * 
+	 * @see	https://bukkit.org/threads/trouble-cancelling-vehicleentitycollisionevent.285269/
+	 * @param event
+	 */
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled=true)
+	public void onVehicleCollision(final VehicleEntityCollisionEvent event) {
+		
+		RideableMinecart cart = getValidMineCart(event.getVehicle(), true);
+		if (cart == null){
+			return;
+		}
+		if(!eCarts.getConfig().getBoolean("MinecartCollisions") && event.getEntity() instanceof Player) {
+			// This will cause the cart to stop
+			event.setCancelled(true);
+			event.setCollisionCancelled(true);
+			event.setPickupCancelled(true);
 		}
 	}
 

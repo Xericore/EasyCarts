@@ -1,5 +1,5 @@
 # Configuration for EasyCarts
-# Version: 1.3
+# Version: 1.4
 # Author: Xericore
 
 # When players stop at an intersection, show an info message to the player.
@@ -28,3 +28,10 @@ PoweredRailBoostPercent: 150
 
 # If true, cart will slow down quicker when empty.
 SlowWhenEmpty: true
+
+# When set to false, minecarts with players in them will push monsters, animals and NPCs out of the way. 
+# Collision with another player will stop the cart and not bounce it back. 
+# Ensures reliable transportation, as empty minecarts blocking the way are also removed. 
+# Players can still push carts at low speeds. Recommended and default setting is 'false'.
+# When set to true, minecarts behave normally and will bounce off blocks and other entities.
+MinecartCollisions: false
