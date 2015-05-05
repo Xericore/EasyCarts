@@ -1,4 +1,4 @@
-<img src="http://xericore.com/files/img/EasyCarts_Logo_V2.png" alt="EasyCarts Logo">
+<img src="http://www.petricevic.net/wp-content/uploads/2015/05/EasyCarts_Logo_V2.png" alt="EasyCarts Logo">
 <br><b>Travel quickly and easily with minecarts!</b>
 
 <p>
