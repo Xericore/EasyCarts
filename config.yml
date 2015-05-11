@@ -1,5 +1,5 @@
 # Configuration for EasyCarts
-# Version: 1.4
+# Version: 1.5
 # Author: Xericore
 
 # When players stop at an intersection, show an info message to the player.
@@ -35,3 +35,9 @@ SlowWhenEmpty: true
 # Players can still push carts at low speeds. Recommended and default setting is 'false'.
 # When set to true, minecarts behave normally and will bounce off blocks and other entities.
 MinecartCollisions: false
+
+# If true, minecarts will automatically be boosted on upward slopes. Default is true.
+# Ensures reliable transportation. Settings this to false will cause EasyCarts to behave more like the vanilla Minecraft.
+# If false, you will need powered rails on slopes if you want to travel slopes up quickly.
+# Players can still push their cart on a long upward slope, enabling them to reach the top even without booster blocks.
+AutoBoostOnSlope: true

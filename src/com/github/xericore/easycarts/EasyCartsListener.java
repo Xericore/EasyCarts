@@ -52,6 +52,9 @@ public class EasyCartsListener implements Listener {
 
 	private HashMap<UUID, SpeedAndYaw> stoppedCarts = new HashMap<UUID, SpeedAndYaw>();
 
+	//FIXME
+	int count = 0;
+
 	public EasyCartsListener(EasyCarts theInstance) {
 		eCarts = theInstance;
 	}
@@ -80,147 +83,150 @@ public class EasyCartsListener implements Listener {
 				return;
 
 			Vector cartVelocity = cart.getVelocity();
-			Double currentSpeed = cartVelocity.length();
+			Double cartSpeed = cartVelocity.length();
 
 			UUID id = cart.getUniqueId();
 			Location cartLocation = cart.getLocation();
 			Block blockUnderCart = cartLocation.getBlock();
 			
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 		HANDLE ENTITY COLLISIONS 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			
-			if(!eCarts.getConfig().getBoolean("MinecartCollisions")) {
-				// To avoid collision, the entity must be located at least 1.0 block away from the cart.
-				// The entities will be moved to this distance if they are within the search box when the cart is moving.
-				// We actually move the entity a little bit further, to avoid it moving right back into the search box. 
-
-    			// Adjust size of box to be between 1-2, depending on movement direction
-				for (Entity entity : cart.getNearbyEntities(1, 1, 1)) {
-	                if (((entity instanceof Monster) || (entity instanceof Animals) || (entity instanceof NPC))) {
-	                	// Only move monsters, animals and npcs, not players
-	                	if (!entity.isInsideVehicle()) {
-	                		// Entity is not in a minecart, thus we can move it
-	                		
-	            			// We cannot use cart.getVelocity() because on diagonal rails, this returns +x,0,0 then 0,0,+z and then diagonal (depending on movement direction).
-	            			// Then it looks like we are moving e.g. left, then right, then diagonal and we cannot distinguish between this and a real straight movement.
-	            			// Luckily, the getLocation().getDirection() is unaffected by this. However, for some unknown reason we have to rotate that vector 90° clockwise to get the correct direction.
-	            			Vector cartVector = (new Vector(-cart.getLocation().getDirection().getZ(), 0, cart.getLocation().getDirection().getX())).normalize();
-	                		
-	                		Vector velocityNormalRight = new Vector(-cartVector.getZ(), 0 , cartVector.getX());
-	                		Vector velocityNormalLeft = new Vector(cartVector.getZ(), 0 , -cartVector.getX());
-	                		
-	                		Location entityLocation = entity.getLocation();
-	                		
-	                		// The vector between the current cart location and the entity location, needed to determine which direction to move the entity to. 
-	                		Vector cartToEntity = new Vector(entityLocation.getX() - cartLocation.getX(), 0, entityLocation.getZ() - cartLocation.getZ());
-
-	                		// The cross product vector will point up- or downwards depending on the location of the second vector
-	                		if(cartVector.crossProduct(cartToEntity).getY() > 0) {
-	                			entity.teleport(entityLocation.add(velocityNormalLeft.multiply(0.5)));
-	                		} else {
-	                			entity.teleport(entityLocation.add(velocityNormalRight.multiply(0.5)));
-	                		}
-		                } else if ((entity instanceof Minecart) && entity.isEmpty()) {
-		                	// Remove empty minecarts still on track
-		                	entity.remove();
-		                }
-	                }
-	        	}
-			}
-
-			// ------------------------------- 	SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE 	-----------------------------
-
+			// We won't do anything if there's no rail under the cart
 			Rails railUnderCart = null;
 			try {
 				railUnderCart = (Rails) blockUnderCart.getState().getData();
 			} catch (ClassCastException e) {
 				railUnderCart = null;
 			}
-			if (railUnderCart != null) {
-				if (!slowedCarts.contains(id)) {
-					Location testLoc = cartLocation.clone();
-					Location testLocUnder;
-					Vector tempVelocity = cartVelocity.clone().normalize();
-					for (int i = 1; i < BLOCKS_LOOK_AHEAD; i++) {
-						testLoc.add(tempVelocity.multiply(i));
-						// Slopes that go down/fall have the blocks underneath the current y-level
-						testLocUnder = testLoc.clone().subtract(0, 1, 0);
-						Rails testRail = null;
-						try {
-							if (testLoc.getBlock().getType() == Material.RAILS) {
-								// Detects rising slope
-								testRail = (Rails) testLoc.getBlock().getState().getData();
-							} else if (testLocUnder.getBlock().getType() == Material.RAILS) {
-								// Detects falling slope
-								testRail = (Rails) testLocUnder.getBlock().getState().getData();
-							}
-							else if (testLoc.getBlock().getType() == Material.POWERED_RAIL) {
-								testRail = (PoweredRail) testLoc.getBlock().getState().getData();
-							}
-							else if (testLocUnder.getBlock().getType() == Material.POWERED_RAIL) {
-								testRail = (PoweredRail) testLocUnder.getBlock().getState().getData();
-							}
-						} catch (ClassCastException e) {
-							break;
-						}
+			if (railUnderCart == null) return;
 
-						if (testRail != null) {
-							// all of this code tests if there is a curve or slope slightly ahead of the cart.
-							if (testRail.isCurve() || testRail.isOnSlope()) {
-								previousSpeed.put(id, currentSpeed);
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 		HANDLE ENTITY COLLISIONS 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+			if(!eCarts.getConfig().getBoolean("MinecartCollisions")) {
+				// To avoid collision, the entity must be located at least 1.0 block away from the cart.
+				// The entities will be moved to this distance if they are within the search box when the cart is moving.
+				// We actually move the entity a little bit further, to avoid it moving right back into the search box. 
+
+				// Adjust size of box to be between 1-2, depending on movement direction
+				for (Entity entity : cart.getNearbyEntities(1, 1, 1)) {
+					if (((entity instanceof Monster) || (entity instanceof Animals) || (entity instanceof NPC))) {
+						// Only move monsters, animals and npcs, not players
+						if (!entity.isInsideVehicle()) {
+							// Entity is not in a minecart, thus we can move it
+
+							// We cannot use cart.getVelocity() because on diagonal rails, this returns +x,0,0 then 0,0,+z and then diagonal (depending on movement direction).
+							// Then it looks like we are moving e.g. left, then right, then diagonal and we cannot distinguish between this and a real straight movement.
+							// Luckily, the getLocation().getDirection() is unaffected by this. However, for some unknown reason we have to rotate that vector 90° clockwise to get the correct direction.
+							Vector cartVector = (new Vector(-cart.getLocation().getDirection().getZ(), 0, cart.getLocation().getDirection().getX())).normalize();
+
+							Vector velocityNormalRight = new Vector(-cartVector.getZ(), 0 , cartVector.getX());
+							Vector velocityNormalLeft = new Vector(cartVector.getZ(), 0 , -cartVector.getX());
+
+							Location entityLocation = entity.getLocation();
+
+							// The vector between the current cart location and the entity location, needed to determine which direction to move the entity to. 
+							Vector cartToEntity = new Vector(entityLocation.getX() - cartLocation.getX(), 0, entityLocation.getZ() - cartLocation.getZ());
+
+							// The cross product vector will point up- or downwards depending on the location of the second vector
+							if(cartVector.crossProduct(cartToEntity).getY() > 0) {
+								entity.teleport(entityLocation.add(velocityNormalLeft.multiply(0.5)));
+							} else {
+								entity.teleport(entityLocation.add(velocityNormalRight.multiply(0.5)));
+							}
+						} else if ((entity instanceof Minecart) && entity.isEmpty()) {
+							// Remove empty minecarts still on track
+							entity.remove();
+						}
+					}
+				}
+			}
+
+			// ------------------------------- 	SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE 	-----------------------------
+			
+			if (!slowedCarts.contains(id)) {
+				Location testLoc = cartLocation.clone();
+				Location testLocUnder;
+				Vector tempVelocity = cartVelocity.clone().normalize();
+				for (int i = 1; i < BLOCKS_LOOK_AHEAD; i++) {
+					testLoc.add(tempVelocity.multiply(i));
+					// Slopes that go down/fall have the blocks underneath the current y-level
+					testLocUnder = testLoc.clone().subtract(0, 1, 0);
+					Rails testRail = null;
+					try {
+						if (testLoc.getBlock().getType() == Material.RAILS) {
+							// Detects rising slope
+							testRail = (Rails) testLoc.getBlock().getState().getData();
+						} else if (testLocUnder.getBlock().getType() == Material.RAILS) {
+							// Detects falling slope
+							testRail = (Rails) testLocUnder.getBlock().getState().getData();
+						}
+						else if (testLoc.getBlock().getType() == Material.POWERED_RAIL) {
+							testRail = (PoweredRail) testLoc.getBlock().getState().getData();
+						}
+						else if (testLocUnder.getBlock().getType() == Material.POWERED_RAIL) {
+							testRail = (PoweredRail) testLocUnder.getBlock().getState().getData();
+						}
+					} catch (ClassCastException e) {
+						break;
+					}
+
+					if (testRail != null) {
+						// all of this code tests if there is a curve or slope slightly ahead of the cart.
+						if (testRail.isCurve() || testRail.isOnSlope()) {
+							if(railUnderCart.isOnSlope() && (event.getTo().getY() - event.getFrom().getY() < 0)){
+								// Don't do anything if we are on a downward slope
+								return;
+							} else {
+								previousSpeed.put(id, cartSpeed);
 								slowedCarts.add(id);
 								cart.setVelocity(cartVelocity.clone().normalize().multiply(MAX_SAFE_DERAIL_SPEED));
 								cart.setMaxSpeed(MAX_SAFE_DERAIL_SPEED);
 								return;
-							} else if ((currentSpeed > MAX_SAFE_INTERSECTION_SPEED) && isIntersection(testLoc, tempVelocity)) {
-								// Slow down before intersections, otherwise the VehicleMoveEvent might 
-								// come too late and we will miss the intersection
-								cart.setVelocity(cartVelocity.clone().normalize().multiply(MAX_SAFE_INTERSECTION_SPEED));
-								cart.setMaxSpeed(MAX_SAFE_INTERSECTION_SPEED);
-								return;
 							}
+						} else if ((cartSpeed > MAX_SAFE_INTERSECTION_SPEED) && isIntersection(testLoc, tempVelocity)) {
+							// Slow down before intersections, otherwise the VehicleMoveEvent might 
+							// come too late and we will miss the intersection
+							cart.setVelocity(cartVelocity.clone().normalize().multiply(MAX_SAFE_INTERSECTION_SPEED));
+							cart.setMaxSpeed(MAX_SAFE_INTERSECTION_SPEED);
+							return;
 						}
 					}
 				}
+			}
+			
+			Double originalSpeed = null;
+			try {
+				originalSpeed = previousSpeed.get(id);
+			} catch (NullPointerException e) {
+				originalSpeed = null;
+			}
 
-				Double originalSpeed = null;
-				try {
-					originalSpeed = previousSpeed.get(id);
-				} catch (NullPointerException e) {
-					originalSpeed = null;
-				}
-
-				if (railUnderCart.isCurve() || railUnderCart.isOnSlope()) {
-					// Speed up carts on slopes so they don't slow down as quickly. 
+			if (railUnderCart.isCurve() || railUnderCart.isOnSlope()) {
+				if(eCarts.getConfig().getBoolean("AutoBoostOnSlope") && railUnderCart.isOnSlope() 
+						&& (event.getTo().getY() - event.getFrom().getY() > 0)) {
+					// Speed up carts on upward slopes so they don't slow down as quickly. 
 					cart.setVelocity(cartVelocity.multiply(eCarts.getConfig().getDouble("MaxPushSpeedPercent")));
-					slowedCarts.remove(id);
-					return;
-				} else if (!slowedCarts.contains(id) && originalSpeed != null) {
-					// If it is passed, set it back to its original speed
-					cart.setMaxSpeed(MINECART_VANILLA_MAX_SPEED * eCarts.getConfig().getDouble("MaxSpeedPercent") / 100);
-					Vector newVel = cart.getVelocity().normalize().multiply(originalSpeed);
-					cart.setVelocity(newVel);
-					previousSpeed.remove(id);
 				}
-			}
-
-			// ----------------------------------------------------------------------------------------------------------------------------
-
-			if (blockUnderCart == null || (blockUnderCart.getType() != Material.RAILS && blockUnderCart.getType() != Material.POWERED_RAIL))
+				slowedCarts.remove(id);
 				return;
-
-			// Boost default minecart speed
-			if (cartVelocity.length() < (MINECART_VANILLA_PUSH_SPEED * eCarts.getConfig().getDouble("MaxPushSpeedPercent") / 100)) { 
-				cart.setVelocity(cartVelocity.multiply(eCarts.getConfig().getDouble("MaxPushSpeedPercent") / 100));
+			} else if (!slowedCarts.contains(id) && originalSpeed != null) {
+				// If it is passed, set it back to its original speed
+				cart.setMaxSpeed(MINECART_VANILLA_MAX_SPEED * eCarts.getConfig().getDouble("MaxSpeedPercent") / 100);
+				Vector newVel = cart.getVelocity().normalize().multiply(originalSpeed);
+				cart.setVelocity(newVel);
+				previousSpeed.remove(id);
 			}
-
-			// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ 		Boost minecart when it passes over a powered rail ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~  
+			
+			// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ 			Boost minecart 			  ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~  
 			boolean isPowered = (blockUnderCart.getData() & 8) != 0;
 			// Only boost carts if they have not been slowed down by slopes already.
 			// This disables boosters that are placed within BLOCKS_LOOK_AHEAD blocks before slopes or curves. 
+			// Also, boosters on slopes will only apply the default minecraft boost, because if we make them stronger here, the cart reverses.
 			if (isPowered && !slowedCarts.contains(id)) {
 				cart.setMaxSpeed(MINECART_VANILLA_MAX_SPEED * eCarts.getConfig().getDouble("MaxSpeedPercent") / 100);
 				cartVelocity.multiply(eCarts.getConfig().getDouble("PoweredRailBoostPercent") / 100);
 				cart.setVelocity(cartVelocity);
+			} else if (cartSpeed < (MINECART_VANILLA_PUSH_SPEED * eCarts.getConfig().getDouble("MaxPushSpeedPercent") / 100)) { 
+				// Boost default/auto minecart speed
+				cart.setVelocity(cartVelocity.multiply(eCarts.getConfig().getDouble("MaxPushSpeedPercent") / 100));
 			}
 
 			// _/\__/\__/\__/\__/\__/\__/\__/\_		STOP MINECARTS AT INTERSECTIONS		_/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\_
@@ -262,8 +268,6 @@ public class EasyCartsListener implements Listener {
 			logger.severe("Error in onMyVehicleMove.");
 			logger.severe(e.toString());
 		}
-
-		return;
 	}
 
 	/**
@@ -386,7 +390,7 @@ public class EasyCartsListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled=true)
 	public void onVehicleCollision(final VehicleEntityCollisionEvent event) {
-		
+
 		RideableMinecart cart = getValidMineCart(event.getVehicle(), true);
 		if (cart == null){
 			return;

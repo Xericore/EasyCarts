@@ -24,6 +24,7 @@ public class EasyCarts extends JavaPlugin {
 	public void onEnable() {
         // Save a copy of the default config.yml if one is not there
         this.saveDefaultConfig();
+
 		// Register events
 		getServer().getPluginManager().registerEvents(this.myMinecartListener, this);
 		
