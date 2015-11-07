@@ -44,6 +44,6 @@ Temporary Items
 
 # Added by Xericore
 .classpath
-.settings
+.settings/
 .project
 bin/
