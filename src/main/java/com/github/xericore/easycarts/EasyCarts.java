@@ -17,23 +17,25 @@ public class EasyCarts extends JavaPlugin {
 
 	// public static MinecartIntersectionTest plugin;
 	public final Logger logger = Logger.getLogger("Minecraft");
-	
+
 	// Define Listener classes
 	public final EasyCartsListener myMinecartListener = new EasyCartsListener(this);
+	public final PlayerClickListener myPlayerClickListener = new PlayerClickListener(this);
 
 	public void onEnable() {
-        // Save a copy of the default config.yml if one is not there
-        this.saveDefaultConfig();
+		// Save a copy of the default config.yml if one is not there
+		this.saveDefaultConfig();
 
 		// Register events
 		getServer().getPluginManager().registerEvents(this.myMinecartListener, this);
-		
+		getServer().getPluginManager().registerEvents(this.myPlayerClickListener, this);
+
 		try {
 			MetricsLite metrics = new MetricsLite(this);
-	        metrics.start();
-	    } catch (IOException e) {
-	        logger.info("Couldn't submit metrics to mcstats.org.");
-	    }
+			metrics.start();
+		} catch (IOException e) {
+			logger.info("Couldn't submit metrics to mcstats.org.");
+		}
 	}
 
 	public void onDisable() {
@@ -50,33 +52,42 @@ public class EasyCarts extends JavaPlugin {
 					return true;
 				}
 			}
-				
+
 			try {
-				switch(args[0]){
+				switch (args[0]) {
 				case "push":
-					if(args.length >= 2) this.getConfig().set("MaxPushSpeedPercent", Double.parseDouble(args[1]));
-					sender.sendMessage(ChatColor.GRAY + "MaxPushSpeedPercent is set to " + this.getConfig().getDouble("MaxPushSpeedPercent"));
+					if (args.length >= 2)
+						this.getConfig().set("MaxPushSpeedPercent", Double.parseDouble(args[1]));
+					sender.sendMessage(ChatColor.GRAY + "MaxPushSpeedPercent is set to "
+							+ this.getConfig().getDouble("MaxPushSpeedPercent"));
 					break;
 				case "boost":
-					if(args.length >= 2) this.getConfig().set("PoweredRailBoostPercent", Double.parseDouble(args[1]));
-					sender.sendMessage(ChatColor.GRAY + "PoweredRailBoostPercent is set to " + this.getConfig().getDouble("PoweredRailBoostPercent"));
+					if (args.length >= 2)
+						this.getConfig().set("PoweredRailBoostPercent", Double.parseDouble(args[1]));
+					sender.sendMessage(ChatColor.GRAY + "PoweredRailBoostPercent is set to "
+							+ this.getConfig().getDouble("PoweredRailBoostPercent"));
 					break;
 				case "maxspeed":
-					if(args.length >= 2) this.getConfig().set("MaxSpeedPercent", Double.parseDouble(args[1]));
-					sender.sendMessage(ChatColor.GRAY + "MaxSpeedPercent is set to " + this.getConfig().getDouble("MaxSpeedPercent"));
+					if (args.length >= 2)
+						this.getConfig().set("MaxSpeedPercent", Double.parseDouble(args[1]));
+					sender.sendMessage(ChatColor.GRAY + "MaxSpeedPercent is set to "
+							+ this.getConfig().getDouble("MaxSpeedPercent"));
 					break;
 				case "slowwhenempty":
-					if(args.length >= 1) this.getConfig().set("SlowWhenEmpty", !this.getConfig().getBoolean("SlowWhenEmpty"));
-					sender.sendMessage(ChatColor.GRAY + "SlowWhenEmpty is set to " + this.getConfig().getBoolean("SlowWhenEmpty"));
+					if (args.length >= 1)
+						this.getConfig().set("SlowWhenEmpty", !this.getConfig().getBoolean("SlowWhenEmpty"));
+					sender.sendMessage(ChatColor.GRAY + "SlowWhenEmpty is set to "
+							+ this.getConfig().getBoolean("SlowWhenEmpty"));
 					break;
 				case "reload":
 					this.reloadConfig();
 					return true;
-				default: throw new IllegalArgumentException();
+				default:
+					throw new IllegalArgumentException();
 				}
 				this.saveConfig();
 				return true;
-				
+
 			} catch (IllegalArgumentException illEx) {
 				sender.sendMessage(ChatColor.RED + illEx.getMessage());
 				return false;

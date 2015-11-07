@@ -8,7 +8,10 @@ import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
 public class Utils {
-	
+
+	public static final double MINECART_VANILLA_PUSH_SPEED = 0.2D;
+	public static final double MINECART_VANILLA_MAX_SPEED = 0.4D;
+
 	/**
 	 * Includes curves, but not slopes.
 	 * 
@@ -25,7 +28,7 @@ public class Utils {
 		return false;
 	}
 
-	public static boolean isRailNormal(Location myLocation, Location otherLocation) {
+	public static boolean isRailPerpendicular(Location myLocation, Location otherLocation) {
 		Block myBlock = myLocation.getBlock();
 		Block otherBlock = otherLocation.getBlock();
 		if (otherBlock.getType() == Material.RAILS) {
@@ -48,7 +51,7 @@ public class Utils {
 		}
 		return false;
 	}
-	
+
 	public static Vector getUnitVectorFromYaw(float yaw) {
 		BlockFace facing = getBlockFaceFromYaw(yaw);
 		switch (facing) {
@@ -61,6 +64,38 @@ public class Utils {
 		default: // EAST
 			return new Vector(1, 0, 0);
 		}
+	}
+
+	/**
+	 * It's not a valid intersection if the rail left or right to our location is not normal to the rail we are moving/standing on.
+	 * 
+	 * @param myLocation
+	 * @param movementDirection
+	 * @return
+	 */
+	public static boolean isIntersection(Location myLocation, Vector movementDirection) {
+		if (Utils.isFlatRail(myLocation)) {
+			// Search for intersection
+			Location front = myLocation.clone().add(movementDirection.normalize());
+			Location back = myLocation.clone().subtract(movementDirection.normalize());
+			Location left = myLocation.clone().add(movementDirection.getZ(), 0, -movementDirection.getX()); // go one left
+			Location right = myLocation.clone().add(-movementDirection.getZ(), 0, movementDirection.getX()); // go one right
+
+			if (Utils.isRailPerpendicular(myLocation, left) && Utils.isRailPerpendicular(myLocation, right)) {
+				return true;
+			} else if ((Utils.isRailPerpendicular(myLocation, left) && (Utils.isRailParallel(myLocation, front) || Utils
+					.isRailParallel(myLocation, back)))
+					|| (Utils.isRailPerpendicular(myLocation, right) && (Utils.isRailParallel(myLocation, front) || Utils
+							.isRailParallel(myLocation, back)))) {
+				return true;
+			} else if ((Utils.isRailParallel(myLocation, left) && (Utils.isRailPerpendicular(myLocation, front) || Utils
+					.isRailPerpendicular(myLocation, back)))
+					|| (Utils.isRailParallel(myLocation, right) && (Utils.isRailPerpendicular(myLocation, front) || Utils
+							.isRailPerpendicular(myLocation, back)))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static BlockFace getBlockFaceFromYaw(float yaw) {
