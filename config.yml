@@ -1,5 +1,5 @@
 # Configuration for EasyCarts
-# Version: 1.5
+# Version: 1.7
 # Author: Xericore
 
 # When players stop at an intersection, show an info message to the player.
@@ -41,3 +41,6 @@ MinecartCollisions: false
 # If false, you will need powered rails on slopes if you want to travel slopes up quickly.
 # Players can still push their cart on a long upward slope, enabling them to reach the top even without booster blocks.
 AutoBoostOnSlope: true
+
+# If true, players can stop and start carts by left clicking into the air. Default is true.
+StopStartOnLeftClick: true

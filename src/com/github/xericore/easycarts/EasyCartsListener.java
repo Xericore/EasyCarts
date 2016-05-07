@@ -2,6 +2,7 @@ package com.github.xericore.easycarts;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -17,7 +18,6 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,7 +26,6 @@ import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
-import org.bukkit.material.PoweredRail;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
@@ -57,7 +56,7 @@ public class EasyCartsListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onMyVehicleCreate(VehicleCreateEvent event) {
-		RideableMinecart cart = getValidMineCart(event.getVehicle(), false);
+		RideableMinecart cart = Utils.getValidMineCart(event.getVehicle(), false);
 		if (cart == null)
 			return;
 
@@ -75,7 +74,7 @@ public class EasyCartsListener implements Listener {
 	public void onMyVehicleMove(VehicleMoveEvent event) {
 
 		try {
-			RideableMinecart cart = getValidMineCart(event.getVehicle(), true);
+			RideableMinecart cart = Utils.getValidMineCart(event.getVehicle(), true);
 			if (cart == null)
 				return;
 
@@ -94,7 +93,7 @@ public class EasyCartsListener implements Listener {
 			}
 
 			if (!config.getBoolean("MinecartCollisions")) {
-				handleCollision(cart, cartLocation);
+				pushNearbyEntities(cart, cartLocation);
 			}
 
 			// ------------------------------- SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE -----------------------------
@@ -104,12 +103,12 @@ public class EasyCartsListener implements Listener {
 				Vector cartDirection = cartVelocity.clone().normalize();
 				for (int i = 1; i < BLOCKS_LOOK_AHEAD; i++) {
 					locationInFront.add(cartDirection.multiply(i));
-					Rails railInFront = getRailInFront(locationInFront);
+					Rails railInFront = Utils.getRailInFront(locationInFront);
 
 					if (railInFront != null) {
 
 						if (railInFront.isCurve() || railInFront.isOnSlope()) {
-							if (railUnderCart.isOnSlope() && (event.getTo().getY() - event.getFrom().getY() < 0)) {
+							if (railUnderCart.isOnSlope() && Utils.isMovingDown(event)) {
 								// Don't do anything if we are on a downward slope
 								return;
 							} else {
@@ -130,9 +129,8 @@ public class EasyCartsListener implements Listener {
 			}
 
 			if (railUnderCart.isCurve() || railUnderCart.isOnSlope()) {
-				if (config.getBoolean("AutoBoostOnSlope") && railUnderCart.isOnSlope()
-						&& (event.getTo().getY() - event.getFrom().getY() > 0)) {
-					// Speed up carts on upward slopes so they don't slow down as quickly.
+				if (config.getBoolean("AutoBoostOnSlope") && railUnderCart.isOnSlope() && Utils.isMovingUp(event)) {
+					// Speed up carts on rising slopes so they don't slow down as quickly.
 					cart.setVelocity(cartVelocity.multiply(config.getDouble("MaxPushSpeedPercent")));
 				}
 				slowedCarts.remove(cartId);
@@ -169,30 +167,33 @@ public class EasyCartsListener implements Listener {
 		}
 	}
 
-	private void handleCollision(RideableMinecart cart, Location cartLocation) {
+	private void pushNearbyEntities(RideableMinecart cart, Location cartLocation) {
 
 		// To avoid collision, the entity must be located at least 1.0 block away from the cart.
 		// The entities will be moved to this distance if they are within the search box when the cart is moving.
 		// We actually move the entity a little bit further, to avoid it moving right back into the search box.
 
+		// We cannot use cart.getVelocity() because on diagonal rails, this returns +x,0,0 then 0,0,+z and then diagonal
+		// (depending on movement direction).
+		// Then it looks like we are moving e.g. left, then right, then diagonal and we cannot distinguish between this
+		// and a real straight movement.
+		// Luckily, the getLocation().getDirection() is unaffected by this. However, for some unknown reason we have to
+		// rotate that vector 90° clockwise to get the correct direction.
+		Vector cartVector = (new Vector(-cart.getLocation().getDirection().getZ(), 0, cart.getLocation().getDirection()
+				.getX())).normalize();
+
+		Vector velocityNormalRight = new Vector(-cartVector.getZ(), 0, cartVector.getX());
+		Vector velocityNormalLeft = new Vector(cartVector.getZ(), 0, -cartVector.getX());
+
 		// Adjust size of box to be between 1-2, depending on movement direction
-		for (Entity entity : cart.getNearbyEntities(1, 1, 1)) {
+		List<Entity> nearbyEntities = cart.getNearbyEntities(1 + Math.abs(cartVector.getX()), 1,
+				1 + Math.abs(cartVector.getZ()));
+
+		for (Entity entity : nearbyEntities) {
 			if (((entity instanceof Monster) || (entity instanceof Animals) || (entity instanceof NPC))) {
 				// Only move monsters, animals and npcs, not players
 				if (!entity.isInsideVehicle()) {
 					// Entity is not in a minecart, thus we can move it
-
-					// We cannot use cart.getVelocity() because on diagonal rails, this returns +x,0,0 then 0,0,+z and then diagonal
-					// (depending on movement direction).
-					// Then it looks like we are moving e.g. left, then right, then diagonal and we cannot distinguish between this
-					// and a real straight movement.
-					// Luckily, the getLocation().getDirection() is unaffected by this. However, for some unknown reason we have to
-					// rotate that vector 90° clockwise to get the correct direction.
-					Vector cartVector = (new Vector(-cart.getLocation().getDirection().getZ(), 0, cart.getLocation()
-							.getDirection().getX())).normalize();
-
-					Vector velocityNormalRight = new Vector(-cartVector.getZ(), 0, cartVector.getX());
-					Vector velocityNormalLeft = new Vector(cartVector.getZ(), 0, -cartVector.getX());
 
 					Location entityLocation = entity.getLocation();
 
@@ -213,28 +214,6 @@ public class EasyCartsListener implements Listener {
 				}
 			}
 		}
-	}
-
-	private Rails getRailInFront(Location testLoc) {
-		try {
-			// Slopes that go down/fall have the blocks underneath the current y-level
-			Location testLocUnder = testLoc.clone().subtract(0, 1, 0);
-
-			if (testLoc.getBlock().getType() == Material.RAILS) {
-				// Detects rising slope
-				return (Rails) testLoc.getBlock().getState().getData();
-			} else if (testLocUnder.getBlock().getType() == Material.RAILS) {
-				// Detects falling slope
-				return (Rails) testLocUnder.getBlock().getState().getData();
-			} else if (testLoc.getBlock().getType() == Material.POWERED_RAIL) {
-				return (PoweredRail) testLoc.getBlock().getState().getData();
-			} else if (testLocUnder.getBlock().getType() == Material.POWERED_RAIL) {
-				return (PoweredRail) testLocUnder.getBlock().getState().getData();
-			}
-		} catch (ClassCastException e) {
-			// no valid rail found
-		}
-		return null;
 	}
 
 	private void slowDownCart(RideableMinecart cart, double maxSpeed) {
@@ -287,22 +266,6 @@ public class EasyCartsListener implements Listener {
 		if (config.getBoolean("ShowIntersectionMessage")) {
 			cart.getPassenger().sendMessage(ChatColor.GRAY + config.getString("IntersectionMessageText"));
 		}
-	}
-
-	private RideableMinecart getValidMineCart(Vehicle vehicle, boolean mustHavePassenger) {
-		RideableMinecart cart = null;
-		try {
-			if (!(vehicle instanceof RideableMinecart))
-				return null;
-			cart = (RideableMinecart) vehicle;
-
-			if (mustHavePassenger && (cart.isEmpty() || !(cart.getPassenger() instanceof Player)))
-				return null;
-
-		} catch (Exception e) {
-			logger.warning("EasyCarts: Couldn't get valid minecart with player in it.");
-		}
-		return cart;
 	}
 
 	private void teleportMineCart(final Minecart cart, Location destination, Location oldPlayerLocation,
@@ -383,7 +346,7 @@ public class EasyCartsListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onVehicleCollision(final VehicleEntityCollisionEvent event) {
 
-		RideableMinecart cart = getValidMineCart(event.getVehicle(), true);
+		RideableMinecart cart = Utils.getValidMineCart(event.getVehicle(), true);
 		if (cart == null) {
 			return;
 		}

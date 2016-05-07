@@ -26,10 +26,17 @@ public class EasyCarts extends JavaPlugin {
 		// Save a copy of the default config.yml if one is not there
 		this.saveDefaultConfig();
 
-		// Register events
+		registerEvents();
+
+		addMetrics();
+	}
+
+	private void registerEvents() {
 		getServer().getPluginManager().registerEvents(this.myMinecartListener, this);
 		getServer().getPluginManager().registerEvents(this.myPlayerClickListener, this);
+	}
 
+	private void addMetrics() {
 		try {
 			MetricsLite metrics = new MetricsLite(this);
 			metrics.start();
@@ -44,6 +51,7 @@ public class EasyCarts extends JavaPlugin {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+
 		if (cmd.getName().equalsIgnoreCase("easycarts")) { // If the player typed /easycarts then do the following...
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
@@ -81,6 +89,7 @@ public class EasyCarts extends JavaPlugin {
 					break;
 				case "reload":
 					this.reloadConfig();
+					sender.sendMessage(ChatColor.RED + "EasyCarts config successfully reloaded.");
 					return true;
 				default:
 					throw new IllegalArgumentException();
@@ -89,10 +98,11 @@ public class EasyCarts extends JavaPlugin {
 				return true;
 
 			} catch (IllegalArgumentException illEx) {
-				sender.sendMessage(ChatColor.RED + illEx.getMessage());
+				sender.sendMessage(ChatColor.RED + "EasyCarts: Sorry, I didn't understand that command. "
+						+ illEx.getMessage());
 				return false;
 			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + "Sorry, I didn't understand that command.");
+				sender.sendMessage(ChatColor.RED + "EasyCarts: Sorry, I didn't understand that command.");
 				return false;
 			}
 		}

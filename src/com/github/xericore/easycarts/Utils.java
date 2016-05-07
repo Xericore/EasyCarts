@@ -4,6 +4,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.minecart.RideableMinecart;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.material.PoweredRail;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
@@ -11,6 +16,19 @@ public class Utils {
 
 	public static final double MINECART_VANILLA_PUSH_SPEED = 0.2D;
 	public static final double MINECART_VANILLA_MAX_SPEED = 0.4D;
+
+	public static RideableMinecart getValidMineCart(Vehicle vehicle, boolean mustHavePassenger) {
+		RideableMinecart cart = null;
+
+		if (!(vehicle instanceof RideableMinecart))
+			return null;
+		cart = (RideableMinecart) vehicle;
+
+		if (mustHavePassenger && (cart.isEmpty() || !(cart.getPassenger() instanceof Player)))
+			return null;
+
+		return cart;
+	}
 
 	/**
 	 * Includes curves, but not slopes.
@@ -116,5 +134,35 @@ public class Utils {
 		} else {
 			return BlockFace.EAST;
 		}
+	}
+
+	public static boolean isMovingUp(VehicleMoveEvent event) {
+		return event.getTo().getY() - event.getFrom().getY() > 0;
+	}
+
+	public static boolean isMovingDown(VehicleMoveEvent event) {
+		return event.getTo().getY() - event.getFrom().getY() < 0;
+	}
+
+	public static Rails getRailInFront(Location testLoc) {
+		try {
+			// Slopes that go down/fall have the blocks underneath the current y-level
+			Location testLocUnder = testLoc.clone().subtract(0, 1, 0);
+
+			if (testLoc.getBlock().getType() == Material.RAILS) {
+				// Detects rising slope
+				return (Rails) testLoc.getBlock().getState().getData();
+			} else if (testLocUnder.getBlock().getType() == Material.RAILS) {
+				// Detects falling slope
+				return (Rails) testLocUnder.getBlock().getState().getData();
+			} else if (testLoc.getBlock().getType() == Material.POWERED_RAIL) {
+				return (PoweredRail) testLoc.getBlock().getState().getData();
+			} else if (testLocUnder.getBlock().getType() == Material.POWERED_RAIL) {
+				return (PoweredRail) testLocUnder.getBlock().getState().getData();
+			}
+		} catch (ClassCastException e) {
+			// no valid rail found
+		}
+		return null;
 	}
 }

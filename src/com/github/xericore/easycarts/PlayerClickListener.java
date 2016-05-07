@@ -23,6 +23,9 @@ public class PlayerClickListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onMyPlayerInteract(PlayerInteractEvent event) {
 
+		if (!config.getBoolean("StopStartOnLeftClick"))
+			return;
+
 		Player player = (Player) event.getPlayer();
 
 		if (!player.isInsideVehicle()) {
