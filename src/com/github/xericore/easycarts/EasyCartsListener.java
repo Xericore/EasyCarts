@@ -178,7 +178,7 @@ public class EasyCartsListener implements Listener {
 		// Then it looks like we are moving e.g. left, then right, then diagonal and we cannot distinguish between this
 		// and a real straight movement.
 		// Luckily, the getLocation().getDirection() is unaffected by this. However, for some unknown reason we have to
-		// rotate that vector 90° clockwise to get the correct direction.
+		// rotate that vector 90Â° clockwise to get the correct direction.
 		Vector cartVector = (new Vector(-cart.getLocation().getDirection().getZ(), 0, cart.getLocation().getDirection()
 				.getX())).normalize();
 
@@ -208,10 +208,11 @@ public class EasyCartsListener implements Listener {
 					} else {
 						entity.teleport(entityLocation.add(velocityNormalRight.multiply(0.5)));
 					}
-				} else if ((entity instanceof Minecart) && entity.isEmpty()) {
-					// Remove empty minecarts still on track
-					entity.remove();
-				}
+				} 
+			}
+			else if ((entity instanceof Minecart) && entity.isEmpty()) {
+				// Remove empty minecarts still on track
+				entity.remove();
 			}
 		}
 	}
