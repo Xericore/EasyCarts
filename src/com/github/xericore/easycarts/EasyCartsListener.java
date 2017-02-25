@@ -201,16 +201,15 @@ public class EasyCartsListener implements Listener
 		// Then it looks like we are moving e.g. left, then right, then diagonal and we cannot distinguish between this
 		// and a real straight movement.
 		// Luckily, the getLocation().getDirection() is unaffected by this. However, for some unknown reason we have to
-		// rotate that vector 90Â° clockwise to get the correct direction.
-		Vector cartVector = (new Vector(-cart.getLocation().getDirection().getZ(), 0,
-				cart.getLocation().getDirection().getX())).normalize();
+		// rotate that vector 90° clockwise to get the correct direction.
+		Vector cartVector = (new Vector(-cart.getLocation().getDirection().getZ(), 0, cart.getLocation().getDirection().getX()))
+				.normalize();
 
 		Vector velocityNormalRight = new Vector(-cartVector.getZ(), 0, cartVector.getX());
 		Vector velocityNormalLeft = new Vector(cartVector.getZ(), 0, -cartVector.getX());
 
 		// Adjust size of box to be between 1-2, depending on movement direction
-		List<Entity> nearbyEntities = cart.getNearbyEntities(1 + Math.abs(cartVector.getX()), 1,
-				1 + Math.abs(cartVector.getZ()));
+		List<Entity> nearbyEntities = cart.getNearbyEntities(1 + Math.abs(cartVector.getX()), 1, 1 + Math.abs(cartVector.getZ()));
 
 		for (Entity entity : nearbyEntities)
 		{
@@ -256,8 +255,12 @@ public class EasyCartsListener implements Listener
 		// Cart must jump one block in the desired direction
 		// Desired direction is player look direction
 		SpeedAndYaw beforeStop = stoppedCarts.get(cart.getUniqueId());
+		Entity firstPassenger = Utils.GetFirstPassenger(cart);
 
-		Vector locationOffset = Utils.getUnitVectorFromYaw(cart.getPassenger().getLocation().getYaw());
+		if (firstPassenger == null)
+			return;
+
+		Vector locationOffset = Utils.getUnitVectorFromYaw(firstPassenger.getLocation().getYaw());
 
 		// The new cart location will be the old location +1 block in the player look direction.
 		Location newCartLocation = cart.getLocation().clone().add(locationOffset);
@@ -269,7 +272,7 @@ public class EasyCartsListener implements Listener
 				beforeStop.setSpeed(0.1d);
 			}
 			cart.setVelocity(locationOffset.clone().multiply(beforeStop.getSpeed()));
-			teleportMineCart(cart, newCartLocation, cart.getPassenger().getLocation(), beforeStop.getDirection());
+			teleportMineCart(cart, newCartLocation, firstPassenger.getLocation(), beforeStop.getDirection());
 			stoppedCarts.remove(cart.getUniqueId());
 		}
 	}
@@ -298,19 +301,20 @@ public class EasyCartsListener implements Listener
 
 	private void stopCartAndShowMessageToPlayer(RideableMinecart cart)
 	{
-		stoppedCarts.put(cart.getUniqueId(),
-				new SpeedAndYaw(cart.getVelocity().length(), cart.getVelocity().normalize()));
+		stoppedCarts.put(cart.getUniqueId(), new SpeedAndYaw(cart.getVelocity().length(), cart.getVelocity().normalize()));
 		cart.setVelocity(new Vector(0, 0, 0));
 		if (config.getBoolean("ShowIntersectionMessage"))
 		{
-			cart.getPassenger().sendMessage(ChatColor.GRAY + config.getString("IntersectionMessageText"));
+			Entity firstPassenger = Utils.GetFirstPassenger(cart);
+			if (firstPassenger == null)
+				return;
+
+			firstPassenger.sendMessage(ChatColor.GRAY + config.getString("IntersectionMessageText"));
 		}
 	}
 
-	private void teleportMineCart(final Minecart cart, Location destination, Location oldPlayerLocation,
-			Vector oldDirection)
+	private void teleportMineCart(final Minecart cart, Location destination, Location oldPlayerLocation, Vector oldDirection)
 	{
-
 		// Teleport destination must be in the center of a minecart track to prevent the cart from derailing.
 		// Thus depending on the facing of the destination either X or Z values must be n,5.
 		Vector destinationVector = new Vector(destination.getX(), destination.getY(), destination.getZ());
@@ -322,7 +326,9 @@ public class EasyCartsListener implements Listener
 		destination.setZ(new Double(destination.getZ()).intValue() + (destination.getZ() >= 0 ? 0.5 : -0.5)); // -138,7 -> -138,5
 
 		final Minecart toCart = cart.getWorld().spawn(destination, RideableMinecart.class);
-		final Entity passenger = cart.getPassenger();
+		final Entity passenger = Utils.GetFirstPassenger(cart);
+		if (passenger == null)
+			return;
 
 		if (passenger != null)
 		{
@@ -337,7 +343,7 @@ public class EasyCartsListener implements Listener
 				@Override
 				public void run()
 				{
-					toCart.setPassenger(passenger);
+					toCart.addPassenger(passenger);
 					passenger.setVelocity(cart.getVelocity());
 				}
 			});
