@@ -79,30 +79,28 @@ public class EasyCarts extends JavaPlugin
 				case "push":
 					if (args.length >= 2)
 						this.getConfig().set("MaxPushSpeedPercent", Double.parseDouble(args[1]));
-					sender.sendMessage(ChatColor.GRAY + "MaxPushSpeedPercent is set to "
-							+ this.getConfig().getDouble("MaxPushSpeedPercent"));
+					sender.sendMessage(
+							ChatColor.GRAY + "MaxPushSpeedPercent is set to " + this.getConfig().getDouble("MaxPushSpeedPercent"));
 					break;
 				case "boost":
 					if (args.length >= 2)
 						this.getConfig().set("PoweredRailBoostPercent", Double.parseDouble(args[1]));
-					sender.sendMessage(ChatColor.GRAY + "PoweredRailBoostPercent is set to "
-							+ this.getConfig().getDouble("PoweredRailBoostPercent"));
+					sender.sendMessage(
+							ChatColor.GRAY + "PoweredRailBoostPercent is set to " + this.getConfig().getDouble("PoweredRailBoostPercent"));
 					break;
 				case "maxspeed":
 					if (args.length >= 2)
 						this.getConfig().set("MaxSpeedPercent", Double.parseDouble(args[1]));
-					sender.sendMessage(ChatColor.GRAY + "MaxSpeedPercent is set to "
-							+ this.getConfig().getDouble("MaxSpeedPercent"));
+					sender.sendMessage(ChatColor.GRAY + "MaxSpeedPercent is set to " + this.getConfig().getDouble("MaxSpeedPercent"));
 					break;
 				case "slowwhenempty":
 					if (args.length >= 1)
 						this.getConfig().set("SlowWhenEmpty", !this.getConfig().getBoolean("SlowWhenEmpty"));
-					sender.sendMessage(
-							ChatColor.GRAY + "SlowWhenEmpty is set to " + this.getConfig().getBoolean("SlowWhenEmpty"));
+					sender.sendMessage(ChatColor.GRAY + "SlowWhenEmpty is set to " + this.getConfig().getBoolean("SlowWhenEmpty"));
 					break;
 				case "reload":
 					this.reloadConfig();
-					sender.sendMessage(ChatColor.RED + "EasyCarts config successfully reloaded.");
+					sender.sendMessage(ChatColor.GREEN + "EasyCarts config successfully reloaded.");
 					return true;
 				default:
 					throw new IllegalArgumentException();
@@ -112,8 +110,7 @@ public class EasyCarts extends JavaPlugin
 
 			} catch (IllegalArgumentException illEx)
 			{
-				sender.sendMessage(
-						ChatColor.RED + "EasyCarts: Sorry, I didn't understand that command. " + illEx.getMessage());
+				sender.sendMessage(ChatColor.RED + "EasyCarts: Sorry, I didn't understand that command. " + illEx.getMessage());
 				return false;
 			} catch (Exception e)
 			{

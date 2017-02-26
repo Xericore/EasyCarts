@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>EasyCarts</groupId>
   <artifactId>EasyCarts</artifactId>
-  <version>1.8</version>
+  <version>1.8.1</version>
   <name>EasyCarts</name>
   <description>Spigot Plugin for Minecraft</description>
 	<repositories>
@@ -38,7 +38,7 @@
 	          </includes>
 	      </resource>
 	      <resource>
-	          <targetPath>defaults/</targetPath>
+	          <targetPath>.</targetPath>
 	          <filtering>false</filtering>
 	          <directory>${basedir}</directory>
 	          <includes>
