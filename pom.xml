@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>EasyCarts</groupId>
   <artifactId>EasyCarts</artifactId>
-  <version>1.11</version>
+  <version>1.12</version>
   <name>EasyCarts</name>
   <description>Spigot Plugin for Minecraft</description>
 	<repositories>
@@ -16,14 +16,14 @@
 	    <dependency>
 	           <groupId>org.spigotmc</groupId>
 	           <artifactId>spigot-api</artifactId>
-	           <version>1.11.2-R0.1-SNAPSHOT</version>
+	           <version>1.12-R0.1-SNAPSHOT</version>
 	           <scope>provided</scope>
 	    </dependency>
 	    <!--Bukkit API-->
 	    <dependency>
 	            <groupId>org.bukkit</groupId>
 	            <artifactId>bukkit</artifactId>
-	            <version>1.11.2-R0.1-SNAPSHOT</version>
+	            <version>1.12-R0.1-SNAPSHOT</version>
 	            <scope>provided</scope>
 	    </dependency>
 	</dependencies>
