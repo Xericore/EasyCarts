@@ -191,7 +191,6 @@ public class EasyCartsListener implements Listener
 
 	private void pushNearbyEntities(RideableMinecart cart, Location cartLocation)
 	{
-
 		// To avoid collision, the entity must be located at least 1.0 block away from the cart.
 		// The entities will be moved to this distance if they are within the search box when the cart is moving.
 		// We actually move the entity a little bit further, to avoid it moving right back into the search box.
@@ -215,7 +214,7 @@ public class EasyCartsListener implements Listener
 		{
 			if (((entity instanceof Monster) || (entity instanceof Animals) || (entity instanceof NPC)))
 			{
-				// Only move monsters, animals and npcs, not players
+				// Only move monsters, animals and NPCs, not players
 				if (!entity.isInsideVehicle())
 				{
 					// Entity is not in a minecart, thus we can move it
