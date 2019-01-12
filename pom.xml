@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>EasyCarts</groupId>
   <artifactId>EasyCarts</artifactId>
-  <version>1.12.2</version>
+  <version>1.13.2</version>
   <name>EasyCarts</name>
   <description>Spigot Plugin for Minecraft</description>
 	<repositories>
