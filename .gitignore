@@ -48,3 +48,5 @@ Temporary Items
 .project
 bin/
 /target/
+.idea/
+EasyCarts.iml
