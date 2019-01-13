@@ -58,7 +58,7 @@ public class Utils
 	 */
 	public static boolean isFlatRail(Location location)
 	{
-		if (location.getBlock().getType() == Material.RAILS)
+		if (location.getBlock().getType() == Material.RAIL)
 		{
 			Rails testRail = (Rails) location.getBlock().getState().getData();
 			if (!testRail.isOnSlope())
@@ -73,7 +73,7 @@ public class Utils
 	{
 		Block myBlock = myLocation.getBlock();
 		Block otherBlock = otherLocation.getBlock();
-		if (otherBlock.getType() == Material.RAILS)
+		if (otherBlock.getType() == Material.RAIL)
 		{
 			if (myBlock.getData() == (byte) 0 && otherBlock.getData() == (byte) 1)
 			{
@@ -90,7 +90,7 @@ public class Utils
 	{
 		Block myBlock = myLocation.getBlock();
 		Block otherBlock = otherLocation.getBlock();
-		if (otherBlock.getType() == Material.RAILS)
+		if (otherBlock.getType() == Material.RAIL)
 		{
 			if (myBlock.getData() == otherBlock.getData())
 			{
@@ -196,11 +196,11 @@ public class Utils
 			// Slopes that go down/fall have the blocks underneath the current y-level
 			Location testLocUnder = testLoc.clone().subtract(0, 1, 0);
 
-			if (testLoc.getBlock().getType() == Material.RAILS)
+			if (testLoc.getBlock().getType() == Material.RAIL)
 			{
 				// Detects rising slope
 				return (Rails) testLoc.getBlock().getState().getData();
-			} else if (testLocUnder.getBlock().getType() == Material.RAILS)
+			} else if (testLocUnder.getBlock().getType() == Material.RAIL)
 			{
 				// Detects falling slope
 				return (Rails) testLocUnder.getBlock().getState().getData();
