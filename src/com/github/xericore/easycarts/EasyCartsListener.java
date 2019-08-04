@@ -8,13 +8,11 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
-import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.material.Rails;
@@ -148,11 +146,8 @@ public class EasyCartsListener implements Listener
 				return;
 			} else if (!slowedCarts.contains(cartId) && previousSpeed.containsKey(cartId))
 			{
-				// If it is passed, set it back to its original speed
-				cart.setMaxSpeed(Utils.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
-				Vector newVel = cart.getVelocity().normalize().multiply(previousSpeed.get(cartId));
-				cart.setVelocity(newVel);
-				previousSpeed.remove(cartId);
+				// No curve or slope under cart
+				setCartToOriginalSpeed(cart);
 			}
 
 			boostCartOnPoweredRails(cart, blockUnderCart);
@@ -162,9 +157,6 @@ public class EasyCartsListener implements Listener
 			if (Double.isNaN(cartVelocity.length()))
 				return; // Otherwise we will not stop at intersection
 
-			// X+ = EAST | X- = WEST
-			// Z+ = SOUTH | Z- = NORTH
-
 			if (stoppedCarts.containsKey(cart.getUniqueId()) && (cartVelocity.lengthSquared() > 0))
 			{
 				continueCartAfterIntersection(cart);
@@ -172,14 +164,22 @@ public class EasyCartsListener implements Listener
 			}
 
 			if (Utils.isIntersection(cartLocation, cartVelocity))
-			{
 				stopCartAndShowMessageToPlayer(cart);
-			}
+
 		} catch (Exception e)
 		{
 			logger.severe("Error in onMyVehicleMove.");
 			logger.severe(e.toString());
 		}
+	}
+
+	private void setCartToOriginalSpeed(RideableMinecart cart)
+	{
+		UUID cartId = cart.getUniqueId();
+		cart.setMaxSpeed(Utils.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
+		Vector newVel = cart.getVelocity().normalize().multiply(previousSpeed.get(cartId));
+		cart.setVelocity(newVel);
+		previousSpeed.remove(cartId);
 	}
 
 	private void continueCartAfterIntersection(RideableMinecart cart)
@@ -200,9 +200,8 @@ public class EasyCartsListener implements Listener
 		if (newCartLocation.getBlock().getState().getType() == Material.RAIL)
 		{
 			if (beforeStop.getSpeed() < 0.1d)
-			{
 				beforeStop.setSpeed(0.1d);
-			}
+
 			cart.setVelocity(locationOffset.clone().multiply(beforeStop.getSpeed()));
 			teleportMineCart(cart, newCartLocation, firstPassenger.getLocation(), beforeStop.getDirection());
 			stoppedCarts.remove(cart.getUniqueId());
