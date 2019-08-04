@@ -30,10 +30,6 @@ public class EasyCartsListener implements Listener
 	public static EasyCarts easyCartsPlugin;
 	private static FileConfiguration config = null;
 
-	// Max speed that a minecart can have before it derails in curves or stops on upward slopes
-	private static final double MAX_SAFE_DERAIL_SPEED = 0.4D;
-	// Max speed that a minecart can have before detection of intersection fails
-	private static final double MAX_SAFE_INTERSECTION_SPEED = 1.0D;
 	private static final int BLOCKS_LOOK_AHEAD = 3;
 
 	private HashMap<UUID, Double> previousSpeed = new HashMap<UUID, Double>();
@@ -116,19 +112,20 @@ public class EasyCartsListener implements Listener
 						{
 							// Don't do anything if we are on a downward slope
 							return;
-						} else
+						}
+						else
 						{
 							previousSpeed.put(cartId, cart.getVelocity().length());
 							slowedCarts.add(cartId);
-							Utils.slowDownCart(cart, MAX_SAFE_DERAIL_SPEED);
+							CartSpeed.setCartSpeedToAvoidDerailing(cart);
 							return;
 						}
-					} else if ((cartVelocity.length() > MAX_SAFE_INTERSECTION_SPEED)
-							&& Utils.isIntersection(locationInFront, cartDirection))
+					}
+					else if (CartSpeed.isCartTooFastToDetectIntersection(cart) && Utils.isIntersection(locationInFront, cartDirection))
 					{
 						// Slow down before intersections, otherwise the VehicleMoveEvent might
 						// come too late and we will miss the intersection
-						Utils.slowDownCart(cart, MAX_SAFE_INTERSECTION_SPEED);
+						CartSpeed.setCartSpeedToAvoidMissingIntersection(cart);
 						return;
 					}
 

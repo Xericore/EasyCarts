@@ -215,12 +215,6 @@ class Utils
 		return null;
 	}
 
-	static void slowDownCart(RideableMinecart cart, double maxSpeed)
-	{
-		cart.setVelocity(cart.getVelocity().clone().normalize().multiply(maxSpeed));
-		cart.setMaxSpeed(maxSpeed);
-	}
-
 	static void pushNearbyEntities(RideableMinecart cart, Location cartLocation)
 	{
 		// To avoid collision, the entity must be located at least 1.0 block away from the cart.
