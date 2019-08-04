@@ -73,7 +73,6 @@ public class EasyCartsListener implements Listener
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onMyVehicleMove(VehicleMoveEvent event)
 	{
-
 		try
 		{
 			RideableMinecart cart = Utils.getValidMineCart(event.getVehicle(), true);
@@ -97,9 +96,7 @@ public class EasyCartsListener implements Listener
 			}
 
 			if (!config.getBoolean("MinecartCollisions"))
-			{
 				Utils.pushNearbyEntities(cart, cartLocation);
-			}
 
 			// ------------------------------- SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE -----------------------------
 
@@ -112,31 +109,31 @@ public class EasyCartsListener implements Listener
 					locationInFront.add(cartDirection.multiply(i));
 					Rails railInFront = Utils.getRailInFront(locationInFront);
 
-					if (railInFront != null)
-					{
+					if (railInFront == null)
+						continue;
 
-						if (railInFront.isCurve() || railInFront.isOnSlope())
+					if (railInFront.isCurve() || railInFront.isOnSlope())
+					{
+						if (railUnderCart.isOnSlope() && Utils.isMovingDown(event))
 						{
-							if (railUnderCart.isOnSlope() && Utils.isMovingDown(event))
-							{
-								// Don't do anything if we are on a downward slope
-								return;
-							} else
-							{
-								previousSpeed.put(cartId, cart.getVelocity().length());
-								slowedCarts.add(cartId);
-								Utils.slowDownCart(cart, MAX_SAFE_DERAIL_SPEED);
-								return;
-							}
-						} else if ((cartVelocity.length() > MAX_SAFE_INTERSECTION_SPEED)
-								&& Utils.isIntersection(locationInFront, cartDirection))
+							// Don't do anything if we are on a downward slope
+							return;
+						} else
 						{
-							// Slow down before intersections, otherwise the VehicleMoveEvent might
-							// come too late and we will miss the intersection
-							Utils.slowDownCart(cart, MAX_SAFE_INTERSECTION_SPEED);
+							previousSpeed.put(cartId, cart.getVelocity().length());
+							slowedCarts.add(cartId);
+							Utils.slowDownCart(cart, MAX_SAFE_DERAIL_SPEED);
 							return;
 						}
+					} else if ((cartVelocity.length() > MAX_SAFE_INTERSECTION_SPEED)
+							&& Utils.isIntersection(locationInFront, cartDirection))
+					{
+						// Slow down before intersections, otherwise the VehicleMoveEvent might
+						// come too late and we will miss the intersection
+						Utils.slowDownCart(cart, MAX_SAFE_INTERSECTION_SPEED);
+						return;
 					}
+
 				}
 			}
 
@@ -297,7 +294,6 @@ public class EasyCartsListener implements Listener
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerDismount(final VehicleExitEvent event)
 	{
-
 		if (!(event.getVehicle() instanceof RideableMinecart))
 			return;
 
