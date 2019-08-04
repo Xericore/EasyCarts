@@ -6,17 +6,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.*;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.material.PoweredRail;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
-public class Utils
+class Utils
 {
 
 	public static final double MINECART_VANILLA_PUSH_SPEED = 0.2D;
@@ -40,7 +37,7 @@ public class Utils
 		return cart;
 	}
 
-	public static Entity GetFirstPassenger(Minecart toCart)
+	static Entity GetFirstPassenger(Minecart toCart)
 	{
 		List<Entity> passengers = toCart.getPassengers();
 
@@ -56,7 +53,7 @@ public class Utils
 	 * @param location
 	 * @return
 	 */
-	public static boolean isFlatRail(Location location)
+	static boolean isFlatRail(Location location)
 	{
 		if (location.getBlock().getType() == Material.RAIL)
 		{
@@ -69,7 +66,7 @@ public class Utils
 		return false;
 	}
 
-	public static boolean isRailPerpendicular(Location myLocation, Location otherLocation)
+	static boolean isRailPerpendicular(Location myLocation, Location otherLocation)
 	{
 		Block myBlock = myLocation.getBlock();
 		Block otherBlock = otherLocation.getBlock();
@@ -86,7 +83,7 @@ public class Utils
 		return false;
 	}
 
-	public static boolean isRailParallel(Location myLocation, Location otherLocation)
+	static boolean isRailParallel(Location myLocation, Location otherLocation)
 	{
 		Block myBlock = myLocation.getBlock();
 		Block otherBlock = otherLocation.getBlock();
@@ -100,7 +97,7 @@ public class Utils
 		return false;
 	}
 
-	public static Vector getUnitVectorFromYaw(float yaw)
+	static Vector getUnitVectorFromYaw(float yaw)
 	{
 		BlockFace facing = getBlockFaceFromYaw(yaw);
 		switch (facing)
@@ -123,7 +120,7 @@ public class Utils
 	 * @param movementDirection
 	 * @return
 	 */
-	public static boolean isIntersection(Location myLocation, Vector movementDirection)
+	static boolean isIntersection(Location myLocation, Vector movementDirection)
 	{
 		if (Utils.isFlatRail(myLocation))
 		{
@@ -153,7 +150,7 @@ public class Utils
 		return false;
 	}
 
-	public static BlockFace getBlockFaceFromYaw(float yaw)
+	static BlockFace getBlockFaceFromYaw(float yaw)
 	{
 
 		if (yaw < 0)
@@ -179,17 +176,17 @@ public class Utils
 		}
 	}
 
-	public static boolean isMovingUp(VehicleMoveEvent event)
+	static boolean isMovingUp(VehicleMoveEvent event)
 	{
 		return event.getTo().getY() - event.getFrom().getY() > 0;
 	}
 
-	public static boolean isMovingDown(VehicleMoveEvent event)
+	static boolean isMovingDown(VehicleMoveEvent event)
 	{
 		return event.getTo().getY() - event.getFrom().getY() < 0;
 	}
 
-	public static Rails getRailInFront(Location testLoc)
+	static Rails getRailInFront(Location testLoc)
 	{
 		try
 		{
@@ -216,5 +213,65 @@ public class Utils
 			// no valid rail found
 		}
 		return null;
+	}
+
+	static void slowDownCart(RideableMinecart cart, double maxSpeed)
+	{
+		cart.setVelocity(cart.getVelocity().clone().normalize().multiply(maxSpeed));
+		cart.setMaxSpeed(maxSpeed);
+	}
+
+	static void pushNearbyEntities(RideableMinecart cart, Location cartLocation)
+	{
+		// To avoid collision, the entity must be located at least 1.0 block away from the cart.
+		// The entities will be moved to this distance if they are within the search box when the cart is moving.
+		// We actually move the entity a little bit further, to avoid it moving right back into the search box.
+
+		// We cannot use cart.getVelocity() because on diagonal rails, this returns +x,0,0 then 0,0,+z and then diagonal
+		// (depending on movement direction).
+		// Then it looks like we are moving e.g. left, then right, then diagonal and we cannot distinguish between this
+		// and a real straight movement.
+		// Luckily, the getLocation().getDirection() is unaffected by this. However, for some unknown reason we have to
+		// rotate that vector 90° clockwise to get the correct direction.
+		Vector cartVector = (new Vector(-cart.getLocation().getDirection().getZ(), 0, cart.getLocation().getDirection().getX()))
+				.normalize();
+
+		Vector velocityNormalRight = new Vector(-cartVector.getZ(), 0, cartVector.getX());
+		Vector velocityNormalLeft = new Vector(cartVector.getZ(), 0, -cartVector.getX());
+
+		// Adjust size of box to be between 1-2, depending on movement direction
+		List<Entity> nearbyEntities = cart.getNearbyEntities(1 + Math.abs(cartVector.getX()), 1, 1 + Math.abs(cartVector.getZ()));
+
+		for (Entity entity : nearbyEntities)
+		{
+			if (((entity instanceof Monster) || (entity instanceof Animals) || (entity instanceof NPC)))
+			{
+				// Only move monsters, animals and NPCs, not players
+				if (!entity.isInsideVehicle())
+				{
+					// Entity is not in a minecart, thus we can move it
+
+					Location entityLocation = entity.getLocation();
+
+					// The vector between the current cart location and the entity location, needed to determine which direction to
+					// move the entity to.
+					Vector cartToEntity = new Vector(entityLocation.getX() - cartLocation.getX(), 0,
+							entityLocation.getZ() - cartLocation.getZ());
+
+					// The cross product vector will point up- or downwards depending on the location of the second vector
+					if (cartVector.crossProduct(cartToEntity).getY() > 0)
+					{
+						entity.teleport(entityLocation.add(velocityNormalLeft.multiply(0.5)));
+					} else
+					{
+						entity.teleport(entityLocation.add(velocityNormalRight.multiply(0.5)));
+					}
+				}
+			} else if ((entity instanceof Minecart) && entity.isEmpty())
+			{
+				// Remove empty minecarts still on track
+				entity.remove();
+			}
+		}
 	}
 }

@@ -1,22 +1,13 @@
 package com.github.xericore.easycarts;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Logger;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.EventHandler;
@@ -28,6 +19,11 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 public class EasyCartsListener implements Listener
 {
@@ -102,7 +98,7 @@ public class EasyCartsListener implements Listener
 
 			if (!config.getBoolean("MinecartCollisions"))
 			{
-				pushNearbyEntities(cart, cartLocation);
+				Utils.pushNearbyEntities(cart, cartLocation);
 			}
 
 			// ------------------------------- SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE -----------------------------
@@ -129,7 +125,7 @@ public class EasyCartsListener implements Listener
 							{
 								previousSpeed.put(cartId, cart.getVelocity().length());
 								slowedCarts.add(cartId);
-								slowDownCart(cart, MAX_SAFE_DERAIL_SPEED);
+								Utils.slowDownCart(cart, MAX_SAFE_DERAIL_SPEED);
 								return;
 							}
 						} else if ((cartVelocity.length() > MAX_SAFE_INTERSECTION_SPEED)
@@ -137,7 +133,7 @@ public class EasyCartsListener implements Listener
 						{
 							// Slow down before intersections, otherwise the VehicleMoveEvent might
 							// come too late and we will miss the intersection
-							slowDownCart(cart, MAX_SAFE_INTERSECTION_SPEED);
+							Utils.slowDownCart(cart, MAX_SAFE_INTERSECTION_SPEED);
 							return;
 						}
 					}
@@ -187,66 +183,6 @@ public class EasyCartsListener implements Listener
 			logger.severe("Error in onMyVehicleMove.");
 			logger.severe(e.toString());
 		}
-	}
-
-	private void pushNearbyEntities(RideableMinecart cart, Location cartLocation)
-	{
-		// To avoid collision, the entity must be located at least 1.0 block away from the cart.
-		// The entities will be moved to this distance if they are within the search box when the cart is moving.
-		// We actually move the entity a little bit further, to avoid it moving right back into the search box.
-
-		// We cannot use cart.getVelocity() because on diagonal rails, this returns +x,0,0 then 0,0,+z and then diagonal
-		// (depending on movement direction).
-		// Then it looks like we are moving e.g. left, then right, then diagonal and we cannot distinguish between this
-		// and a real straight movement.
-		// Luckily, the getLocation().getDirection() is unaffected by this. However, for some unknown reason we have to
-		// rotate that vector 90° clockwise to get the correct direction.
-		Vector cartVector = (new Vector(-cart.getLocation().getDirection().getZ(), 0, cart.getLocation().getDirection().getX()))
-				.normalize();
-
-		Vector velocityNormalRight = new Vector(-cartVector.getZ(), 0, cartVector.getX());
-		Vector velocityNormalLeft = new Vector(cartVector.getZ(), 0, -cartVector.getX());
-
-		// Adjust size of box to be between 1-2, depending on movement direction
-		List<Entity> nearbyEntities = cart.getNearbyEntities(1 + Math.abs(cartVector.getX()), 1, 1 + Math.abs(cartVector.getZ()));
-
-		for (Entity entity : nearbyEntities)
-		{
-			if (((entity instanceof Monster) || (entity instanceof Animals) || (entity instanceof NPC)))
-			{
-				// Only move monsters, animals and NPCs, not players
-				if (!entity.isInsideVehicle())
-				{
-					// Entity is not in a minecart, thus we can move it
-
-					Location entityLocation = entity.getLocation();
-
-					// The vector between the current cart location and the entity location, needed to determine which direction to
-					// move the entity to.
-					Vector cartToEntity = new Vector(entityLocation.getX() - cartLocation.getX(), 0,
-							entityLocation.getZ() - cartLocation.getZ());
-
-					// The cross product vector will point up- or downwards depending on the location of the second vector
-					if (cartVector.crossProduct(cartToEntity).getY() > 0)
-					{
-						entity.teleport(entityLocation.add(velocityNormalLeft.multiply(0.5)));
-					} else
-					{
-						entity.teleport(entityLocation.add(velocityNormalRight.multiply(0.5)));
-					}
-				}
-			} else if ((entity instanceof Minecart) && entity.isEmpty())
-			{
-				// Remove empty minecarts still on track
-				entity.remove();
-			}
-		}
-	}
-
-	private void slowDownCart(RideableMinecart cart, double maxSpeed)
-	{
-		cart.setVelocity(cart.getVelocity().clone().normalize().multiply(maxSpeed));
-		cart.setMaxSpeed(maxSpeed);
 	}
 
 	private void continueCartAfterIntersection(RideableMinecart cart)
@@ -398,7 +334,6 @@ public class EasyCartsListener implements Listener
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onVehicleCollision(final VehicleEntityCollisionEvent event)
 	{
-
 		RideableMinecart cart = Utils.getValidMineCart(event.getVehicle(), true);
 		if (cart == null)
 		{
