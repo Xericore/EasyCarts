@@ -243,7 +243,7 @@ class Utils
 			}
 
 			// Only move monsters, animals and NPCs, not players
-			if (((entity instanceof Monster) || (entity instanceof Animals) || (entity instanceof NPC)))
+			if ((entity instanceof Monster) || (entity instanceof Animals) || (entity instanceof NPC) || (entity instanceof Player))
 			{
 				// Entity is not in a minecart, thus we can move it
 				if (entity.isInsideVehicle())
