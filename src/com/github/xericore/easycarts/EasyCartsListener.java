@@ -34,7 +34,7 @@ public class EasyCartsListener implements Listener
 
 	// Max speed that a minecart can have before it derails in curves or stops on upward slopes
 	private static final double MAX_SAFE_DERAIL_SPEED = 0.4D;
-	// Max speed that a minecart can have before it detection of intersection fails
+	// Max speed that a minecart can have before detection of intersection fails
 	private static final double MAX_SAFE_INTERSECTION_SPEED = 1.0D;
 	private static final int BLOCKS_LOOK_AHEAD = 3;
 
@@ -320,32 +320,4 @@ public class EasyCartsListener implements Listener
 			}, 2L);
 		}
 	}
-
-	/**
-	 * Unfortunately at this point the cart's speed is already 0. Thus it isn't possible to determine the speed of the cart before the
-	 * collision (at least not without resource intense saving of speed every tick in VehicleMoveEvent).
-	 * 
-	 * The work around is to move the entities before they collide with the cart. Other players will not be moved. However, if a player
-	 * blocks the path, the cart will come to a stop.
-	 * 
-	 * @see https://bukkit.org/threads/trouble-cancelling-vehicleentitycollisionevent.285269/
-	 * @param event
-	 */
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-	public void onVehicleCollision(final VehicleEntityCollisionEvent event)
-	{
-		RideableMinecart cart = Utils.getValidMineCart(event.getVehicle(), true);
-		if (cart == null)
-		{
-			return;
-		}
-		if (!config.getBoolean("MinecartCollisions") && event.getEntity() instanceof Player)
-		{
-			// This will cause the cart to stop
-			event.setCancelled(true);
-			event.setCollisionCancelled(true);
-			event.setPickupCancelled(true);
-		}
-	}
-
 }

@@ -244,33 +244,35 @@ class Utils
 
 		for (Entity entity : nearbyEntities)
 		{
+			// Remove empty minecarts still on track
+			if ((entity instanceof Minecart) && entity.isEmpty())
+			{
+				entity.remove();
+				continue;
+			}
+
+			// Only move monsters, animals and NPCs, not players
 			if (((entity instanceof Monster) || (entity instanceof Animals) || (entity instanceof NPC)))
 			{
-				// Only move monsters, animals and NPCs, not players
-				if (!entity.isInsideVehicle())
+				// Entity is not in a minecart, thus we can move it
+				if (entity.isInsideVehicle())
+					continue;
+
+				Location entityLocation = entity.getLocation();
+
+				// The vector between the current cart location and the entity location, needed to determine which direction to
+				// move the entity to.
+				Vector cartToEntity = new Vector(entityLocation.getX() - cartLocation.getX(), 0,
+						entityLocation.getZ() - cartLocation.getZ());
+
+				// The cross product vector will point up- or downwards depending on the location of the second vector
+				if (cartVector.crossProduct(cartToEntity).getY() > 0)
 				{
-					// Entity is not in a minecart, thus we can move it
-
-					Location entityLocation = entity.getLocation();
-
-					// The vector between the current cart location and the entity location, needed to determine which direction to
-					// move the entity to.
-					Vector cartToEntity = new Vector(entityLocation.getX() - cartLocation.getX(), 0,
-							entityLocation.getZ() - cartLocation.getZ());
-
-					// The cross product vector will point up- or downwards depending on the location of the second vector
-					if (cartVector.crossProduct(cartToEntity).getY() > 0)
-					{
-						entity.teleport(entityLocation.add(velocityNormalLeft.multiply(0.5)));
-					} else
-					{
-						entity.teleport(entityLocation.add(velocityNormalRight.multiply(0.5)));
-					}
+					entity.teleport(entityLocation.add(velocityNormalLeft.multiply(0.5)));
+				} else
+				{
+					entity.teleport(entityLocation.add(velocityNormalRight.multiply(0.5)));
 				}
-			} else if ((entity instanceof Minecart) && entity.isEmpty())
-			{
-				// Remove empty minecarts still on track
-				entity.remove();
 			}
 		}
 	}

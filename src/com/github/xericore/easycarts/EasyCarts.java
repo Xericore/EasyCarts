@@ -22,6 +22,7 @@ public class EasyCarts extends JavaPlugin
 	// Define Listener classes
 	public final EasyCartsListener myMinecartListener = new EasyCartsListener(this);
 	public final PlayerClickListener myPlayerClickListener = new PlayerClickListener(this);
+	public final MyVehicleCollisionListener myVehicleCollisionListener = new MyVehicleCollisionListener(this);
 
 	public void onEnable()
 	{
@@ -36,6 +37,7 @@ public class EasyCarts extends JavaPlugin
 	private void registerEvents()
 	{
 		getServer().getPluginManager().registerEvents(this.myMinecartListener, this);
+		getServer().getPluginManager().registerEvents(this.myVehicleCollisionListener, this);
 
 		if (getConfig().getBoolean("StopStartOnLeftClick"))
 			getServer().getPluginManager().registerEvents(this.myPlayerClickListener, this);
