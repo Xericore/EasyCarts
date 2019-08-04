@@ -16,9 +16,6 @@ import org.bukkit.util.Vector;
 class Utils
 {
 
-	public static final double MINECART_VANILLA_PUSH_SPEED = 0.2D;
-	public static final double MINECART_VANILLA_MAX_SPEED = 0.4D;
-
 	public static RideableMinecart getValidMineCart(Vehicle vehicle, boolean mustHavePassenger)
 	{
 		RideableMinecart cart = null;

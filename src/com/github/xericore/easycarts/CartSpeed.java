@@ -4,6 +4,9 @@ import org.bukkit.entity.minecart.RideableMinecart;
 
 class CartSpeed
 {
+    public static final double MINECART_VANILLA_PUSH_SPEED = 0.2D;
+    public static final double MINECART_VANILLA_MAX_SPEED = 0.4D;
+
     // Max speed that a minecart can have before it derails in curves or stops on upward slopes
     private static final double MAX_SAFE_DERAIL_SPEED = 0.4D;
     // Max speed that a minecart can have before detection of intersection fails

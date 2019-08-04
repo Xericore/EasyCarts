@@ -58,7 +58,7 @@ public class EasyCartsListener implements Listener
 
 		if (config.getDouble("MaxSpeedPercent") > 0)
 		{
-			cart.setMaxSpeed(Utils.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
+			cart.setMaxSpeed(CartSpeed.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
 		}
 
 		cart.setSlowWhenEmpty(config.getBoolean("SlowWhenEmpty"));
@@ -173,7 +173,7 @@ public class EasyCartsListener implements Listener
 	private void setCartToOriginalSpeed(RideableMinecart cart)
 	{
 		UUID cartId = cart.getUniqueId();
-		cart.setMaxSpeed(Utils.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
+		cart.setMaxSpeed(CartSpeed.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
 		Vector newVel = cart.getVelocity().normalize().multiply(previousSpeed.get(cartId));
 		cart.setVelocity(newVel);
 		previousSpeed.remove(cartId);
@@ -217,10 +217,10 @@ public class EasyCartsListener implements Listener
 		// reverses.
 		if (isPoweredBlock && !slowedCarts.contains(cart.getUniqueId()))
 		{
-			cart.setMaxSpeed(Utils.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
+			cart.setMaxSpeed(CartSpeed.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
 			cartVelocity.multiply(config.getDouble("PoweredRailBoostPercent") / 100);
 			cart.setVelocity(cartVelocity);
-		} else if (cartSpeed < (Utils.MINECART_VANILLA_PUSH_SPEED * config.getDouble("MaxPushSpeedPercent") / 100))
+		} else if (cartSpeed < (CartSpeed.MINECART_VANILLA_PUSH_SPEED * config.getDouble("MaxPushSpeedPercent") / 100))
 		{
 			// Boost default/auto minecart speed
 			cart.setVelocity(cartVelocity.multiply(config.getDouble("MaxPushSpeedPercent") / 100));

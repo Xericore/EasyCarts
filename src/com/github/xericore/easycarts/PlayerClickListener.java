@@ -44,7 +44,7 @@ public class PlayerClickListener implements Listener
 			if (cart.getVelocity().length() <= 0)
 			{
 				cart.setVelocity(Utils.getUnitVectorFromYaw(player.getLocation().getYaw())
-						.multiply((Utils.MINECART_VANILLA_PUSH_SPEED * config.getDouble("MaxPushSpeedPercent") / 100)));
+						.multiply((CartSpeed.MINECART_VANILLA_PUSH_SPEED * config.getDouble("MaxPushSpeedPercent") / 100)));
 			} else
 			{
 				cart.setVelocity(new Vector(0, 0, 0));
