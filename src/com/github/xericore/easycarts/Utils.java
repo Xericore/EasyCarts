@@ -94,9 +94,9 @@ class Utils
 		return false;
 	}
 
-	public static Vector getUnitVectorFromYaw(float yaw)
+	public static Vector getStraightUnitVectorFromYaw(float yaw)
 	{
-		BlockFace facing = getBlockFaceFromYaw(yaw);
+		BlockFace facing = getStraightBlockFaceFromYaw(yaw);
 		switch (facing)
 		{
 		case SOUTH:
@@ -147,14 +147,13 @@ class Utils
 		return false;
 	}
 
-	public static BlockFace getBlockFaceFromYaw(float yaw)
+	public static BlockFace getStraightBlockFaceFromYaw(float yaw)
 	{
-
 		if (yaw < 0)
-		{ // Map all negative values to positives. E.g. -45� = +315�
+		{ // Map all negative values to positives. E.g. -45° = +315°
 			yaw = yaw + 360;
 		}
-		yaw = yaw % 360; // crop value, e.g. if it's 460� --> 100�
+		yaw = yaw % 360; // crop value, e.g. if it's 460° --> 100°
 
 		float straightAngle = 90;
 

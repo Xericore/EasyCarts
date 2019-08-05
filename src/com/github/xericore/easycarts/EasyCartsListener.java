@@ -1,9 +1,6 @@
 package com.github.xericore.easycarts;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
@@ -29,8 +26,6 @@ public class EasyCartsListener implements Listener
 	public final Logger logger = Logger.getLogger("Minecraft");
 	public static EasyCarts easyCartsPlugin;
 	private static FileConfiguration config = null;
-
-	private static final int BLOCKS_LOOK_AHEAD = 3;
 
 	private HashMap<UUID, Double> previousSpeed = new HashMap<UUID, Double>();
 	private HashSet<UUID> slowedCarts = new HashSet<UUID>();
@@ -91,50 +86,37 @@ public class EasyCartsListener implements Listener
 
 			// ------------------------------- SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE -----------------------------
 
+			RailsAhead railsAhead = CartSpeed.getRailsAhead(cart);
+
 			UUID cartId = cart.getUniqueId();
-			Vector cartVelocity = cart.getVelocity();
 
-			boolean isDerailingAhead = false;
+			//logger.info("railsAhead: " + railsAhead);
 
-			if (CartSpeed.isCartTooFast(cart))
+			switch (railsAhead)
 			{
-				Location locationInFront = cartLocation.clone();
-				Vector cartDirection = cartVelocity.clone().normalize();
-
-				for (int i = 1; i < BLOCKS_LOOK_AHEAD; i++)
-				{
-					locationInFront.add(cartDirection.multiply(i));
-					Rails railInFront = Utils.getRailInFront(locationInFront);
-
-					if (railInFront == null)
-						continue;
-
-					isDerailingAhead = CartSpeed.isDerailingAhead(railUnderCart, railInFront);
-
-					if (isDerailingAhead)
+				case SafeForSpeedup:
+					break;
+				case Derailing:
+					if (railUnderCart.isOnSlope() && Utils.isMovingDown(event))
 					{
-						if (railUnderCart.isOnSlope() && Utils.isMovingDown(event))
-						{
-							// Don't do anything if we are on a downward slope
-							break;
-						}
-						else
-						{
-							previousSpeed.put(cartId, cart.getVelocity().length());
-							slowedCarts.add(cartId);
-							CartSpeed.setCartSpeedToAvoidDerailing(cart);
-							break;
-						}
+						// Don't do anything if we are on a downward slope
+						return;
 					}
-					else if (CartSpeed.isCartTooFastToDetectIntersection(cart) && Utils.isIntersection(locationInFront, cartDirection))
+					else
 					{
-						// Slow down before intersections, otherwise the VehicleMoveEvent might
-						// come too late and we will miss the intersection
-						CartSpeed.setCartSpeedToAvoidMissingIntersection(cart);
-						break;
+						previousSpeed.put(cartId, cart.getVelocity().length());
+						slowedCarts.add(cartId);
+						CartSpeed.setCartSpeedToAvoidDerailing(cart);
+						return;
 					}
-				}
+				case Intersection:
+					// Slow down before intersections, otherwise the VehicleMoveEvent might
+					// come too late and we will miss the intersection
+					CartSpeed.setCartSpeedToAvoidMissingIntersection(cart);
+					return;
 			}
+
+			Vector cartVelocity = cart.getVelocity();
 
 			if (railUnderCart.isOnSlope())
 			{
@@ -146,13 +128,16 @@ public class EasyCartsListener implements Listener
 				slowedCarts.remove(cartId);
 				return;
 			}
-			else if (!isDerailingAhead && previousSpeed.containsKey(cartId))
+			else if (previousSpeed.containsKey(cartId))
 			{
 				// No curve or slope under cart
 				setCartToOriginalSpeed(cart);
 			}
 
-			boostCartOnPoweredRails(cart, blockUnderCart);
+			if(!isCartSlowedDown(cart))
+			{
+				boostCartOnPoweredRails(cart, blockUnderCart);
+			}
 
 			// _/\__/\__/\__/\__/\__/\__/\__/\_ STOP MINECARTS AT INTERSECTIONS _/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\_
 
@@ -175,9 +160,16 @@ public class EasyCartsListener implements Listener
 		}
 	}
 
-	private boolean CanCartDerail(UUID cartId)
+	private void setCartSlow(RideableMinecart cart)
 	{
-		return !slowedCarts.contains(cartId);
+		previousSpeed.put(cart.getUniqueId(), cart.getVelocity().length());
+		slowedCarts.add(cart.getUniqueId());
+		CartSpeed.setCartSpeedToAvoidDerailing(cart);
+	}
+
+	private boolean isCartSlowedDown(RideableMinecart cart)
+	{
+		return slowedCarts.contains(cart.getUniqueId());
 	}
 
 	private void setCartToOriginalSpeed(RideableMinecart cart)
@@ -199,7 +191,7 @@ public class EasyCartsListener implements Listener
 		if (firstPassenger == null)
 			return;
 
-		Vector locationOffset = Utils.getUnitVectorFromYaw(firstPassenger.getLocation().getYaw());
+		Vector locationOffset = Utils.getStraightUnitVectorFromYaw(firstPassenger.getLocation().getYaw());
 
 		// The new cart location will be the old location +1 block in the player look direction.
 		Location newCartLocation = cart.getLocation().clone().add(locationOffset);
@@ -218,19 +210,28 @@ public class EasyCartsListener implements Listener
 	private void boostCartOnPoweredRails(RideableMinecart cart, Block blockUnderCart)
 	{
 		Vector cartVelocity = cart.getVelocity();
-		Double cartSpeed = cartVelocity.length();
 
 		boolean isPoweredBlock = (blockUnderCart.getType() == Material.POWERED_RAIL);
 		// Only boost carts if they have not been slowed down by slopes already.
 		// This disables boosters that are placed within BLOCKS_LOOK_AHEAD blocks before slopes or curves.
 		// Also, boosters on slopes will only apply the default minecraft boost, because if we make them stronger here, the cart
 		// reverses.
-		if (isPoweredBlock && !slowedCarts.contains(cart.getUniqueId()))
+		if (isPoweredBlock)
 		{
 			cart.setMaxSpeed(CartSpeed.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
 			cartVelocity.multiply(config.getDouble("PoweredRailBoostPercent") / 100);
 			cart.setVelocity(cartVelocity);
-		} else if (cartSpeed < (CartSpeed.MINECART_VANILLA_PUSH_SPEED * config.getDouble("MaxPushSpeedPercent") / 100))
+		}
+		else
+		{
+			pushCartFaster(cart, cartVelocity);
+		}
+	}
+
+	private void pushCartFaster(RideableMinecart cart, Vector cartVelocity)
+	{
+		Double cartSpeed = cartVelocity.length();
+		if (cartSpeed < (CartSpeed.MINECART_VANILLA_PUSH_SPEED * config.getDouble("MaxPushSpeedPercent") / 100))
 		{
 			// Boost default/auto minecart speed
 			cart.setVelocity(cartVelocity.multiply(config.getDouble("MaxPushSpeedPercent") / 100));
