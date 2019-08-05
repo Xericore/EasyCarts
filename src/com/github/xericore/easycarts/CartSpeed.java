@@ -1,6 +1,7 @@
 package com.github.xericore.easycarts;
 
 import org.bukkit.entity.minecart.RideableMinecart;
+import org.bukkit.material.Rails;
 
 class CartSpeed
 {
@@ -31,5 +32,17 @@ class CartSpeed
     public static boolean isCartTooFastToDetectIntersection(RideableMinecart cart)
     {
         return cart.getVelocity().length() > MAX_SAFE_INTERSECTION_SPEED;
+    }
+
+    public static boolean isDerailingAhead(Rails railUnderCart, Rails railInFront)
+    {
+        return (Utils.isStraightRail(railUnderCart) && railInFront.isCurve()) ||
+                (railUnderCart.isCurve() && Utils.isStraightRail(railInFront)) ||
+                railInFront.isOnSlope();
+    }
+
+    public static boolean isCartTooFast(RideableMinecart cart)
+    {
+        return cart.getVelocity().clone().lengthSquared() > MAX_SAFE_DERAIL_SPEED;
     }
 }

@@ -183,6 +183,11 @@ class Utils
 		return event.getTo().getY() - event.getFrom().getY() < 0;
 	}
 
+	public static boolean isStraightRail(Rails rails)
+	{
+		return !rails.isCurve();
+	}
+
 	static Rails getRailInFront(Location testLoc)
 	{
 		try
@@ -194,14 +199,17 @@ class Utils
 			{
 				// Detects rising slope
 				return (Rails) testLoc.getBlock().getState().getData();
-			} else if (testLocUnder.getBlock().getType() == Material.RAIL)
+			}
+			else if (testLocUnder.getBlock().getType() == Material.RAIL)
 			{
 				// Detects falling slope
 				return (Rails) testLocUnder.getBlock().getState().getData();
-			} else if (testLoc.getBlock().getType() == Material.POWERED_RAIL)
+			}
+			else if (testLoc.getBlock().getType() == Material.POWERED_RAIL)
 			{
 				return (PoweredRail) testLoc.getBlock().getState().getData();
-			} else if (testLocUnder.getBlock().getType() == Material.POWERED_RAIL)
+			}
+			else if (testLocUnder.getBlock().getType() == Material.POWERED_RAIL)
 			{
 				return (PoweredRail) testLocUnder.getBlock().getState().getData();
 			}

@@ -73,9 +73,6 @@ public class EasyCartsListener implements Listener
 			if (cart == null)
 				return;
 
-			Vector cartVelocity = cart.getVelocity();
-
-			UUID cartId = cart.getUniqueId();
 			Location cartLocation = cart.getLocation();
 			Block blockUnderCart = cartLocation.getBlock();
 
@@ -94,10 +91,16 @@ public class EasyCartsListener implements Listener
 
 			// ------------------------------- SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE -----------------------------
 
-			if (!slowedCarts.contains(cartId))
+			UUID cartId = cart.getUniqueId();
+			Vector cartVelocity = cart.getVelocity();
+
+			boolean isDerailingAhead = false;
+
+			if (CartSpeed.isCartTooFast(cart))
 			{
 				Location locationInFront = cartLocation.clone();
 				Vector cartDirection = cartVelocity.clone().normalize();
+
 				for (int i = 1; i < BLOCKS_LOOK_AHEAD; i++)
 				{
 					locationInFront.add(cartDirection.multiply(i));
@@ -106,19 +109,21 @@ public class EasyCartsListener implements Listener
 					if (railInFront == null)
 						continue;
 
-					if (railInFront.isCurve() || railInFront.isOnSlope())
+					isDerailingAhead = CartSpeed.isDerailingAhead(railUnderCart, railInFront);
+
+					if (isDerailingAhead)
 					{
 						if (railUnderCart.isOnSlope() && Utils.isMovingDown(event))
 						{
 							// Don't do anything if we are on a downward slope
-							return;
+							break;
 						}
 						else
 						{
 							previousSpeed.put(cartId, cart.getVelocity().length());
 							slowedCarts.add(cartId);
 							CartSpeed.setCartSpeedToAvoidDerailing(cart);
-							return;
+							break;
 						}
 					}
 					else if (CartSpeed.isCartTooFastToDetectIntersection(cart) && Utils.isIntersection(locationInFront, cartDirection))
@@ -126,22 +131,22 @@ public class EasyCartsListener implements Listener
 						// Slow down before intersections, otherwise the VehicleMoveEvent might
 						// come too late and we will miss the intersection
 						CartSpeed.setCartSpeedToAvoidMissingIntersection(cart);
-						return;
+						break;
 					}
-
 				}
 			}
 
-			if (railUnderCart.isCurve() || railUnderCart.isOnSlope())
+			if (railUnderCart.isOnSlope())
 			{
-				if (config.getBoolean("AutoBoostOnSlope") && railUnderCart.isOnSlope() && Utils.isMovingUp(event))
+				if (config.getBoolean("AutoBoostOnSlope") && Utils.isMovingUp(event))
 				{
 					// Speed up carts on rising slopes so they don't slow down as quickly.
 					cart.setVelocity(cartVelocity.multiply(config.getDouble("MaxPushSpeedPercent")));
 				}
 				slowedCarts.remove(cartId);
 				return;
-			} else if (!slowedCarts.contains(cartId) && previousSpeed.containsKey(cartId))
+			}
+			else if (!isDerailingAhead && previousSpeed.containsKey(cartId))
 			{
 				// No curve or slope under cart
 				setCartToOriginalSpeed(cart);
@@ -168,6 +173,11 @@ public class EasyCartsListener implements Listener
 			logger.severe("Error in onMyVehicleMove.");
 			logger.severe(e.toString());
 		}
+	}
+
+	private boolean CanCartDerail(UUID cartId)
+	{
+		return !slowedCarts.contains(cartId);
 	}
 
 	private void setCartToOriginalSpeed(RideableMinecart cart)
