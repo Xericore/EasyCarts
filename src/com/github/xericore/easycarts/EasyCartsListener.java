@@ -86,11 +86,11 @@ public class EasyCartsListener implements Listener
 
 			// ------------------------------- SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE -----------------------------
 
-			RailsAhead railsAhead = CartSpeed.getRailsAhead(cart);
-
-			UUID cartId = cart.getUniqueId();
+			RailsAhead railsAhead = CartSpeed.getRailsAhead(cart, logger);
 
 			//logger.info("railsAhead: " + railsAhead);
+
+			UUID cartId = cart.getUniqueId();
 
 			switch (railsAhead)
 			{

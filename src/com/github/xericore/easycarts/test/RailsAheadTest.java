@@ -8,14 +8,14 @@ import static org.junit.Assert.fail;
 public class RailsAheadTest
 {
     @Before
-    public void givenFileNameCreatesFile()
+    public void setup()
     {
     }
 
     @Test
     public void getCuboids_givenDefaultCuboid_isPresent()
     {
-        fail("Not implemented");
+
     }
 
 }

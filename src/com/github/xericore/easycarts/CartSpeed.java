@@ -6,6 +6,9 @@ import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
+import java.text.DecimalFormat;
+import java.util.logging.Logger;
+
 class CartSpeed
 {
     public static final double MINECART_VANILLA_PUSH_SPEED = 0.2D;
@@ -39,13 +42,20 @@ class CartSpeed
         return cart.getVelocity().length() > MAX_SAFE_INTERSECTION_SPEED;
     }
 
-    public static RailsAhead getRailsAhead(RideableMinecart cart)
+    public static RailsAhead getRailsAhead(RideableMinecart cart, Logger logger)
     {
         Location cartLocation = cart.getLocation();
         Block blockUnderCart = cartLocation.getBlock();
 
         Location locationInFront = cartLocation.clone();
-        Vector cartDirection = cart.getLocation().getDirection().clone();
+        Vector cartDirection = cart.getVelocity().clone().normalize();
+
+        DecimalFormat df = new DecimalFormat("#.#");
+
+        logger.info("cartDirection: " +
+                df.format(cart.getLocation().getDirection().clone().getX()) + ", " +
+                df.format(cart.getLocation().getDirection().clone().getZ()));
+        //logger.info("cartVelocity:  " + cart.getVelocity().clone());
 
         // We won't do anything if there's no rail under the cart
         Rails railUnderCart = null;
