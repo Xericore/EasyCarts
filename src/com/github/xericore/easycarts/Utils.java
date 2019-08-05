@@ -34,7 +34,7 @@ class Utils
 		return cart;
 	}
 
-	static Entity GetFirstPassenger(Minecart toCart)
+	public static Entity GetFirstPassenger(Minecart toCart)
 	{
 		List<Entity> passengers = toCart.getPassengers();
 
@@ -50,7 +50,7 @@ class Utils
 	 * @param location
 	 * @return
 	 */
-	static boolean isFlatRail(Location location)
+	public static boolean isFlatRail(Location location)
 	{
 		if (location.getBlock().getType() == Material.RAIL)
 		{
@@ -63,7 +63,7 @@ class Utils
 		return false;
 	}
 
-	static boolean isRailPerpendicular(Location myLocation, Location otherLocation)
+	public static boolean isRailPerpendicular(Location myLocation, Location otherLocation)
 	{
 		Block myBlock = myLocation.getBlock();
 		Block otherBlock = otherLocation.getBlock();
@@ -80,7 +80,7 @@ class Utils
 		return false;
 	}
 
-	static boolean isRailParallel(Location myLocation, Location otherLocation)
+	public static boolean isRailParallel(Location myLocation, Location otherLocation)
 	{
 		Block myBlock = myLocation.getBlock();
 		Block otherBlock = otherLocation.getBlock();
@@ -94,7 +94,7 @@ class Utils
 		return false;
 	}
 
-	static Vector getUnitVectorFromYaw(float yaw)
+	public static Vector getUnitVectorFromYaw(float yaw)
 	{
 		BlockFace facing = getBlockFaceFromYaw(yaw);
 		switch (facing)
@@ -117,7 +117,7 @@ class Utils
 	 * @param movementDirection
 	 * @return
 	 */
-	static boolean isIntersection(Location myLocation, Vector movementDirection)
+	public static boolean isIntersection(Location myLocation, Vector movementDirection)
 	{
 		if (Utils.isFlatRail(myLocation))
 		{
@@ -147,7 +147,7 @@ class Utils
 		return false;
 	}
 
-	static BlockFace getBlockFaceFromYaw(float yaw)
+	public static BlockFace getBlockFaceFromYaw(float yaw)
 	{
 
 		if (yaw < 0)
@@ -173,12 +173,12 @@ class Utils
 		}
 	}
 
-	static boolean isMovingUp(VehicleMoveEvent event)
+	public static boolean isMovingUp(VehicleMoveEvent event)
 	{
 		return event.getTo().getY() - event.getFrom().getY() > 0;
 	}
 
-	static boolean isMovingDown(VehicleMoveEvent event)
+	public static boolean isMovingDown(VehicleMoveEvent event)
 	{
 		return event.getTo().getY() - event.getFrom().getY() < 0;
 	}
@@ -188,7 +188,7 @@ class Utils
 		return !rails.isCurve();
 	}
 
-	static Rails getRailInFront(Location testLoc)
+	public static Rails getRailInFront(Location testLoc)
 	{
 		try
 		{
@@ -220,7 +220,7 @@ class Utils
 		return null;
 	}
 
-	static void pushNearbyEntities(RideableMinecart cart, Location cartLocation)
+	public static void pushNearbyEntities(RideableMinecart cart, Location cartLocation)
 	{
 		// To avoid collision, the entity must be located at least 1.0 block away from the cart.
 		// The entities will be moved to this distance if they are within the search box when the cart is moving.
