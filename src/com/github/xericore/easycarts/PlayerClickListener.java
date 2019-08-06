@@ -1,5 +1,7 @@
 package com.github.xericore.easycarts;
 
+import com.github.xericore.easycarts.utilities.CartSpeed;
+import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;

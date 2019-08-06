@@ -1,4 +1,4 @@
-package com.github.xericore.easycarts;
+package com.github.xericore.easycarts.utilities;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import org.bukkit.material.PoweredRail;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
-class Utils
+public class Utils
 {
 
 	public static RideableMinecart getValidMineCart(Vehicle vehicle, boolean mustHavePassenger)
@@ -44,56 +44,6 @@ class Utils
 		return passengers.get(0);
 	}
 
-	/**
-	 * Includes curves, but not slopes.
-	 * 
-	 * @param location
-	 * @return
-	 */
-	public static boolean isFlatRail(Location location)
-	{
-		if (location.getBlock().getType() == Material.RAIL)
-		{
-			Rails testRail = (Rails) location.getBlock().getState().getData();
-			if (!testRail.isOnSlope())
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static boolean isRailPerpendicular(Location myLocation, Location otherLocation)
-	{
-		Block myBlock = myLocation.getBlock();
-		Block otherBlock = otherLocation.getBlock();
-		if (otherBlock.getType() == Material.RAIL)
-		{
-			if (myBlock.getData() == (byte) 0 && otherBlock.getData() == (byte) 1)
-			{
-				return true;
-			} else if (myBlock.getData() == (byte) 1 && otherBlock.getData() == (byte) 0)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static boolean isRailParallel(Location myLocation, Location otherLocation)
-	{
-		Block myBlock = myLocation.getBlock();
-		Block otherBlock = otherLocation.getBlock();
-		if (otherBlock.getType() == Material.RAIL)
-		{
-			if (myBlock.getData() == otherBlock.getData())
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public static Vector getStraightUnitVectorFromYaw(float yaw)
 	{
 		BlockFace facing = getStraightBlockFaceFromYaw(yaw);
@@ -110,42 +60,7 @@ class Utils
 		}
 	}
 
-	/**
-	 * It's not a valid intersection if the rail left or right to our location is not normal to the rail we are moving/standing on.
-	 * 
-	 * @param myLocation
-	 * @param movementDirection
-	 * @return
-	 */
-	public static boolean isIntersection(Location myLocation, Vector movementDirection)
-	{
-		if (Utils.isFlatRail(myLocation))
-		{
-			// Search for intersection
-			Location front = myLocation.clone().add(movementDirection.normalize());
-			Location back = myLocation.clone().subtract(movementDirection.normalize());
-			Location left = myLocation.clone().add(movementDirection.getZ(), 0, -movementDirection.getX()); // go one left
-			Location right = myLocation.clone().add(-movementDirection.getZ(), 0, movementDirection.getX()); // go one right
 
-			if (Utils.isRailPerpendicular(myLocation, left) && Utils.isRailPerpendicular(myLocation, right))
-			{
-				return true;
-			} else if ((Utils.isRailPerpendicular(myLocation, left)
-					&& (Utils.isRailParallel(myLocation, front) || Utils.isRailParallel(myLocation, back)))
-					|| (Utils.isRailPerpendicular(myLocation, right)
-							&& (Utils.isRailParallel(myLocation, front) || Utils.isRailParallel(myLocation, back))))
-			{
-				return true;
-			} else if ((Utils.isRailParallel(myLocation, left)
-					&& (Utils.isRailPerpendicular(myLocation, front) || Utils.isRailPerpendicular(myLocation, back)))
-					|| (Utils.isRailParallel(myLocation, right)
-							&& (Utils.isRailPerpendicular(myLocation, front) || Utils.isRailPerpendicular(myLocation, back))))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
 
 	public static BlockFace getStraightBlockFaceFromYaw(float yaw)
 	{
@@ -180,43 +95,6 @@ class Utils
 	public static boolean isMovingDown(VehicleMoveEvent event)
 	{
 		return event.getTo().getY() - event.getFrom().getY() < 0;
-	}
-
-	public static boolean isStraightRail(Rails rails)
-	{
-		return !rails.isCurve();
-	}
-
-	public static Rails getRailInFront(Location testLoc)
-	{
-		try
-		{
-			// Slopes that go down/fall have the blocks underneath the current y-level
-			Location testLocUnder = testLoc.clone().subtract(0, 1, 0);
-
-			if (testLoc.getBlock().getType() == Material.RAIL)
-			{
-				// Detects rising slope
-				return (Rails) testLoc.getBlock().getState().getData();
-			}
-			else if (testLocUnder.getBlock().getType() == Material.RAIL)
-			{
-				// Detects falling slope
-				return (Rails) testLocUnder.getBlock().getState().getData();
-			}
-			else if (testLoc.getBlock().getType() == Material.POWERED_RAIL)
-			{
-				return (PoweredRail) testLoc.getBlock().getState().getData();
-			}
-			else if (testLocUnder.getBlock().getType() == Material.POWERED_RAIL)
-			{
-				return (PoweredRail) testLocUnder.getBlock().getState().getData();
-			}
-		} catch (ClassCastException e)
-		{
-			// no valid rail found
-		}
-		return null;
 	}
 
 	public static void pushNearbyEntities(RideableMinecart cart, Location cartLocation)

@@ -1,5 +1,8 @@
 package com.github.xericore.easycarts;
 
+import com.github.xericore.easycarts.utilities.CartSpeed;
+import com.github.xericore.easycarts.utilities.RailUtils;
+import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -86,7 +89,7 @@ public class EasyCartsListener implements Listener
 
 			// ------------------------------- SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE -----------------------------
 
-			RailsAhead railsAhead = CartSpeed.getRailsAhead(cart, logger);
+			RailsAhead railsAhead = RailUtils.getRailsAhead(cart, logger);
 
 			//logger.info("railsAhead: " + railsAhead);
 
@@ -150,7 +153,7 @@ public class EasyCartsListener implements Listener
 				return;
 			}
 
-			if (Utils.isIntersection(cartLocation, cartVelocity))
+			if (RailUtils.isIntersection(cartLocation, cartVelocity))
 				stopCartAndShowMessageToPlayer(cart);
 
 		} catch (Exception e)
