@@ -87,4 +87,56 @@ public class CartDirectionTest
 
         Assert.assertEquals(BlockFace.SOUTH, cartBlockFaceDirection);
     }
+
+    @Test
+    public void getCartBlockFaceDirection_given_yaw_0_velocity_1_0_returnsEast()
+    {
+        float cartYaw = 0;
+        Vector cartVelocity = new Vector(1,0,0);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
+
+        BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
+
+        Assert.assertEquals(BlockFace.EAST, cartBlockFaceDirection);
+    }
+
+    @Test
+    public void getCartBlockFaceDirection_given_yaw_180_velocity_1_0_returnsEast()
+    {
+        float cartYaw = 180;
+        Vector cartVelocity = new Vector(1,0,0);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
+
+        BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
+
+        Assert.assertEquals(BlockFace.EAST, cartBlockFaceDirection);
+    }
+
+    @Test
+    public void getCartBlockFaceDirection_given_yaw_0_velocity_minus1_0_returnsWest()
+    {
+        float cartYaw = 0;
+        Vector cartVelocity = new Vector(-1,0,0);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
+
+        BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
+
+        Assert.assertEquals(BlockFace.WEST, cartBlockFaceDirection);
+    }
+
+    @Test
+    public void getCartBlockFaceDirection_given_yaw_180_velocity_minus1_0_returnsWest()
+    {
+        float cartYaw = 0;
+        Vector cartVelocity = new Vector(-1,0,0);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
+
+        BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
+
+        Assert.assertEquals(BlockFace.WEST, cartBlockFaceDirection);
+    }
 }

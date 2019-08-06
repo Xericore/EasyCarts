@@ -89,6 +89,10 @@ public class Utils
         if(approximatelyEquals(yaw, 0) || approximatelyEquals(yaw, 180))
         {
             // We are either facing east or west
+            if(approximatelyEquals(velocity.getX(), 1) && approximatelyEquals(velocity.getZ(), 0))
+                return BlockFace.EAST;
+            if(approximatelyEquals(velocity.getX(), -1) && approximatelyEquals(velocity.getZ(), 0))
+                return BlockFace.WEST;
         }
         else if(approximatelyEquals(yaw, 90) || approximatelyEquals(yaw, -90) || approximatelyEquals(yaw, 270))
         {
