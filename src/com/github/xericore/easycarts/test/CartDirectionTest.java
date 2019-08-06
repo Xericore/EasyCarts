@@ -1,6 +1,6 @@
 package com.github.xericore.easycarts.test;
 
-import com.github.xericore.easycarts.test.mocking.MockedLocationWithDirection;
+import com.github.xericore.easycarts.test.mocking.MockedLocation;
 import com.github.xericore.easycarts.test.mocking.MockedRideableMinecart;
 import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.block.BlockFace;
@@ -11,13 +11,12 @@ import org.junit.jupiter.api.Test;
 public class CartDirectionTest
 {
     @Test
-    public void getCartBlockFaceDirection_returnsNorth()
+    public void getCartBlockFaceDirection_given_yaw_90_0_minus1_returnsNorth()
     {
-        Vector direction = new Vector(0,0,0);
-
-        MockedLocationWithDirection locationWithDirection = new MockedLocationWithDirection(direction);
-
-        MockedRideableMinecart mockedCart = new MockedRideableMinecart(locationWithDirection);
+        float cartYaw = 90;
+        Vector cartVelocity = new Vector(0,0,-1);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
 
         BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
 

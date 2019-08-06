@@ -1,14 +1,6 @@
 package com.github.xericore.easycarts.utilities;
 
-import com.github.xericore.easycarts.RailsAhead;
-import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.entity.minecart.RideableMinecart;
-import org.bukkit.material.Rails;
-import org.bukkit.util.Vector;
-
-import java.text.DecimalFormat;
-import java.util.logging.Logger;
 
 public class CartSpeed
 {

@@ -4,25 +4,31 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 
-public class MockedLocationWithDirection extends Location
+public class MockedLocation extends Location
 {
     private Vector _direction;
 
-    public MockedLocationWithDirection(World world, double x, double y, double z)
+    public MockedLocation(World world, double x, double y, double z)
     {
         super(world, x, y, z);
     }
 
-    public MockedLocationWithDirection(World world, double x, double y, double z, Vector direction)
+    public MockedLocation(World world, double x, double y, double z, Vector direction)
     {
         super(world, x, y, z);
         setDirection(direction);
     }
 
-    public MockedLocationWithDirection(Vector direction)
+    public MockedLocation(Vector direction)
     {
         super(null, 0, 0, 0);
         setDirection(direction);
+    }
+
+    public MockedLocation(float yaw)
+    {
+        super(null, 0, 0, 0);
+        setYaw(yaw);
     }
 
     public Location setDirection(Vector direction)
@@ -35,4 +41,6 @@ public class MockedLocationWithDirection extends Location
     {
         return _direction;
     }
+
+
 }

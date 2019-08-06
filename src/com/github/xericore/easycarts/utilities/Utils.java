@@ -3,14 +3,10 @@ package com.github.xericore.easycarts.utilities;
 import java.util.List;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
-import org.bukkit.material.PoweredRail;
-import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
 public class Utils
@@ -87,7 +83,29 @@ public class Utils
 
     public static BlockFace getCartBlockFaceDirection(RideableMinecart cart)
     {
+        Vector velocity = cart.getVelocity();
+        float yaw = cart.getLocation().getYaw();
+
+        if(approximatelyEquals(yaw, 0) || approximatelyEquals(yaw, 180))
+        {
+            // We are either facing east or west
+        }
+        else if(approximatelyEquals(yaw, 90) || approximatelyEquals(yaw, -90) || approximatelyEquals(yaw, 270))
+        {
+            // We are either facing north or south
+            if(approximatelyEquals(velocity.getX(), 0) && approximatelyEquals(velocity.getZ(), -1))
+                return BlockFace.NORTH;
+        }
+        else
+        {
+
+        }
+
         return null;
+    }
+
+    public static boolean approximatelyEquals(double a, double b){
+        return Math.abs(a-b)<0.0001d;
     }
 
 	public static boolean isMovingUp(VehicleMoveEvent event)
