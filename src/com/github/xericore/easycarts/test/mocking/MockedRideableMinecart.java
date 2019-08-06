@@ -34,9 +34,9 @@ public class MockedRideableMinecart implements RideableMinecart
     private boolean _isSlowWhenEmpty;
     private Vector _velocity;
     private Entity _passenger;
-    private MockedLocation _mockedLocation;
+    private MockedLocationWithDirection _mockedLocation;
 
-    public MockedRideableMinecart(MockedLocation mockedLocation)
+    public MockedRideableMinecart(MockedLocationWithDirection mockedLocation)
     {
         _mockedLocation = mockedLocation;
     }
@@ -523,14 +523,14 @@ public class MockedRideableMinecart implements RideableMinecart
     public Location getLocation()
     {
         if(_mockedLocation == null)
-            _mockedLocation = new MockedLocation(null, 0,0,0);
+            _mockedLocation = new MockedLocationWithDirection(null, 0,0,0);
 
         return _mockedLocation;
     }
 
-    public void setLocation(Vector newLocation)
+    public void setLocation(MockedLocationWithDirection newLocation)
     {
-        _mockedLocation = new MockedLocation(null, newLocation.getX(), newLocation.getY(), newLocation.getZ());
+        _mockedLocation = newLocation;
     }
 
     @Override
