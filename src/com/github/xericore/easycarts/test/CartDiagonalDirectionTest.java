@@ -61,4 +61,44 @@ public class CartDiagonalDirectionTest
 
         Assert.assertEquals(BlockFace.SOUTH_EAST, cartBlockFaceDirection);
     }
+
+    @Test
+    public void getCartBlockFaceDirection_given_yaw_135_velocity_07_minus07_returnsNorthEast()
+    {
+        float cartYaw = 135;
+        Vector cartVelocity = new Vector(Utils.Sqrt2Half,0,-Utils.Sqrt2Half);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
+
+        BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
+
+        Assert.assertEquals(BlockFace.NORTH_EAST, cartBlockFaceDirection);
+    }
+
+    @Test
+    public void getCartBlockFaceDirection_given_yaw_135_velocity_1_0_returnsNorthEast()
+    {
+        float cartYaw = 135;
+        Vector cartVelocity = new Vector(1,0,0);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
+
+        BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
+
+        Assert.assertEquals(BlockFace.NORTH_EAST, cartBlockFaceDirection);
+    }
+
+    @Test
+    public void getCartBlockFaceDirection_given_yaw_135_velocity_0_minus1_returnsNorthEast()
+    {
+        float cartYaw = 135;
+        Vector cartVelocity = new Vector(0,0,-1);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
+
+        BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
+
+        Assert.assertEquals(BlockFace.NORTH_EAST, cartBlockFaceDirection);
+    }
+
 }
