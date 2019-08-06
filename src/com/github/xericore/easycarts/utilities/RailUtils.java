@@ -151,9 +151,9 @@ public class RailUtils
 
         DecimalFormat df = new DecimalFormat("#.#");
 
-        logger.info("cartDirection: " +
+        /*logger.info("cartDirection: " +
                 df.format(cart.getLocation().getDirection().clone().getX()) + ", " +
-                df.format(cart.getLocation().getDirection().clone().getZ()));
+                df.format(cart.getLocation().getDirection().clone().getZ()));*/
         //logger.info("cartVelocity:  " + cart.getVelocity().clone());
 
         // We won't do anything if there's no rail under the cart

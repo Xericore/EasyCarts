@@ -18,6 +18,7 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
@@ -91,7 +92,14 @@ public class EasyCartsListener implements Listener
 
 			RailsAhead railsAhead = RailUtils.getRailsAhead(cart, logger);
 
-			//logger.info("railsAhead: " + railsAhead);
+			Vector cartVector = (new Vector(-cart.getLocation().getDirection().getZ(), 0, cart.getLocation().getDirection().getX()))
+					.normalize();
+
+			DecimalFormat df = new DecimalFormat("#.#");
+
+			logger.info("cartDirection: " +
+					df.format(cartVector.getX()) + ", " +
+					df.format(cartVector.getZ()));
 
 			UUID cartId = cart.getUniqueId();
 

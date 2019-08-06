@@ -60,8 +60,6 @@ public class Utils
 		}
 	}
 
-
-
 	public static BlockFace getStraightBlockFaceFromYaw(float yaw)
 	{
 		if (yaw < 0)
@@ -86,6 +84,11 @@ public class Utils
 			return BlockFace.EAST;
 		}
 	}
+
+    public static BlockFace getCartBlockFaceDirection(RideableMinecart cart)
+    {
+        return null;
+    }
 
 	public static boolean isMovingUp(VehicleMoveEvent event)
 	{
