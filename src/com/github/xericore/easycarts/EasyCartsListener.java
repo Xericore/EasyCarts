@@ -92,15 +92,6 @@ public class EasyCartsListener implements Listener
 
 			RailsAhead railsAhead = RailUtils.getRailsAhead(cart, logger);
 
-			DecimalFormat df = new DecimalFormat("#.###");
-
-			/*logger.info("cartVelocity:  " +
-					df.format(cart.getVelocity().clone().normalize().getX()) + ", " +
-					df.format(cart.getVelocity().clone().normalize().getZ()));
-
-			logger.info("cartYaw: " +
-					df.format(cart.getLocation().getYaw()));*/
-
 			logger.info("getCartBlockFaceDirection: " + Utils.getCartBlockFaceDirection(cart));
 
 			UUID cartId = cart.getUniqueId();
