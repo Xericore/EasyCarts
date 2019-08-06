@@ -8,7 +8,7 @@ import org.bukkit.util.Vector;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
-public class CartDirectionTest
+public class CartStraightDirectionTest
 {
     @Test
     public void getCartBlockFaceDirection_given_yaw_90_velocity_0_minus1_returnsNorth()

@@ -88,7 +88,7 @@ public class Utils
 
         if(approximatelyEquals(yaw, 0) || approximatelyEquals(yaw, 180))
         {
-            // We are either facing east or west
+            // We are either facing EAST or WEST
             if(approximatelyEquals(velocity.getX(), 1) && approximatelyEquals(velocity.getZ(), 0))
                 return BlockFace.EAST;
             if(approximatelyEquals(velocity.getX(), -1) && approximatelyEquals(velocity.getZ(), 0))
@@ -96,15 +96,35 @@ public class Utils
         }
         else if(approximatelyEquals(yaw, 90) || approximatelyEquals(yaw, -90) || approximatelyEquals(yaw, 270))
         {
-            // We are either facing north or south
+            // We are either facing NORTH or SOUTH
             if(approximatelyEquals(velocity.getX(), 0) && approximatelyEquals(velocity.getZ(), -1))
                 return BlockFace.NORTH;
             if(approximatelyEquals(velocity.getX(), 0) && approximatelyEquals(velocity.getZ(), 1))
                 return BlockFace.SOUTH;
         }
-        else
+        else if(approximatelyEquals(yaw, 135))
         {
-
+            // We are either facing NORTH_EAST or SOUTH_WEST
+        }
+        else if(approximatelyEquals(yaw, 45))
+        {
+            // We are either facing SOUTH_EAST or NORTH_WEST
+        }
+        else if(approximatelyEquals(yaw, 225))
+        {
+            return BlockFace.NORTH_WEST;
+        }
+        else if(approximatelyEquals(yaw, -135))
+        {
+            return BlockFace.SOUTH_EAST;
+        }
+        else if(approximatelyEquals(yaw, 315))
+        {
+            return BlockFace.NORTH_EAST;
+        }
+        else if(approximatelyEquals(yaw, -45))
+        {
+            return BlockFace.SOUTH_WEST;
         }
 
         return null;
