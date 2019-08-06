@@ -11,6 +11,7 @@ import org.bukkit.util.Vector;
 
 public class Utils
 {
+    public static final double Sqrt2Half = Math.sqrt(2)/2;
 
 	public static RideableMinecart getValidMineCart(Vehicle vehicle, boolean mustHavePassenger)
 	{
@@ -105,10 +106,44 @@ public class Utils
         else if(approximatelyEquals(yaw, 135))
         {
             // We are either facing NORTH_EAST or SOUTH_WEST
+            if(approximatelyEquals(velocity.getX(), Sqrt2Half) && approximatelyEquals(velocity.getZ(), -Sqrt2Half))
+                return BlockFace.NORTH_EAST;
+
+            if(approximatelyEquals(velocity.getX(), 1) && approximatelyEquals(velocity.getZ(), 0))
+                return BlockFace.NORTH_EAST;
+
+            if(approximatelyEquals(velocity.getX(), 0) && approximatelyEquals(velocity.getZ(), -1))
+                return BlockFace.NORTH_EAST;
+
+            if(approximatelyEquals(velocity.getX(), -Sqrt2Half) && approximatelyEquals(velocity.getZ(), Sqrt2Half))
+                return BlockFace.SOUTH_WEST;
+
+            if(approximatelyEquals(velocity.getX(), 0) && approximatelyEquals(velocity.getZ(), 1))
+                return BlockFace.SOUTH_WEST;
+
+            if(approximatelyEquals(velocity.getX(), -1) && approximatelyEquals(velocity.getZ(), 0))
+                return BlockFace.SOUTH_WEST;
         }
         else if(approximatelyEquals(yaw, 45))
         {
             // We are either facing SOUTH_EAST or NORTH_WEST
+            if(approximatelyEquals(velocity.getX(), -Utils.Sqrt2Half) && approximatelyEquals(velocity.getZ(), -Utils.Sqrt2Half))
+                return BlockFace.NORTH_WEST;
+
+            if(approximatelyEquals(velocity.getX(), 0) && approximatelyEquals(velocity.getZ(), -1))
+                return BlockFace.NORTH_WEST;
+
+            if(approximatelyEquals(velocity.getX(), -1) && approximatelyEquals(velocity.getZ(), 0))
+                return BlockFace.NORTH_WEST;
+
+            if(approximatelyEquals(velocity.getX(), Utils.Sqrt2Half) && approximatelyEquals(velocity.getZ(), Utils.Sqrt2Half))
+                return BlockFace.SOUTH_EAST;
+
+            if(approximatelyEquals(velocity.getX(), 1) && approximatelyEquals(velocity.getZ(), 0))
+                return BlockFace.SOUTH_EAST;
+
+            if(approximatelyEquals(velocity.getX(), 0) && approximatelyEquals(velocity.getZ(), 1))
+                return BlockFace.SOUTH_EAST;
         }
         else if(approximatelyEquals(yaw, 225))
         {
