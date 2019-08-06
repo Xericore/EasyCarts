@@ -95,6 +95,8 @@ public class Utils
             // We are either facing north or south
             if(approximatelyEquals(velocity.getX(), 0) && approximatelyEquals(velocity.getZ(), -1))
                 return BlockFace.NORTH;
+            if(approximatelyEquals(velocity.getX(), 0) && approximatelyEquals(velocity.getZ(), 1))
+                return BlockFace.SOUTH;
         }
         else
         {

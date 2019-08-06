@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class CartDirectionTest
 {
     @Test
-    public void getCartBlockFaceDirection_given_yaw_90_0_minus1_returnsNorth()
+    public void getCartBlockFaceDirection_given_yaw_90_velocity_0_minus1_returnsNorth()
     {
         float cartYaw = 90;
         Vector cartVelocity = new Vector(0,0,-1);
@@ -21,5 +21,70 @@ public class CartDirectionTest
         BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
 
         Assert.assertEquals(BlockFace.NORTH, cartBlockFaceDirection);
+    }
+
+    @Test
+    public void getCartBlockFaceDirection_given_yaw_minus90_velocity_0_minus1_returnsNorth()
+    {
+        float cartYaw = -90;
+        Vector cartVelocity = new Vector(0,0,-1);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
+
+        BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
+
+        Assert.assertEquals(BlockFace.NORTH, cartBlockFaceDirection);
+    }
+
+    @Test
+    public void getCartBlockFaceDirection_given_yaw_270_velocity_0_minus1_returnsNorth()
+    {
+        float cartYaw = 270;
+        Vector cartVelocity = new Vector(0,0,-1);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
+
+        BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
+
+        Assert.assertEquals(BlockFace.NORTH, cartBlockFaceDirection);
+    }
+
+    @Test
+    public void getCartBlockFaceDirection_given_yaw_90_velocity_0_1_returnsSouth()
+    {
+        float cartYaw = 90;
+        Vector cartVelocity = new Vector(0,0,1);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
+
+        BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
+
+        Assert.assertEquals(BlockFace.SOUTH, cartBlockFaceDirection);
+    }
+
+    @Test
+    public void getCartBlockFaceDirection_given_yaw_minus90_velocity_0_1_returnsSouth()
+    {
+        float cartYaw = -90;
+        Vector cartVelocity = new Vector(0,0,1);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
+
+        BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
+
+        Assert.assertEquals(BlockFace.SOUTH, cartBlockFaceDirection);
+    }
+
+    @Test
+    public void getCartBlockFaceDirection_given_yaw_270_velocity_0_1_returnsSouth()
+    {
+        float cartYaw = 270;
+        Vector cartVelocity = new Vector(0,0,1);
+        MockedLocation mockedLocation = new MockedLocation(cartYaw);
+        MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
+
+        BlockFace cartBlockFaceDirection = Utils.getCartBlockFaceDirection(mockedCart);
+
+        Assert.assertEquals(BlockFace.SOUTH, cartBlockFaceDirection);
     }
 }
