@@ -84,7 +84,7 @@ public class Utils
 
     public static BlockFace getCartBlockFaceDirection(RideableMinecart cart)
     {
-        Vector velocity = cart.getVelocity();
+        Vector velocity = cart.getVelocity().normalize();
         float yaw = cart.getLocation().getYaw();
 
         if(approximatelyEquals(yaw, 0) || approximatelyEquals(yaw, 180))

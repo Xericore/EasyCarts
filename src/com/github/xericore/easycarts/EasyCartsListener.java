@@ -94,12 +94,14 @@ public class EasyCartsListener implements Listener
 
 			DecimalFormat df = new DecimalFormat("#.###");
 
-			logger.info("cartVelocity:  " +
+			/*logger.info("cartVelocity:  " +
 					df.format(cart.getVelocity().clone().normalize().getX()) + ", " +
 					df.format(cart.getVelocity().clone().normalize().getZ()));
 
 			logger.info("cartYaw: " +
-					df.format(cart.getLocation().getYaw()));
+					df.format(cart.getLocation().getYaw()));*/
+
+			logger.info("getCartBlockFaceDirection: " + Utils.getCartBlockFaceDirection(cart));
 
 			UUID cartId = cart.getUniqueId();
 
