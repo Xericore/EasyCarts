@@ -2,7 +2,6 @@ package com.github.xericore.easycarts.utilities;
 
 import java.util.List;
 
-import com.sun.istack.internal.Nullable;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
@@ -83,7 +82,6 @@ public class Utils
 		}
 	}
 
-	@Nullable
     public static BlockFace getCartBlockFaceDirection(RideableMinecart cart)
     {
     	if(cart.getVelocity().length() <= 0.05)
