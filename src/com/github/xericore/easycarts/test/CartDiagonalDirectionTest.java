@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 public class CartDiagonalDirectionTest
 {
     @Test
-    public void getCartBlockFaceDirection_given_yaw_315_velocity_0_0_returnsNorthEast()
+    public void getCartBlockFaceDirection_given_yaw_315_velocity_01_01_returnsNorthEast()
     {
         float cartYaw = 315;
-        Vector cartVelocity = new Vector(0,0,0);
+        Vector cartVelocity = new Vector(0.1,0,0.1);
         MockedLocation mockedLocation = new MockedLocation(cartYaw);
         MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
 
@@ -24,10 +24,10 @@ public class CartDiagonalDirectionTest
     }
 
     @Test
-    public void getCartBlockFaceDirection_given_yaw_minus45_velocity_0_0_returnsSouthWest()
+    public void getCartBlockFaceDirection_given_yaw_minus45_velocity_01_01_returnsSouthWest()
     {
         float cartYaw = -45;
-        Vector cartVelocity = new Vector(0,0,0);
+        Vector cartVelocity = new Vector(0.1,0,0.1);
         MockedLocation mockedLocation = new MockedLocation(cartYaw);
         MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
 
@@ -37,10 +37,10 @@ public class CartDiagonalDirectionTest
     }
 
     @Test
-    public void getCartBlockFaceDirection_given_yaw_225_velocity_0_0_returnsNorthWest()
+    public void getCartBlockFaceDirection_given_yaw_225_velocity_01_01_returnsNorthWest()
     {
         float cartYaw = 225;
-        Vector cartVelocity = new Vector(0,0,0);
+        Vector cartVelocity = new Vector(0.1,0,0.1);
         MockedLocation mockedLocation = new MockedLocation(cartYaw);
         MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
 
@@ -50,10 +50,10 @@ public class CartDiagonalDirectionTest
     }
 
     @Test
-    public void getCartBlockFaceDirection_given_yaw_minus135_velocity_0_0_returnsSouthEast()
+    public void getCartBlockFaceDirection_given_yaw_minus135_velocity_01_01_returnsSouthEast()
     {
         float cartYaw = -135;
-        Vector cartVelocity = new Vector(0,0,0);
+        Vector cartVelocity = new Vector(0.1,0,0.1);
         MockedLocation mockedLocation = new MockedLocation(cartYaw);
         MockedRideableMinecart mockedCart = new MockedRideableMinecart(mockedLocation, cartVelocity);
 

@@ -141,20 +141,13 @@ public class RailUtils
     }
 
 
-    public static RailsAhead getRailsAhead(RideableMinecart cart, Logger logger)
+    public static RailsAhead getRailsAhead(RideableMinecart cart)
     {
         Location cartLocation = cart.getLocation();
         Block blockUnderCart = cartLocation.getBlock();
 
         Location locationInFront = cartLocation.clone();
         Vector cartDirection = cart.getVelocity().clone().normalize();
-
-        DecimalFormat df = new DecimalFormat("#.#");
-
-        /*logger.info("cartDirection: " +
-                df.format(cart.getLocation().getDirection().clone().getX()) + ", " +
-                df.format(cart.getLocation().getDirection().clone().getZ()));*/
-        //logger.info("cartVelocity:  " + cart.getVelocity().clone());
 
         // We won't do anything if there's no rail under the cart
         Rails railUnderCart = null;
