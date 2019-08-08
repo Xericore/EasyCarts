@@ -4,6 +4,7 @@ import com.github.xericore.easycarts.RailsAhead;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.material.PoweredRail;
 import org.bukkit.material.Rails;
@@ -147,7 +148,13 @@ public class RailUtils
         Block blockUnderCart = cartLocation.getBlock();
 
         Location locationInFront = cartLocation.clone();
-        Vector cartDirection = cart.getVelocity().clone().normalize();
+
+        BlockFace cartFacing = Utils.getCartBlockFaceDirection(cart);
+
+        if(cartFacing == null)
+            return RailsAhead.Derailing;
+
+        Vector cartDirection = Utils.getDirectionFromBlockFace(cartFacing);
 
         // We won't do anything if there's no rail under the cart
         Rails railUnderCart = null;
@@ -161,10 +168,10 @@ public class RailUtils
 
         for (int i = 1; i < BLOCKS_LOOK_AHEAD; i++)
         {
-            /*if(i==1)
+            if(i==1)
                 locationInFront.clone().subtract(0,1,0).getBlock().setType(Material.QUARTZ_BLOCK);
             if(i==2)
-                locationInFront.clone().subtract(0,1,0).getBlock().setType(Material.GOLD_BLOCK);*/
+                locationInFront.clone().subtract(0,1,0).getBlock().setType(Material.GOLD_BLOCK);
 
             locationInFront.add(cartDirection.multiply(i));
             Rails railInFront = getRailInFront(locationInFront);

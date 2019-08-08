@@ -5,6 +5,7 @@ import com.github.xericore.easycarts.utilities.RailUtils;
 import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
@@ -90,10 +91,9 @@ public class EasyCartsListener implements Listener
 
 			// ------------------------------- SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE -----------------------------
 
-			RailsAhead railsAhead = RailUtils.getRailsAhead(cart);
-
 			logger.info("getCartBlockFaceDirection: " + Utils.getCartBlockFaceDirection(cart));
-			//logger.info("cartVelocity length:       " + cart.getVelocity().clone().length());
+
+			RailsAhead railsAhead = RailUtils.getRailsAhead(cart);
 
 			UUID cartId = cart.getUniqueId();
 
