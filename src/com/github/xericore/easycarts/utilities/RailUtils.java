@@ -152,7 +152,7 @@ public class RailUtils
         BlockFace cartFacing = Utils.getCartBlockFaceDirection(cart);
 
         if(cartFacing == null)
-            return RailsAhead.Derailing;
+            return null;
 
         Vector cartDirection = Utils.getDirectionFromBlockFace(cartFacing);
 
@@ -168,11 +168,6 @@ public class RailUtils
 
         for (int i = 1; i < BLOCKS_LOOK_AHEAD; i++)
         {
-            if(i==1)
-                locationInFront.clone().subtract(0,1,0).getBlock().setType(Material.QUARTZ_BLOCK);
-            if(i==2)
-                locationInFront.clone().subtract(0,1,0).getBlock().setType(Material.GOLD_BLOCK);
-
             locationInFront.add(cartDirection.multiply(i));
             Rails railInFront = getRailInFront(locationInFront);
 

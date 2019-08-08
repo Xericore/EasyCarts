@@ -89,18 +89,25 @@ public class EasyCartsListener implements Listener
 			if (!config.getBoolean("MinecartCollisions"))
 				Utils.pushNearbyEntities(cart, cartLocation);
 
+			Vector cartVelocity = cart.getVelocity();
+
+			if(Utils.isCartSlowAndDirectionUnknown(cart))
+			{
+				cart.setVelocity(cartVelocity.multiply(config.getDouble("MaxPushSpeedPercent")));
+				return;
+			}
+
 			// ------------------------------- SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE -----------------------------
 
-			logger.info("getCartBlockFaceDirection: " + Utils.getCartBlockFaceDirection(cart));
-
 			RailsAhead railsAhead = RailUtils.getRailsAhead(cart);
+
+			if(railsAhead == null)
+				return;
 
 			UUID cartId = cart.getUniqueId();
 
 			switch (railsAhead)
 			{
-				case SafeForSpeedup:
-					break;
 				case Derailing:
 					if (railUnderCart.isOnSlope() && Utils.isMovingDown(event))
 					{
@@ -119,9 +126,18 @@ public class EasyCartsListener implements Listener
 					// come too late and we will miss the intersection
 					CartSpeed.setCartSpeedToAvoidMissingIntersection(cart);
 					return;
+                case SafeForSpeedup:
+                    if (previousSpeed.containsKey(cartId))
+                    {
+                        // No curve or slope under cart
+                        setCartToOriginalSpeed(cart);
+                    }
+                    if(!isCartSlowedDown(cart))
+                    {
+                        boostCartOnPoweredRails(cart, blockUnderCart);
+                    }
+                    break;
 			}
-
-			Vector cartVelocity = cart.getVelocity();
 
 			if (railUnderCart.isOnSlope())
 			{
@@ -132,16 +148,6 @@ public class EasyCartsListener implements Listener
 				}
 				slowedCarts.remove(cartId);
 				return;
-			}
-			else if (previousSpeed.containsKey(cartId))
-			{
-				// No curve or slope under cart
-				setCartToOriginalSpeed(cart);
-			}
-
-			if(!isCartSlowedDown(cart))
-			{
-				boostCartOnPoweredRails(cart, blockUnderCart);
 			}
 
 			// _/\__/\__/\__/\__/\__/\__/\__/\_ STOP MINECARTS AT INTERSECTIONS _/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\_

@@ -12,6 +12,12 @@ import org.bukkit.util.Vector;
 public class Utils
 {
     public static final double Sqrt2Half = Math.sqrt(2)/2;
+	private static final double SlowCartVelocityWhereDirectionIsUnknown = 0.05d;
+
+	public static boolean isCartSlowAndDirectionUnknown(RideableMinecart cart)
+	{
+		return cart.getVelocity().length() <= SlowCartVelocityWhereDirectionIsUnknown;
+	}
 
 	public static RideableMinecart getValidMineCart(Vehicle vehicle, boolean mustHavePassenger)
 	{
@@ -84,7 +90,7 @@ public class Utils
 
     public static BlockFace getCartBlockFaceDirection(RideableMinecart cart)
     {
-    	if(cart.getVelocity().length() <= 0.05)
+    	if(isCartSlowAndDirectionUnknown(cart))
     		return null;
 
         Vector velocity = cart.getVelocity().normalize();
