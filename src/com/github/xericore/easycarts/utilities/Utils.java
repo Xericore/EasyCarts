@@ -174,6 +174,25 @@ public class Utils
 
     public static Vector getDirectionFromBlockFace(BlockFace blockFace)
 	{
+		switch (blockFace) {
+			case NORTH:
+				return new Vector(0,0,-1);
+			case EAST:
+				return new Vector(1,0,0);
+			case SOUTH:
+				return new Vector(0,0,1);
+			case WEST:
+				return new Vector(-1,0,0);
+			case NORTH_EAST:
+				return new Vector(1,0,-1);
+			case NORTH_WEST:
+				return new Vector(-1,0,-1);
+			case SOUTH_EAST:
+				return new Vector(1,0,1);
+			case SOUTH_WEST:
+				return new Vector(-1,0,1);
+		}
+
 		return new Vector(0,0,0);
 	}
 

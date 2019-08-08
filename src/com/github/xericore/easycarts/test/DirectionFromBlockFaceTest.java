@@ -25,13 +25,13 @@ public class DirectionFromBlockFaceTest
     @Test
     public void getDirectionFromBlockFace_given_South_returns_0_0_1()
     {
-        Assert.assertEquals(new Vector(1,0,0), Utils.getDirectionFromBlockFace(BlockFace.SOUTH));
+        Assert.assertEquals(new Vector(0,0,1), Utils.getDirectionFromBlockFace(BlockFace.SOUTH));
     }
 
     @Test
     public void getDirectionFromBlockFace_given_West_returns_minus1_0_0()
     {
-        Assert.assertEquals(new Vector(1,0,0), Utils.getDirectionFromBlockFace(BlockFace.WEST));
+        Assert.assertEquals(new Vector(-1,0,0), Utils.getDirectionFromBlockFace(BlockFace.WEST));
     }
 
     @Test
