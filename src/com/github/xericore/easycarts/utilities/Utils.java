@@ -172,6 +172,11 @@ public class Utils
         return Math.abs(a-b)<0.0001d;
     }
 
+    public static Vector getDirectionFromBlockFace(BlockFace blockFace)
+	{
+		return new Vector(0,0,0);
+	}
+
 	public static boolean isMovingUp(VehicleMoveEvent event)
 	{
 		return event.getTo().getY() - event.getFrom().getY() > 0;

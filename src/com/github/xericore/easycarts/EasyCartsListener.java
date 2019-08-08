@@ -93,7 +93,7 @@ public class EasyCartsListener implements Listener
 			RailsAhead railsAhead = RailUtils.getRailsAhead(cart);
 
 			logger.info("getCartBlockFaceDirection: " + Utils.getCartBlockFaceDirection(cart));
-			logger.info("cartVelocity length:       " + cart.getVelocity().clone().length());
+			//logger.info("cartVelocity length:       " + cart.getVelocity().clone().length());
 
 			UUID cartId = cart.getUniqueId();
 
