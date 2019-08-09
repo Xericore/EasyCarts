@@ -202,6 +202,32 @@ public class Utils
 		return new Vector(0,0,0);
 	}
 
+    public static BlockFace getBlockFaceFromDirection(Vector direction)
+	{
+		direction.setX(Math.round(direction.getX()));
+		direction.setY(0);
+		direction.setZ(Math.round(direction.getZ()));
+
+		if(direction.equals(new Vector(0,0,-1)))
+			return BlockFace.NORTH;
+		else if (direction.equals(new Vector(1,0,0)))
+			return BlockFace.EAST;
+		else if (direction.equals(new Vector(0,0,1)))
+			return BlockFace.SOUTH;
+		else if (direction.equals(new Vector(-1,0,0)))
+			return BlockFace.WEST;
+		else if (direction.equals(new Vector(1,0,-1)))
+			return BlockFace.NORTH_EAST;
+		else if (direction.equals(new Vector(-1,0,-1)))
+			return BlockFace.NORTH_WEST;
+		else if (direction.equals(new Vector(1,0,1)))
+			return BlockFace.SOUTH_EAST;
+		else if (direction.equals(new Vector(-1,0,1)))
+			return BlockFace.SOUTH_WEST;
+
+		return null;
+	}
+
 	public static boolean isMovingUp(VehicleMoveEvent event)
 	{
 		return event.getTo().getY() - event.getFrom().getY() > 0;
