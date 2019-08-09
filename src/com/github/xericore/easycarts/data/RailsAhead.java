@@ -1,4 +1,4 @@
-package com.github.xericore.easycarts;
+package com.github.xericore.easycarts.data;
 
 public enum RailsAhead
 {

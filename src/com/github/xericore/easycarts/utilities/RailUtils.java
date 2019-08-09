@@ -1,6 +1,6 @@
 package com.github.xericore.easycarts.utilities;
 
-import com.github.xericore.easycarts.RailsAhead;
+import com.github.xericore.easycarts.data.RailsAhead;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -10,9 +10,6 @@ import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.material.PoweredRail;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
-
-import java.text.DecimalFormat;
-import java.util.logging.Logger;
 
 public class RailUtils
 {
@@ -163,10 +160,16 @@ public class RailUtils
 
         for (int i = 1; i <= 6; i++)
         {
+            Location nextRailsLocation = cartLocation.clone().add(cartDirection.multiply(i));
 
         }
 
         return RailsAhead.SafeForSpeedup;
+    }
+
+    public static Block getNextRail(Block blockUnderCart, Vector startDirection)
+    {
+        return null;
     }
 
     public static boolean areRailsConnectedFlat(Rail.Shape thisShape, Rail.Shape otherShape)

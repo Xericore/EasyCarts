@@ -1,11 +1,11 @@
 package com.github.xericore.easycarts;
 
+import com.github.xericore.easycarts.data.RailsAhead;
 import com.github.xericore.easycarts.utilities.CartSpeed;
 import com.github.xericore.easycarts.utilities.RailUtils;
 import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
@@ -19,7 +19,6 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
