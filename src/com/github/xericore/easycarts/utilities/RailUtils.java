@@ -169,8 +169,35 @@ public class RailUtils
         return RailsAhead.SafeForSpeedup;
     }
 
-    public static boolean areRailsConnectedFlat(Rail.Shape railShape0, Rail.Shape railShape1)
+    public static boolean areRailsConnectedFlat(Rail.Shape thisShape, Rail.Shape otherShape)
     {
+        switch (thisShape) {
+            case NORTH_SOUTH:
+                if(otherShape == Rail.Shape.NORTH_SOUTH)
+                    return true;
+                break;
+            case EAST_WEST:
+                if(otherShape == Rail.Shape.EAST_WEST)
+                    return true;
+                break;
+            case SOUTH_EAST:
+                if(otherShape == Rail.Shape.NORTH_WEST)
+                    return true;
+                break;
+            case SOUTH_WEST:
+                if(otherShape == Rail.Shape.NORTH_EAST)
+                    return true;
+                break;
+            case NORTH_WEST:
+                if(otherShape == Rail.Shape.SOUTH_EAST)
+                    return true;
+                break;
+            case NORTH_EAST:
+                if(otherShape == Rail.Shape.SOUTH_WEST)
+                    return true;
+                break;
+        }
+
         return false;
     }
 

@@ -18,4 +18,34 @@ public class RailsConnectedTest
     {
         Assert.assertEquals(true, RailUtils.areRailsConnectedFlat(Rail.Shape.NORTH_SOUTH, Rail.Shape.NORTH_SOUTH));
     }
+
+    @Test
+    public void areRailsConnectedFlat_given_NW_SE_returnsTrue()
+    {
+        Assert.assertEquals(true, RailUtils.areRailsConnectedFlat(Rail.Shape.NORTH_WEST, Rail.Shape.SOUTH_EAST));
+    }
+
+    @Test
+    public void areRailsConnectedFlat_given_SE_NW_returnsTrue()
+    {
+        Assert.assertEquals(true, RailUtils.areRailsConnectedFlat(Rail.Shape.SOUTH_EAST, Rail.Shape.NORTH_WEST));
+    }
+
+    @Test
+    public void areRailsConnectedFlat_given_NE_SW_returnsTrue()
+    {
+        Assert.assertEquals(true, RailUtils.areRailsConnectedFlat(Rail.Shape.NORTH_EAST, Rail.Shape.SOUTH_WEST));
+    }
+
+    @Test
+    public void areRailsConnectedFlat_given_SW_NE_returnsTrue()
+    {
+        Assert.assertEquals(true, RailUtils.areRailsConnectedFlat(Rail.Shape.SOUTH_WEST, Rail.Shape.NORTH_EAST));
+    }
+
+    @Test
+    public void areRailsConnectedFlat_given_SW_NE_returnsTrue()
+    {
+        Assert.assertEquals(true, RailUtils.areRailsConnectedFlat(Rail.Shape.SOUTH_WEST, Rail.Shape.NORTH_EAST));
+    }
 }
