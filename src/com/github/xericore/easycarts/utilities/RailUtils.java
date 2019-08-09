@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Rail;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.material.PoweredRail;
 import org.bukkit.material.Rails;
@@ -141,6 +142,37 @@ public class RailUtils
         return null;
     }
 
+    public static RailsAhead traceRailsAhead(RideableMinecart cart)
+    {
+        Location cartLocation = cart.getLocation();
+        Block blockUnderCart = cartLocation.getBlock();
+
+        BlockFace cartFacing = Utils.getCartBlockFaceDirection(cart);
+
+        if(cartFacing == null)
+            return null;
+
+        Vector cartDirection = Utils.getDirectionFromBlockFace(cartFacing);
+
+        // We won't do anything if there's no rail under the cart
+        if(blockUnderCart.getBlockData().getMaterial() != Material.RAIL)
+            return null;
+
+        Rail railUnderCart = (Rail) blockUnderCart.getBlockData();
+        Rail.Shape railUnderCartShape = railUnderCart.getShape();
+
+        for (int i = 1; i <= 6; i++)
+        {
+
+        }
+
+        return RailsAhead.SafeForSpeedup;
+    }
+
+    public static boolean areRailsConnectedFlat(Rail.Shape railShape0, Rail.Shape railShape1)
+    {
+        return false;
+    }
 
     public static RailsAhead getRailsAhead(RideableMinecart cart)
     {

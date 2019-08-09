@@ -14,7 +14,6 @@ import org.bukkit.util.Vector;
 
 public class PlayerClickListener implements Listener
 {
-
 	public static EasyCarts easyCartsPlugin;
 	private static FileConfiguration config = null;
 
@@ -27,7 +26,6 @@ public class PlayerClickListener implements Listener
 	@EventHandler(priority = EventPriority.LOW)
 	public void onMyPlayerInteract(PlayerInteractEvent event)
 	{
-
 		if (!config.getBoolean("StopStartOnLeftClick"))
 			return;
 

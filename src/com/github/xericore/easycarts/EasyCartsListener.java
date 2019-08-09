@@ -101,6 +101,8 @@ public class EasyCartsListener implements Listener
 
 			RailsAhead railsAhead = RailUtils.getRailsAhead(cart);
 
+			logger.info("railsAhead: " + railsAhead);
+
 			if(railsAhead == null)
 				return;
 
