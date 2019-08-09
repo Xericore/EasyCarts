@@ -1,5 +1,6 @@
 package com.github.xericore.easycarts.utilities;
 
+import com.github.xericore.easycarts.data.RailTrace;
 import com.github.xericore.easycarts.data.RailsAhead;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,6 +11,9 @@ import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.material.PoweredRail;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RailUtils
 {
@@ -155,21 +159,10 @@ public class RailUtils
         if(blockUnderCart.getBlockData().getMaterial() != Material.RAIL)
             return null;
 
-        Rail railUnderCart = (Rail) blockUnderCart.getBlockData();
-        Rail.Shape railUnderCartShape = railUnderCart.getShape();
-
-        for (int i = 1; i <= 6; i++)
-        {
-            Location nextRailsLocation = cartLocation.clone().add(cartDirection.multiply(i));
-
-        }
+        RailTracer railTracer = new RailTracer();
+        railTracer.traceRails(blockUnderCart, cartFacing, 5);
 
         return RailsAhead.SafeForSpeedup;
-    }
-
-    public static Block getNextRail(Block blockUnderCart, Vector startDirection)
-    {
-        return null;
     }
 
     public static boolean areRailsConnectedFlat(Rail.Shape thisShape, Rail.Shape otherShape)

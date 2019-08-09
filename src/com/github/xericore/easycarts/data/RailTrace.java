@@ -8,29 +8,22 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rail;
 import org.bukkit.util.Vector;
 
-public class NextBlockWithDirection
+public class RailTrace
 {
     private static final double Degrees90FromRad = Math.PI/2;
 
     private BlockFace _nextFacing;
     private Block _nextBlock;
 
-    public NextBlockWithDirection(Block lastBlock, BlockFace previousFacing)
+    public RailTrace(Block lastBlock, BlockFace previousFacing)
     {
         Vector previousDirection = Utils.getDirectionFromBlockFace(previousFacing);
         Location nextLocation = lastBlock.getLocation().clone().add(previousDirection);
         _nextBlock = nextLocation.getBlock();
 
-        if(_nextBlock.getBlockData().getMaterial() != Material.RAIL)
-        {
-            _nextFacing = null;
-            return;
-        }
+        Rail.Shape nextRailShape = getNextRailShape();
 
-        Rail nextRail = (Rail) lastBlock.getBlockData();
-        Rail.Shape nextRailShape = nextRail.getShape();
-
-
+        _nextFacing = getNextFacingFromRailShape(nextRailShape, previousFacing);
     }
 
     public BlockFace getNextFacing()
@@ -43,8 +36,20 @@ public class NextBlockWithDirection
         return _nextBlock;
     }
 
+    public Rail.Shape getNextRailShape()
+    {
+        if(_nextBlock.getBlockData().getMaterial() != Material.RAIL)
+            return null;
+
+        Rail nextRail = (Rail) _nextBlock.getBlockData();
+        return nextRail.getShape();
+    }
+
     public static BlockFace getNextFacingFromRailShape(Rail.Shape currentRailShape, BlockFace previousFacing)
     {
+        if(currentRailShape == null)
+            return null;
+
         double rotateAround = 0d;
 
         switch (currentRailShape)

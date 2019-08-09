@@ -1,5 +1,7 @@
 package com.github.xericore.easycarts;
 
+import com.github.xericore.easycarts.utilities.RailTracer;
+import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.Material;
 import org.bukkit.block.data.Rail;
 import org.bukkit.entity.Player;
@@ -8,6 +10,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+
+import java.util.List;
 
 public class DebugClickListener implements Listener
 {
@@ -21,7 +25,7 @@ public class DebugClickListener implements Listener
     @EventHandler(priority = EventPriority.LOW)
     public void onMyPlayerInteract(PlayerInteractEvent event)
     {
-        Player player = (Player) event.getPlayer();
+        Player player = event.getPlayer();
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
         {
@@ -45,6 +49,26 @@ public class DebugClickListener implements Listener
 
             Rail railData = (Rail) event.getClickedBlock().getBlockData();
             easyCartsPlugin.logger.info("Shape: " + railData.getShape());
+
+            if(player.getInventory().getItemInMainHand().getType() == Material.RAIL)
+            {
+                LogTracedRails(event, player);
+            }
+        }
+    }
+
+    private void LogTracedRails(PlayerInteractEvent event, Player player)
+    {
+        RailTracer railTracer = new RailTracer();
+        List<Rail.Shape> tracedRails = railTracer.traceRails(event.getClickedBlock(),
+                Utils.getStraightBlockFaceFromYaw(player.getLocation().getYaw()), 5);
+
+        easyCartsPlugin.logger.info("");
+        easyCartsPlugin.logger.info("Traced Rails:");
+
+        for (Rail.Shape railShape : tracedRails)
+        {
+            easyCartsPlugin.logger.info("   " + railShape);
         }
     }
 }
