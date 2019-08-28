@@ -1,6 +1,7 @@
 package com.github.xericore.easycarts;
 
 import com.github.xericore.easycarts.utilities.RailTracer;
+import com.github.xericore.easycarts.utilities.RailUtils;
 import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.Material;
 import org.bukkit.block.data.Rail;
@@ -59,16 +60,38 @@ public class DebugClickListener implements Listener
 
     private void LogTracedRails(PlayerInteractEvent event, Player player)
     {
+        int traceLength = 6;
+
         RailTracer railTracer = new RailTracer();
-        List<Rail.Shape> tracedRails = railTracer.traceRails(event.getClickedBlock(),
-                Utils.getStraightBlockFaceFromYaw(player.getLocation().getYaw()), 5);
+
+        List<Rail.Shape> tracedRails = railTracer.traceRails(
+                event.getClickedBlock(),
+                Utils.getStraightBlockFaceFromYaw(player.getLocation().getYaw()),
+                traceLength);
 
         easyCartsPlugin.logger.info("");
         easyCartsPlugin.logger.info("Traced Rails:");
 
         for (Rail.Shape railShape : tracedRails)
-        {
             easyCartsPlugin.logger.info("   " + railShape);
+
+        boolean areAllRailsConnectedStraight = areAllRailsConnectedStraight(tracedRails);
+
+        easyCartsPlugin.logger.info("Is Safe For Speedup: " + areAllRailsConnectedStraight);
+    }
+
+    public static boolean areAllRailsConnectedStraight(List<Rail.Shape> tracedRails)
+    {
+        int tracedRailsCount = 0;
+
+        for (int i = 0; i < tracedRails.size()-1; i++)
+        {
+            tracedRailsCount++;
+
+            if(RailUtils.areRailsConnectedStraight(tracedRails.get(i), tracedRails.get(i+1)) == false)
+                return false;
         }
+
+        return tracedRailsCount >= tracedRails.size() - 1;
     }
 }

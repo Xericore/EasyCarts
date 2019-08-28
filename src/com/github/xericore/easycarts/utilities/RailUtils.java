@@ -165,7 +165,7 @@ public class RailUtils
         return RailsAhead.SafeForSpeedup;
     }
 
-    public static boolean areRailsConnectedFlat(Rail.Shape thisShape, Rail.Shape otherShape)
+    public static boolean areRailsConnectedStraight(Rail.Shape thisShape, Rail.Shape otherShape)
     {
         switch (thisShape) {
             case NORTH_SOUTH:

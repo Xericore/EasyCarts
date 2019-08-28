@@ -1,6 +1,7 @@
 package com.github.xericore.easycarts.utilities;
 
 import com.github.xericore.easycarts.data.RailTrace;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rail;
@@ -17,12 +18,26 @@ public class RailTracer
     {
         _traceLength = traceLength;
 
-        traceRailRecursive(block, facing);
+        if (addCurrentRail(block) == false)
+            return _tracedRailShapes;
+
+        traceNextRailRecursive(block, facing);
 
         return _tracedRailShapes;
     }
 
-    private void traceRailRecursive(Block block, BlockFace facing)
+    private boolean addCurrentRail(Block block)
+    {
+        if(block.getBlockData().getMaterial() != Material.RAIL)
+            return false;
+
+        Rail currentRail = (Rail) block.getBlockData();
+
+        _tracedRailShapes.add(currentRail.getShape());
+        return true;
+    }
+
+    private void traceNextRailRecursive(Block block, BlockFace facing)
     {
         _traceLength--;
 
@@ -38,7 +53,7 @@ public class RailTracer
 
             _tracedRailShapes.add(nextTrace.getNextRailShape());
 
-            traceRailRecursive(nextTrace.getNextBlock(), nextTrace.getNextFacing());
+            traceNextRailRecursive(nextTrace.getNextBlock(), nextTrace.getNextFacing());
         }
     }
 }
