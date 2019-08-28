@@ -17,6 +17,9 @@ public class RailTrace
 
     public RailTrace(Block lastBlock, BlockFace previousFacing)
     {
+        if(previousFacing == null)
+            return;
+
         Vector previousDirection = Utils.getDirectionFromBlockFace(previousFacing);
         Location nextLocation = lastBlock.getLocation().clone().add(previousDirection);
         _nextBlock = nextLocation.getBlock();

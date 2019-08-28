@@ -28,6 +28,12 @@ public class RailTracer
 
         while (_traceLength > 0)
         {
+            if(facing == null || block == null)
+            {
+                _traceLength = 0;
+                return;
+            }
+
             RailTrace nextTrace = new RailTrace(block, facing);
 
             _tracedRailShapes.add(nextTrace.getNextRailShape());
