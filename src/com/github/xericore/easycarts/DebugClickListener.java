@@ -66,7 +66,7 @@ public class DebugClickListener implements Listener
 
         List<Rail.Shape> tracedRails = railTracer.traceRails(
                 event.getClickedBlock(),
-                Utils.getStraightBlockFaceFromYaw(player.getLocation().getYaw()),
+                Utils.getDiagonalBlockFaceFromYaw(player.getLocation().getYaw()),
                 traceLength);
 
         easyCartsPlugin.logger.info("");
