@@ -2,10 +2,13 @@ package com.github.xericore.easycarts;
 
 import com.github.xericore.easycarts.data.RailsAhead;
 import com.github.xericore.easycarts.utilities.CartSpeed;
+import com.github.xericore.easycarts.utilities.RailTracer;
 import com.github.xericore.easycarts.utilities.RailUtils;
 import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Rail;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
@@ -21,6 +24,7 @@ import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -30,6 +34,7 @@ public class EasyCartsListener implements Listener
 	public final Logger logger = Logger.getLogger("Minecraft");
 	public static EasyCarts easyCartsPlugin;
 	private static FileConfiguration config = null;
+	private final RailTracer _railTracer;
 
 	private HashMap<UUID, Double> previousSpeed = new HashMap<UUID, Double>();
 	private HashSet<UUID> slowedCarts = new HashSet<UUID>();
@@ -43,6 +48,7 @@ public class EasyCartsListener implements Listener
 	{
 		easyCartsPlugin = theInstance;
 		config = easyCartsPlugin.getConfig();
+		_railTracer = new RailTracer();
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -76,14 +82,8 @@ public class EasyCartsListener implements Listener
 			Block blockUnderCart = cartLocation.getBlock();
 
 			// We won't do anything if there's no rail under the cart
-			Rails railUnderCart = null;
-			try
-			{
-				railUnderCart = (Rails) blockUnderCart.getState().getData();
-			} catch (ClassCastException e)
-			{
+			if(blockUnderCart.getBlockData().getMaterial() != Material.RAIL)
 				return;
-			}
 
 			if (!config.getBoolean("MinecartCollisions"))
 				Utils.pushNearbyEntities(cart, cartLocation);
@@ -98,7 +98,18 @@ public class EasyCartsListener implements Listener
 
 			// ------------------------------- SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE -----------------------------
 
-			RailsAhead railsAhead = RailUtils.getRailsAhead(cart);
+			RailsAhead railsAhead = null;
+
+			BlockFace cartFacing = Utils.getCartBlockFaceDirection(cart);
+
+			logger.info("cartFacing: " + cartFacing);
+
+			if(cartFacing == null)
+				return;
+
+			List<Rail.Shape> tracedRails = _railTracer.traceRails(blockUnderCart, cartFacing, 5);
+
+			railsAhead = RailUtils.areAllRailsConnectedStraight(tracedRails) ? RailsAhead.SafeForSpeedup : RailsAhead.Derailing;
 
 			logger.info("railsAhead: " + railsAhead);
 
@@ -110,7 +121,7 @@ public class EasyCartsListener implements Listener
 			switch (railsAhead)
 			{
 				case Derailing:
-					if (railUnderCart.isOnSlope() && Utils.isMovingDown(event))
+					if (isAscendingRail(blockUnderCart) && Utils.isMovingDown(event))
 					{
 						// Don't do anything if we are on a downward slope
 						return;
@@ -140,7 +151,7 @@ public class EasyCartsListener implements Listener
                     break;
 			}
 
-			if (railUnderCart.isOnSlope())
+			if (isAscendingRail(blockUnderCart))
 			{
 				if (config.getBoolean("AutoBoostOnSlope") && Utils.isMovingUp(event))
 				{
@@ -169,6 +180,22 @@ public class EasyCartsListener implements Listener
 		{
 			logger.severe("Error in onMyVehicleMove.");
 			logger.severe(e.toString());
+		}
+	}
+
+	private boolean isAscendingRail(Block blockUnderCart)
+	{
+		Rail.Shape railShape = ((Rail) blockUnderCart.getBlockData()).getShape();
+
+		switch (railShape)
+		{
+			case ASCENDING_EAST:
+			case ASCENDING_WEST:
+			case ASCENDING_NORTH:
+			case ASCENDING_SOUTH:
+				return true;
+			default:
+				return false;
 		}
 	}
 

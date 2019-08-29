@@ -14,14 +14,15 @@ public class RailTracer
     private List<Rail.Shape> _tracedRailShapes = new ArrayList<>();
     private int _traceLength;
 
-    public List<Rail.Shape> traceRails(Block block, BlockFace facing, int traceLength)
+    public List<Rail.Shape> traceRails(Block initialBlock, BlockFace initialFacing, int traceLength)
     {
         _traceLength = traceLength;
+        _tracedRailShapes.clear();
 
-        if (addCurrentRail(block) == false)
+        if (addCurrentRail(initialBlock) == false)
             return _tracedRailShapes;
 
-        traceNextRailRecursive(block, facing);
+        traceNextRailRecursive(initialBlock, initialFacing);
 
         return _tracedRailShapes;
     }

@@ -75,23 +75,9 @@ public class DebugClickListener implements Listener
         for (Rail.Shape railShape : tracedRails)
             easyCartsPlugin.logger.info("   " + railShape);
 
-        boolean areAllRailsConnectedStraight = areAllRailsConnectedStraight(tracedRails);
+        boolean areAllRailsConnectedStraight = RailUtils.areAllRailsConnectedStraight(tracedRails);
 
         easyCartsPlugin.logger.info("Is Safe For Speedup: " + areAllRailsConnectedStraight);
     }
 
-    public static boolean areAllRailsConnectedStraight(List<Rail.Shape> tracedRails)
-    {
-        int tracedRailsCount = 0;
-
-        for (int i = 0; i < tracedRails.size()-1; i++)
-        {
-            tracedRailsCount++;
-
-            if(RailUtils.areRailsConnectedStraight(tracedRails.get(i), tracedRails.get(i+1)) == false)
-                return false;
-        }
-
-        return tracedRailsCount >= tracedRails.size() - 1;
-    }
 }

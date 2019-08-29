@@ -88,6 +88,48 @@ public class Utils
 		}
 	}
 
+	public static BlockFace getDiagonalBlockFaceFromYaw(float yaw)
+	{
+		if (yaw > -22.5 && yaw <= 22.5)
+		{
+			return BlockFace.SOUTH;
+		}
+		else if (yaw > 22.5 && yaw <= 67.5)
+		{
+			return BlockFace.SOUTH_WEST;
+		}
+		else if (yaw > 67.5 && yaw <= 112.5)
+		{
+			return BlockFace.WEST;
+		}
+		else if (yaw > 112.5 && yaw <= 157.5)
+		{
+			return BlockFace.NORTH_WEST;
+		}
+		else if (yaw > 157.5 && yaw <= 180)
+		{
+			return BlockFace.NORTH;
+		}
+		else if (yaw >= -180 && yaw <= -157.5)
+		{
+			return BlockFace.NORTH;
+		}
+		else if (yaw > -157.5 && yaw <= -112.5)
+		{
+			return BlockFace.NORTH_EAST;
+		}
+		else if (yaw > -112.5 && yaw <= -67.5)
+		{
+			return BlockFace.EAST;
+		}
+		else if (yaw > -67.5 && yaw <= -22.5)
+		{
+			return BlockFace.SOUTH_EAST;
+		}
+
+		return BlockFace.SOUTH;
+	}
+
     public static BlockFace getCartBlockFaceDirection(RideableMinecart cart)
     {
     	if(isCartSlowAndDirectionUnknown(cart))
@@ -174,7 +216,8 @@ public class Utils
         return null;
     }
 
-    public static boolean approximatelyEquals(double a, double b){
+
+	public static boolean approximatelyEquals(double a, double b){
         return Math.abs(a-b)<0.0001d;
     }
 

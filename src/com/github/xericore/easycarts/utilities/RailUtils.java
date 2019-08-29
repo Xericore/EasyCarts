@@ -1,6 +1,5 @@
 package com.github.xericore.easycarts.utilities;
 
-import com.github.xericore.easycarts.data.RailTrace;
 import com.github.xericore.easycarts.data.RailsAhead;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,7 +11,6 @@ import org.bukkit.material.PoweredRail;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RailUtils
@@ -143,26 +141,19 @@ public class RailUtils
         return null;
     }
 
-    public static RailsAhead traceRailsAhead(RideableMinecart cart)
+    public static boolean areAllRailsConnectedStraight(List<Rail.Shape> tracedRails)
     {
-        Location cartLocation = cart.getLocation();
-        Block blockUnderCart = cartLocation.getBlock();
+        int tracedRailsCount = 0;
 
-        BlockFace cartFacing = Utils.getCartBlockFaceDirection(cart);
+        for (int i = 0; i < tracedRails.size()-1; i++)
+        {
+            tracedRailsCount++;
 
-        if(cartFacing == null)
-            return null;
+            if(RailUtils.areRailsConnectedStraight(tracedRails.get(i), tracedRails.get(i+1)) == false)
+                return false;
+        }
 
-        Vector cartDirection = Utils.getDirectionFromBlockFace(cartFacing);
-
-        // We won't do anything if there's no rail under the cart
-        if(blockUnderCart.getBlockData().getMaterial() != Material.RAIL)
-            return null;
-
-        RailTracer railTracer = new RailTracer();
-        railTracer.traceRails(blockUnderCart, cartFacing, 5);
-
-        return RailsAhead.SafeForSpeedup;
+        return tracedRailsCount >= tracedRails.size() - 1;
     }
 
     public static boolean areRailsConnectedStraight(Rail.Shape thisShape, Rail.Shape otherShape)
