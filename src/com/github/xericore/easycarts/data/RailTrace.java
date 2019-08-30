@@ -56,7 +56,7 @@ public class RailTrace
         return nextRail.getShape();
     }
 
-    public static BlockFace getNextFacingFromRailShape(Rail.Shape currentRailShape, BlockFace previousFacing)
+    public static BlockFace getNextFacingFromRailShape(Rail.Shape currentRailShape, BlockFace initialFacing)
     {
         if(currentRailShape == null)
             return null;
@@ -71,42 +71,70 @@ public class RailTrace
             case ASCENDING_WEST:
             case ASCENDING_NORTH:
             case ASCENDING_SOUTH:
-                return previousFacing;
+                return initialFacing;
             case SOUTH_EAST:
-                if(previousFacing == BlockFace.WEST)
-                    rotateAround = Degrees90FromRad;
-                else if (previousFacing == BlockFace.NORTH)
-                    rotateAround = -Degrees90FromRad;
-                else
-                    return null;
+                switch (initialFacing)
+                {
+                    case NORTH:
+                    case EAST:
+                    case NORTH_EAST:
+                    case NORTH_WEST:
+                        return BlockFace.EAST;
+                    case SOUTH:
+                    case WEST:
+                    case SOUTH_WEST:
+                    case SOUTH_EAST:
+                        return BlockFace.SOUTH;
+                }
                 break;
             case SOUTH_WEST:
-                if(previousFacing == BlockFace.NORTH)
-                    rotateAround = Degrees90FromRad;
-                else if (previousFacing == BlockFace.EAST)
-                    rotateAround = -Degrees90FromRad;
-                else
-                    return null;
+                switch (initialFacing)
+                {
+                    case NORTH:
+                    case WEST:
+                    case SOUTH_WEST:
+                    case NORTH_WEST:
+                        return BlockFace.WEST;
+                    case SOUTH:
+                    case EAST:
+                    case NORTH_EAST:
+                    case SOUTH_EAST:
+                        return BlockFace.SOUTH;
+                }
                 break;
             case NORTH_WEST:
-                if(previousFacing == BlockFace.EAST)
-                    rotateAround = Degrees90FromRad;
-                else if (previousFacing == BlockFace.SOUTH)
-                    rotateAround = -Degrees90FromRad;
-                else
-                    return null;
+                switch (initialFacing)
+                {
+                    case NORTH:
+                    case EAST:
+                    case NORTH_EAST:
+                    case NORTH_WEST:
+                        return BlockFace.NORTH;
+                    case SOUTH:
+                    case WEST:
+                    case SOUTH_WEST:
+                    case SOUTH_EAST:
+                        return BlockFace.WEST;
+                }
                 break;
             case NORTH_EAST:
-                if(previousFacing == BlockFace.SOUTH)
-                    rotateAround = Degrees90FromRad;
-                else if (previousFacing == BlockFace.WEST)
-                    rotateAround = -Degrees90FromRad;
-                else
-                    return null;
+                switch (initialFacing)
+                {
+                    case SOUTH:
+                    case EAST:
+                    case SOUTH_EAST:
+                    case SOUTH_WEST:
+                        return BlockFace.EAST;
+                    case NORTH:
+                    case WEST:
+                    case NORTH_WEST:
+                    case NORTH_EAST:
+                        return BlockFace.NORTH;
+                }
                 break;
         }
 
-        Vector previousDirection = Utils.getDirectionFromBlockFace(previousFacing);
+        Vector previousDirection = Utils.getDirectionFromBlockFace(initialFacing);
         Vector newDirection = previousDirection.clone().rotateAroundY(rotateAround);
         return Utils.getBlockFaceFromDirection(newDirection);
     }

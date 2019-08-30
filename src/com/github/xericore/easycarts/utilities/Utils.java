@@ -90,6 +90,9 @@ public class Utils
 
 	public static BlockFace getDiagonalBlockFaceFromYaw(float yaw)
 	{
+		if(yaw < 0)
+			yaw += 360;
+
 		if (yaw >= 0 && yaw <= 22.5)
 		{
 			return BlockFace.SOUTH;

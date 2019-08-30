@@ -44,11 +44,8 @@ public class DebugClickListener implements Listener
             switch (event.getClickedBlock().getBlockData().getMaterial())
             {
                 case RAIL:
-                    break;
                 case ACTIVATOR_RAIL:
-                    break;
                 case POWERED_RAIL:
-                    break;
                 case DETECTOR_RAIL:
                     break;
                 default:

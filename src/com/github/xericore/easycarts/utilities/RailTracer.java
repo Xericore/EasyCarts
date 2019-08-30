@@ -19,23 +19,12 @@ public class RailTracer
         _traceLength = traceLength;
         _tracedRailShapes.clear();
 
-        if (addCurrentRail(initialBlock) == false)
+        if(initialBlock.getBlockData().getMaterial() != Material.RAIL)
             return _tracedRailShapes;
 
         traceNextRailRecursive(initialBlock, initialFacing);
 
         return _tracedRailShapes;
-    }
-
-    private boolean addCurrentRail(Block block)
-    {
-        if(block.getBlockData().getMaterial() != Material.RAIL)
-            return false;
-
-        Rail currentRail = (Rail) block.getBlockData();
-
-        _tracedRailShapes.add(currentRail.getShape());
-        return true;
     }
 
     private void traceNextRailRecursive(Block block, BlockFace facing)
