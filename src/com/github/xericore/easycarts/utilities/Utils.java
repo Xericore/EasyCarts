@@ -90,7 +90,7 @@ public class Utils
 
 	public static BlockFace getDiagonalBlockFaceFromYaw(float yaw)
 	{
-		if (yaw > -22.5 && yaw <= 22.5)
+		if (yaw >= 0 && yaw <= 22.5)
 		{
 			return BlockFace.SOUTH;
 		}
@@ -106,23 +106,19 @@ public class Utils
 		{
 			return BlockFace.NORTH_WEST;
 		}
-		else if (yaw > 157.5 && yaw <= 180)
+		else if (yaw > 157.5 && yaw <= 202.5)
 		{
 			return BlockFace.NORTH;
 		}
-		else if (yaw >= -180 && yaw <= -157.5)
-		{
-			return BlockFace.NORTH;
-		}
-		else if (yaw > -157.5 && yaw <= -112.5)
+		else if (yaw > 202.5 && yaw <= 247.5)
 		{
 			return BlockFace.NORTH_EAST;
 		}
-		else if (yaw > -112.5 && yaw <= -67.5)
+		else if (yaw > 247.5 && yaw <= 292.5)
 		{
 			return BlockFace.EAST;
 		}
-		else if (yaw > -67.5 && yaw <= -22.5)
+		else if (yaw > 292.5 && yaw <= 337.5)
 		{
 			return BlockFace.SOUTH_EAST;
 		}
@@ -223,7 +219,11 @@ public class Utils
 
     public static Vector getDirectionFromBlockFace(BlockFace blockFace)
 	{
-		switch (blockFace) {
+		if(blockFace == null)
+			return new Vector(0,0,0);
+
+		switch (blockFace)
+		{
 			case NORTH:
 				return new Vector(0,0,-1);
 			case EAST:

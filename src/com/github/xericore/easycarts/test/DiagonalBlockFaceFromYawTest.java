@@ -86,74 +86,68 @@ public class DiagonalBlockFaceFromYawTest
     }
 
     @Test
-    public void getDiagonalBlockFaceFromYaw_given_minus180_returns_North()
+    public void getDiagonalBlockFaceFromYaw_given_202_5_returns_North()
     {
-        Assert.assertEquals(BlockFace.NORTH, Utils.getDiagonalBlockFaceFromYaw(-180));
+        Assert.assertEquals(BlockFace.NORTH, Utils.getDiagonalBlockFaceFromYaw(202.5f));
     }
 
     @Test
-    public void getDiagonalBlockFaceFromYaw_given_minus157_5_returns_North()
+    public void getDiagonalBlockFaceFromYaw_given_202_51_returns_NorthEast()
     {
-        Assert.assertEquals(BlockFace.NORTH, Utils.getDiagonalBlockFaceFromYaw(-157.5f));
+        Assert.assertEquals(BlockFace.NORTH_EAST, Utils.getDiagonalBlockFaceFromYaw(202.51f));
     }
 
     @Test
-    public void getDiagonalBlockFaceFromYaw_given_minus157_49_returns_NorthEast()
+    public void getDiagonalBlockFaceFromYaw_given_225_returns_NorthEast()
     {
-        Assert.assertEquals(BlockFace.NORTH_EAST, Utils.getDiagonalBlockFaceFromYaw(-157.49f));
+        Assert.assertEquals(BlockFace.NORTH_EAST, Utils.getDiagonalBlockFaceFromYaw(225));
     }
 
     @Test
-    public void getDiagonalBlockFaceFromYaw_given_minus135_returns_NorthEast()
+    public void getDiagonalBlockFaceFromYaw_given_247_5_returns_NorthEast()
     {
-        Assert.assertEquals(BlockFace.NORTH_EAST, Utils.getDiagonalBlockFaceFromYaw(-135));
+        Assert.assertEquals(BlockFace.NORTH_EAST, Utils.getDiagonalBlockFaceFromYaw(247.5f));
     }
 
     @Test
-    public void getDiagonalBlockFaceFromYaw_given_minus112_5_returns_NorthEast()
+    public void getDiagonalBlockFaceFromYaw_given_247_51_returns_East()
     {
-        Assert.assertEquals(BlockFace.NORTH_EAST, Utils.getDiagonalBlockFaceFromYaw(-112.5f));
+        Assert.assertEquals(BlockFace.EAST, Utils.getDiagonalBlockFaceFromYaw(247.51f));
     }
 
     @Test
-    public void getDiagonalBlockFaceFromYaw_given_minus112_49_returns_East()
+    public void getDiagonalBlockFaceFromYaw_given_270_returns_East()
     {
-        Assert.assertEquals(BlockFace.EAST, Utils.getDiagonalBlockFaceFromYaw(-112.49f));
+        Assert.assertEquals(BlockFace.EAST, Utils.getDiagonalBlockFaceFromYaw(270));
     }
 
     @Test
-    public void getDiagonalBlockFaceFromYaw_given_minus90_returns_East()
+    public void getDiagonalBlockFaceFromYaw_given_292_5_returns_East()
     {
-        Assert.assertEquals(BlockFace.EAST, Utils.getDiagonalBlockFaceFromYaw(-90f));
+        Assert.assertEquals(BlockFace.EAST, Utils.getDiagonalBlockFaceFromYaw(292.5f));
     }
 
     @Test
-    public void getDiagonalBlockFaceFromYaw_given_minus67_5_returns_East()
+    public void getDiagonalBlockFaceFromYaw_given_292_51_returns_SouthEast()
     {
-        Assert.assertEquals(BlockFace.EAST, Utils.getDiagonalBlockFaceFromYaw(-67.5f));
+        Assert.assertEquals(BlockFace.SOUTH_EAST, Utils.getDiagonalBlockFaceFromYaw(292.51f));
     }
 
     @Test
-    public void getDiagonalBlockFaceFromYaw_given_minus67_49_returns_SouthEast()
+    public void getDiagonalBlockFaceFromYaw_given_315_returns_SouthEast()
     {
-        Assert.assertEquals(BlockFace.SOUTH_EAST, Utils.getDiagonalBlockFaceFromYaw(-67.49f));
+        Assert.assertEquals(BlockFace.SOUTH_EAST, Utils.getDiagonalBlockFaceFromYaw(315));
     }
 
     @Test
-    public void getDiagonalBlockFaceFromYaw_given_minus45_returns_SouthEast()
+    public void getDiagonalBlockFaceFromYaw_given_337_5_returns_SouthEast()
     {
-        Assert.assertEquals(BlockFace.SOUTH_EAST, Utils.getDiagonalBlockFaceFromYaw(-45));
+        Assert.assertEquals(BlockFace.SOUTH_EAST, Utils.getDiagonalBlockFaceFromYaw(337.5f));
     }
 
     @Test
-    public void getDiagonalBlockFaceFromYaw_given_minus22_5_returns_SouthEast()
+    public void getDiagonalBlockFaceFromYaw_given_337_51_returns_South()
     {
-        Assert.assertEquals(BlockFace.SOUTH_EAST, Utils.getDiagonalBlockFaceFromYaw(-22.5f));
-    }
-
-    @Test
-    public void getDiagonalBlockFaceFromYaw_given_minus22_49_returns_South()
-    {
-        Assert.assertEquals(BlockFace.SOUTH, Utils.getDiagonalBlockFaceFromYaw(-22.49f));
+        Assert.assertEquals(BlockFace.SOUTH, Utils.getDiagonalBlockFaceFromYaw(337.51f));
     }
 }

@@ -4,6 +4,7 @@ import com.github.xericore.easycarts.utilities.RailTracer;
 import com.github.xericore.easycarts.utilities.RailUtils;
 import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rail;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,6 +28,12 @@ public class DebugClickListener implements Listener
     public void onMyPlayerInteract(PlayerInteractEvent event)
     {
         Player player = event.getPlayer();
+
+        if (event.getAction() == Action.RIGHT_CLICK_AIR)
+        {
+            easyCartsPlugin.logger.info("Player YAW: " + player.getLocation().getYaw());
+            return;
+        }
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
         {
@@ -64,10 +71,9 @@ public class DebugClickListener implements Listener
 
         RailTracer railTracer = new RailTracer();
 
-        List<Rail.Shape> tracedRails = railTracer.traceRails(
-                event.getClickedBlock(),
-                Utils.getDiagonalBlockFaceFromYaw(player.getLocation().getYaw()),
-                traceLength);
+        BlockFace initialFacing = Utils.getDiagonalBlockFaceFromYaw(player.getLocation().getYaw());
+
+        List<Rail.Shape> tracedRails = railTracer.traceRails(event.getClickedBlock(), initialFacing, traceLength);
 
         easyCartsPlugin.logger.info("");
         easyCartsPlugin.logger.info("Traced Rails:");
