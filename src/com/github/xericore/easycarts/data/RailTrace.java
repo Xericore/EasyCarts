@@ -20,16 +20,16 @@ public class RailTrace
         if(initialFacing == null)
             return;
 
-        BlockFace adjustedInitialFacing = getNextFacingFromRailShape(getRailShapeFromBlock(initialBlock), initialFacing);
+        BlockFace adjustedInitialFacing = getNextFacingFromRailShape(getTracedRailFromBlock(initialBlock).getShape(), initialFacing);
 
         Vector initialDirection = Utils.getDirectionFromBlockFace(adjustedInitialFacing);
         Location nextLocation = initialBlock.getLocation().clone().add(initialDirection);
 
         _nextBlock = nextLocation.getBlock();
 
-        Rail.Shape nextRailShape = getNextRailShape();
+        TracedRail nextTracedRail = getNextTracedRail();
 
-        _nextFacing = getNextFacingFromRailShape(nextRailShape, adjustedInitialFacing);
+        _nextFacing = getNextFacingFromRailShape(nextTracedRail.getShape(), adjustedInitialFacing);
     }
 
     public BlockFace getNextFacing()
@@ -42,18 +42,18 @@ public class RailTrace
         return _nextBlock;
     }
 
-    public Rail.Shape getNextRailShape()
+    public TracedRail getNextTracedRail()
     {
-        return getRailShapeFromBlock(_nextBlock);
+        return getTracedRailFromBlock(_nextBlock);
     }
 
-    private Rail.Shape getRailShapeFromBlock(Block block)
+    private TracedRail getTracedRailFromBlock(Block block)
     {
         if(block.getBlockData().getMaterial() != Material.RAIL)
             return null;
 
         Rail nextRail = (Rail) block.getBlockData();
-        return nextRail.getShape();
+        return new TracedRail(nextRail.getShape(), block.getLocation());
     }
 
     public static BlockFace getNextFacingFromRailShape(Rail.Shape currentRailShape, BlockFace initialFacing)

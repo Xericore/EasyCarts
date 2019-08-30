@@ -1,5 +1,6 @@
 package com.github.xericore.easycarts;
 
+import com.github.xericore.easycarts.data.TracedRail;
 import com.github.xericore.easycarts.utilities.RailTracer;
 import com.github.xericore.easycarts.utilities.RailUtils;
 import com.github.xericore.easycarts.utilities.Utils;
@@ -70,15 +71,15 @@ public class DebugClickListener implements Listener
 
         BlockFace initialFacing = Utils.getDiagonalBlockFaceFromYaw(player.getLocation().getYaw());
 
-        List<Rail.Shape> tracedRails = railTracer.traceRails(event.getClickedBlock(), initialFacing, traceLength);
+        List<TracedRail> tracedRails = railTracer.traceRails(event.getClickedBlock(), initialFacing, traceLength);
 
         easyCartsPlugin.logger.info("");
         easyCartsPlugin.logger.info("Traced Rails:");
 
-        for (Rail.Shape railShape : tracedRails)
-            easyCartsPlugin.logger.info("   " + railShape);
+        for (TracedRail railShape : tracedRails)
+            easyCartsPlugin.logger.info("   " + railShape.getShape());
 
-        boolean areAllRailsConnectedStraight = RailUtils.areAllRailsConnectedStraight(tracedRails);
+        boolean areAllRailsConnectedStraight = RailUtils.areAllRailsConnectedStraightOrDiagonal(tracedRails);
 
         easyCartsPlugin.logger.info("Is Safe For Speedup: " + areAllRailsConnectedStraight);
     }

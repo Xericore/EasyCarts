@@ -24,6 +24,9 @@ public class CartSpeed
 
     private static void setCartSpeed(RideableMinecart cart, double maxSpeed)
     {
+        if(cart == null)
+            return;
+
         cart.setVelocity(cart.getVelocity().clone().normalize().multiply(maxSpeed));
         cart.setMaxSpeed(maxSpeed);
     }

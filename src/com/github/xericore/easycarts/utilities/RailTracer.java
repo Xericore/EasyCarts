@@ -1,20 +1,20 @@
 package com.github.xericore.easycarts.utilities;
 
 import com.github.xericore.easycarts.data.RailTrace;
+import com.github.xericore.easycarts.data.TracedRail;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.Rail;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RailTracer
 {
-    private List<Rail.Shape> _tracedRailShapes = new ArrayList<>();
+    private List<TracedRail> _tracedRailShapes = new ArrayList<>();
     private int _traceLength;
 
-    public List<Rail.Shape> traceRails(Block initialBlock, BlockFace initialFacing, int traceLength)
+    public List<TracedRail> traceRails(Block initialBlock, BlockFace initialFacing, int traceLength)
     {
         _traceLength = traceLength;
         _tracedRailShapes.clear();
@@ -41,7 +41,7 @@ public class RailTracer
 
             RailTrace nextTrace = new RailTrace(block, facing);
 
-            _tracedRailShapes.add(nextTrace.getNextRailShape());
+            _tracedRailShapes.add(nextTrace.getNextTracedRail());
 
             traceNextRailRecursive(nextTrace.getNextBlock(), nextTrace.getNextFacing());
         }

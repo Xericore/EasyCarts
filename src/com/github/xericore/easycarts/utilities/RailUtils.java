@@ -1,6 +1,7 @@
 package com.github.xericore.easycarts.utilities;
 
 import com.github.xericore.easycarts.data.RailsAhead;
+import com.github.xericore.easycarts.data.TracedRail;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -68,7 +69,7 @@ public class RailUtils
     }
 
     /**
-     * It's not a valid intersection if the rail left or right to our location is not normal to the rail we are moving/standing on.
+     * It's not a valid intersection if the rail left or right to our location is not normal (90°) to the rail we are moving/standing on.
      *
      * @param myLocation
      * @param movementDirection
@@ -141,7 +142,7 @@ public class RailUtils
         return null;
     }
 
-    public static boolean areAllRailsConnectedStraight(List<Rail.Shape> tracedRails)
+    public static boolean areAllRailsConnectedStraightOrDiagonal(List<TracedRail> tracedRails)
     {
         int tracedRailsCount = 0;
 
@@ -149,7 +150,7 @@ public class RailUtils
         {
             tracedRailsCount++;
 
-            if(RailUtils.areRailsConnectedStraight(tracedRails.get(i), tracedRails.get(i+1)) == false)
+            if(RailUtils.areRailsConnectedStraight(tracedRails.get(i).getShape(), tracedRails.get(i+1).getShape()) == false)
                 return false;
         }
 

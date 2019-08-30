@@ -1,6 +1,7 @@
 package com.github.xericore.easycarts;
 
 import com.github.xericore.easycarts.data.RailsAhead;
+import com.github.xericore.easycarts.data.TracedRail;
 import com.github.xericore.easycarts.utilities.CartSpeed;
 import com.github.xericore.easycarts.utilities.RailTracer;
 import com.github.xericore.easycarts.utilities.RailUtils;
@@ -19,7 +20,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
-import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -102,19 +102,17 @@ public class EasyCartsListener implements Listener
 
 			BlockFace cartFacing = Utils.getCartBlockFaceDirection(cart);
 
-			logger.info("cartFacing: " + cartFacing);
-
 			if(cartFacing == null)
 				return;
 
-			List<Rail.Shape> tracedRails = _railTracer.traceRails(blockUnderCart, cartFacing, 5);
+			List<TracedRail> tracedRails = _railTracer.traceRails(blockUnderCart, cartFacing, 5);
 
-			railsAhead = RailUtils.areAllRailsConnectedStraight(tracedRails) ? RailsAhead.SafeForSpeedup : RailsAhead.Derailing;
-
-			logger.info("railsAhead: " + railsAhead);
+			railsAhead = getRailsAhead(tracedRails);
 
 			if(railsAhead == null)
 				return;
+
+			logger.info("railsAhead: " + railsAhead);
 
 			UUID cartId = cart.getUniqueId();
 
@@ -181,6 +179,21 @@ public class EasyCartsListener implements Listener
 			logger.severe("Error in onMyVehicleMove.");
 			logger.severe(e.toString());
 		}
+	}
+
+	private RailsAhead getRailsAhead(List<TracedRail> tracedRails) {
+		RailsAhead railsAhead;
+		railsAhead = RailUtils.areAllRailsConnectedStraightOrDiagonal(tracedRails) ? RailsAhead.SafeForSpeedup : RailsAhead.Derailing;
+
+		for (TracedRail tracedRail : tracedRails)
+		{
+			if(tracedRail.isIntersection())
+			{
+				return RailsAhead.Intersection;
+			}
+		}
+
+		return railsAhead;
 	}
 
 	private boolean isAscendingRail(Block blockUnderCart)
