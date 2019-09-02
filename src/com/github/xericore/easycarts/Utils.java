@@ -1,11 +1,13 @@
 package com.github.xericore.easycarts;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Rail;
 import org.bukkit.entity.*;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
@@ -266,5 +268,25 @@ class Utils
 				}
 			}
 		}
+	}
+
+	static boolean isRail(Material m) {
+		return m == Material.RAIL ||
+			   	m == Material.POWERED_RAIL ||
+				m == Material.ACTIVATOR_RAIL ||
+				m == Material.DETECTOR_RAIL;
+	}
+
+	static Rail changeRailDirection(Rail r, boolean b) {
+		Set<Rail.Shape> shapes = r.getShapes();
+		Rail.Shape[] array = new Rail.Shape[shapes.size()];
+		shapes.toArray(array);
+		int i;
+		for (i = 0; i < array.length; i++)
+			if (r.getShape().equals(array[i]))
+				break;
+		System.out.println(i);
+		r.setShape(array[(i+(b ? 1 : -1)+array.length)%array.length]);
+		return r;
 	}
 }
