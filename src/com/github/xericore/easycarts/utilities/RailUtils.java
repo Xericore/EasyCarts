@@ -37,6 +37,22 @@ public class RailUtils
         return false;
     }
 
+    public static boolean isSlopedRail(Block blockUnderCart)
+    {
+        Rail.Shape railShape = ((Rail) blockUnderCart.getBlockData()).getShape();
+
+        switch (railShape)
+        {
+            case ASCENDING_EAST:
+            case ASCENDING_WEST:
+            case ASCENDING_NORTH:
+            case ASCENDING_SOUTH:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public static boolean isRailPerpendicular(Location myLocation, Location otherLocation)
     {
         Block myBlock = myLocation.getBlock();

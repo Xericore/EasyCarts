@@ -9,7 +9,6 @@ import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.Rail;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
@@ -42,7 +41,7 @@ public class EasyCartsListener implements Listener
 	// Needed to automatically delete newly created carts on intersections.
 	private HashSet<UUID> removeOnExitMinecartIds = new HashSet<UUID>();
 
-	private HashMap<UUID, SpeedAndYaw> stoppedCarts = new HashMap<UUID, SpeedAndYaw>();
+	private HashMap<UUID, SpeedAndYaw> cartsAtIntersection = new HashMap<UUID, SpeedAndYaw>();
 
 	public EasyCartsListener(EasyCarts theInstance)
 	{
@@ -98,8 +97,6 @@ public class EasyCartsListener implements Listener
 
 			// ------------------------------- SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE -----------------------------
 
-			RailsAhead railsAhead = null;
-
 			BlockFace cartFacing = Utils.getCartBlockFaceDirection(cart);
 
 			if(cartFacing == null)
@@ -107,49 +104,53 @@ public class EasyCartsListener implements Listener
 
 			List<TracedRail> tracedRails = _railTracer.traceRails(blockUnderCart, cartFacing, 5);
 
-			railsAhead = getRailsAhead(tracedRails);
+			RailsAhead railsAhead = getRailsAhead(tracedRails);
 
 			if(railsAhead == null)
 				return;
 
 			logger.info("railsAhead: " + railsAhead);
 
+
+			boolean isCartAtIntersection = handleIntersection(cart);
+			if (isCartAtIntersection)
+				return;
+
 			UUID cartId = cart.getUniqueId();
 
 			switch (railsAhead)
 			{
 				case Derailing:
-					if (isAscendingRail(blockUnderCart) && Utils.isMovingDown(event))
+					if (RailUtils.isSlopedRail(blockUnderCart) && Utils.isMovingDown(event))
 					{
 						// Don't do anything if we are on a downward slope
 						return;
 					}
-					else
+					else if(!isCartSlowedDown(cart))
 					{
-						previousSpeed.put(cartId, cart.getVelocity().length());
-						slowedCarts.add(cartId);
-						CartSpeed.setCartSpeedToAvoidDerailing(cart);
+						slowDownCart(cart);
 						return;
 					}
+					break;
 				case Intersection:
 					// Slow down before intersections, otherwise the VehicleMoveEvent might
 					// come too late and we will miss the intersection
 					CartSpeed.setCartSpeedToAvoidMissingIntersection(cart);
-					return;
+					break;
                 case SafeForSpeedup:
-                    if (previousSpeed.containsKey(cartId))
+                    if (isCartSlowedDown(cart))
                     {
-                        // No curve or slope under cart
-                        setCartToOriginalSpeed(cart);
+                        speedupCart(cart);
+                        return;
                     }
-                    if(!isCartSlowedDown(cart))
+                    else
                     {
                         boostCartOnPoweredRails(cart, blockUnderCart);
                     }
                     break;
 			}
 
-			if (isAscendingRail(blockUnderCart))
+			if (RailUtils.isSlopedRail(blockUnderCart))
 			{
 				if (config.getBoolean("AutoBoostOnSlope") && Utils.isMovingUp(event))
 				{
@@ -160,25 +161,32 @@ public class EasyCartsListener implements Listener
 				return;
 			}
 
-			// _/\__/\__/\__/\__/\__/\__/\__/\_ STOP MINECARTS AT INTERSECTIONS _/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\__/\_
-
-			if (Double.isNaN(cartVelocity.length()))
-				return; // Otherwise we will not stop at intersection
-
-			if (stoppedCarts.containsKey(cart.getUniqueId()) && (cartVelocity.lengthSquared() > 0))
-			{
-				continueCartAfterIntersection(cart);
-				return;
-			}
-
-			if (RailUtils.isIntersection(cartLocation, cartVelocity))
-				stopCartAndShowMessageToPlayer(cart);
-
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			logger.severe("Error in onMyVehicleMove.");
 			logger.severe(e.toString());
 		}
+	}
+
+	private boolean handleIntersection(RideableMinecart cart)
+	{
+		Vector cartVelocity = cart.getVelocity();
+
+		// Otherwise we will not stop at intersection
+		if (Double.isNaN(cartVelocity.length()))
+			return true;
+
+		if (isCartAtIntersection(cart) && (cartVelocity.lengthSquared() > 0))
+		{
+			continueCartAfterIntersection(cart);
+			return true;
+		}
+
+		if (RailUtils.isIntersection(cart.getLocation(), cartVelocity))
+			stopCartAndShowMessageToPlayer(cart);
+
+		return false;
 	}
 
 	private RailsAhead getRailsAhead(List<TracedRail> tracedRails) {
@@ -188,31 +196,13 @@ public class EasyCartsListener implements Listener
 		for (TracedRail tracedRail : tracedRails)
 		{
 			if(tracedRail.isIntersection())
-			{
 				return RailsAhead.Intersection;
-			}
 		}
 
 		return railsAhead;
 	}
 
-	private boolean isAscendingRail(Block blockUnderCart)
-	{
-		Rail.Shape railShape = ((Rail) blockUnderCart.getBlockData()).getShape();
-
-		switch (railShape)
-		{
-			case ASCENDING_EAST:
-			case ASCENDING_WEST:
-			case ASCENDING_NORTH:
-			case ASCENDING_SOUTH:
-				return true;
-			default:
-				return false;
-		}
-	}
-
-	private void setCartSlow(RideableMinecart cart)
+	private void slowDownCart(RideableMinecart cart)
 	{
 		previousSpeed.put(cart.getUniqueId(), cart.getVelocity().length());
 		slowedCarts.add(cart.getUniqueId());
@@ -224,12 +214,24 @@ public class EasyCartsListener implements Listener
 		return slowedCarts.contains(cart.getUniqueId());
 	}
 
-	private void setCartToOriginalSpeed(RideableMinecart cart)
+	private boolean isCartAtIntersection(RideableMinecart cart)
+	{
+		return cartsAtIntersection.containsKey(cart.getUniqueId());
+	}
+
+	private void speedupCart(RideableMinecart cart)
 	{
 		UUID cartId = cart.getUniqueId();
+
+		if(!previousSpeed.containsKey(cartId))
+			return;
+
 		cart.setMaxSpeed(CartSpeed.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
 		Vector newVel = cart.getVelocity().normalize().multiply(previousSpeed.get(cartId));
 		cart.setVelocity(newVel);
+
+		logger.info("speedupCart: " + cartId + ", to speed: "+ previousSpeed.get(cartId));
+
 		previousSpeed.remove(cartId);
 	}
 
@@ -237,7 +239,7 @@ public class EasyCartsListener implements Listener
 	{
 		// Cart must jump one block in the desired direction
 		// Desired direction is player look direction
-		SpeedAndYaw beforeStop = stoppedCarts.get(cart.getUniqueId());
+		SpeedAndYaw beforeStop = cartsAtIntersection.get(cart.getUniqueId());
 		Entity firstPassenger = Utils.GetFirstPassenger(cart);
 
 		if (firstPassenger == null)
@@ -255,7 +257,7 @@ public class EasyCartsListener implements Listener
 
 			cart.setVelocity(locationOffset.clone().multiply(beforeStop.getSpeed()));
 			teleportMineCart(cart, newCartLocation, firstPassenger.getLocation(), beforeStop.getDirection());
-			stoppedCarts.remove(cart.getUniqueId());
+			cartsAtIntersection.remove(cart.getUniqueId());
 		}
 	}
 
@@ -292,7 +294,7 @@ public class EasyCartsListener implements Listener
 
 	private void stopCartAndShowMessageToPlayer(RideableMinecart cart)
 	{
-		stoppedCarts.put(cart.getUniqueId(), new SpeedAndYaw(cart.getVelocity().length(), cart.getVelocity().normalize()));
+		cartsAtIntersection.put(cart.getUniqueId(), new SpeedAndYaw(cart.getVelocity().length(), cart.getVelocity().normalize()));
 		cart.setVelocity(new Vector(0, 0, 0));
 		if (config.getBoolean("ShowIntersectionMessage"))
 		{
@@ -360,7 +362,7 @@ public class EasyCartsListener implements Listener
 		// Clean up data to avoid having dead entries in the maps when user dismounts at intersections or on slopes
 		previousSpeed.remove(cartId);
 		slowedCarts.remove(cartId);
-		stoppedCarts.remove(cartId);
+		cartsAtIntersection.remove(cartId);
 
 		if (removeOnExitMinecartIds.contains(cartId) && config.getBoolean("RemoveMinecartOnExit"))
 		{
