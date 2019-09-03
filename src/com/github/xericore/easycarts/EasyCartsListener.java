@@ -21,6 +21,7 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.util.Vector;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,9 +35,10 @@ public class EasyCartsListener implements Listener
 	public static EasyCarts easyCartsPlugin;
 	private static FileConfiguration config = null;
 	private final RailTracer _railTracer;
+	private DecimalFormat decimalFormat = new DecimalFormat("##.00");
+
 
 	private HashMap<UUID, Double> previousSpeed = new HashMap<UUID, Double>();
-	private HashSet<UUID> slowedCarts = new HashSet<UUID>();
 
 	// Needed to automatically delete newly created carts on intersections.
 	private HashSet<UUID> removeOnExitMinecartIds = new HashSet<UUID>();
@@ -112,6 +114,8 @@ public class EasyCartsListener implements Listener
 
 			logger.info("railsAhead: " + railsAhead);
 
+			//logger.info("speed: " + decimalFormat.format(cart.getVelocity().length()) + "/" + decimalFormat.format(cart.getMaxSpeed()));
+
 			UUID cartId = cart.getUniqueId();
 
 			switch (railsAhead)
@@ -136,7 +140,7 @@ public class EasyCartsListener implements Listener
                 case SafeForSpeedup:
                     if (isCartSlowedDown(cart))
                     {
-                        speedupCart(cart);
+                        restoreCartSpeed(cart);
                         return;
                     }
                     else
@@ -144,13 +148,9 @@ public class EasyCartsListener implements Listener
 						boolean isPoweredRail = (blockUnderCart.getType() == Material.POWERED_RAIL);
 
 						if (isPoweredRail)
-						{
 							boostCartOnPoweredRail(cart);
-						}
 						else
-						{
 							pushCartFaster(cart);
-						}
                     }
                     break;
 			}
@@ -162,7 +162,7 @@ public class EasyCartsListener implements Listener
 					// Speed up carts on rising slopes so they don't slow down as quickly.
 					cart.setVelocity(cartVelocity.multiply(config.getDouble("MaxPushSpeedPercent")));
 				}
-				slowedCarts.remove(cartId);
+				previousSpeed.remove(cartId);
 				return;
 			}
 
@@ -176,11 +176,17 @@ public class EasyCartsListener implements Listener
 
 	private void boostCartOnPoweredRail(RideableMinecart cart)
 	{
-		cart.setMaxSpeed(CartSpeed.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
+		double maxSpeed = CartSpeed.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100;
+		cart.setMaxSpeed(maxSpeed);
 		Vector boostedVelocity = cart.getVelocity().clone().multiply(config.getDouble("PoweredRailBoostPercent") / 100);
+
+		boostedVelocity = boostedVelocity.length() > maxSpeed ? boostedVelocity.normalize().multiply(maxSpeed) : boostedVelocity;
+
 		cart.setVelocity(boostedVelocity);
 
-		logger.info("BOOSTING cart on powered rails: " + cart.getUniqueId() + ", to speed: "+ boostedVelocity);
+		previousSpeed.remove(cart.getUniqueId());
+
+		logger.info("BOOSTING cart on powered rails: " + cart.getUniqueId() + ", to speed: "+ boostedVelocity.length());
 	}
 
 	private boolean handleIntersection(RideableMinecart cart)
@@ -206,13 +212,12 @@ public class EasyCartsListener implements Listener
 	private void slowDownCart(RideableMinecart cart)
 	{
 		previousSpeed.put(cart.getUniqueId(), cart.getVelocity().length());
-		slowedCarts.add(cart.getUniqueId());
 		CartSpeed.setCartSpeedToAvoidDerailing(cart);
 	}
 
 	private boolean isCartSlowedDown(RideableMinecart cart)
 	{
-		return slowedCarts.contains(cart.getUniqueId());
+		return previousSpeed.containsKey(cart.getUniqueId());
 	}
 
 	private boolean isCartAtIntersection(RideableMinecart cart)
@@ -220,7 +225,7 @@ public class EasyCartsListener implements Listener
 		return cartsAtIntersection.containsKey(cart.getUniqueId());
 	}
 
-	private void speedupCart(RideableMinecart cart)
+	private void restoreCartSpeed(RideableMinecart cart)
 	{
 		UUID cartId = cart.getUniqueId();
 
@@ -231,7 +236,7 @@ public class EasyCartsListener implements Listener
 		Vector newVel = cart.getVelocity().normalize().multiply(previousSpeed.get(cartId));
 		cart.setVelocity(newVel);
 
-		logger.info("speedupCart: " + cartId + ", to speed: "+ previousSpeed.get(cartId));
+		logger.info("restoreCartSpeed: " + cartId + ", to speed: "+ previousSpeed.get(cartId));
 
 		previousSpeed.remove(cartId);
 	}
@@ -324,7 +329,7 @@ public class EasyCartsListener implements Listener
 		toCart.getLocation().setYaw(cart.getLocation().getYaw());
 		toCart.getLocation().setPitch(cart.getLocation().getPitch());
 		toCart.setVelocity(cart.getVelocity()); // speed of newly spawned minecart will be speed of old cart before the stop.
-		// Make sure newly spawned cart after intesection will be correctly removed.
+		// Make sure newly spawned cart after intersection will be correctly removed.
 		if (config.getBoolean("RemoveMinecartOnExit"))
 			removeOnExitMinecartIds.add(toCart.getUniqueId());
 		// Old cart must be removed from list as well, otherwise it will stay in memory.
@@ -341,7 +346,6 @@ public class EasyCartsListener implements Listener
 		UUID cartId = event.getVehicle().getUniqueId();
 		// Clean up data to avoid having dead entries in the maps when user dismounts at intersections or on slopes
 		previousSpeed.remove(cartId);
-		slowedCarts.remove(cartId);
 		cartsAtIntersection.remove(cartId);
 
 		if (removeOnExitMinecartIds.contains(cartId) && config.getBoolean("RemoveMinecartOnExit"))
