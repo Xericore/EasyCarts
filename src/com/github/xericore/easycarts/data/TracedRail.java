@@ -1,5 +1,6 @@
 package com.github.xericore.easycarts.data;
 
+import com.github.xericore.easycarts.utilities.RailUtils;
 import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,6 +17,12 @@ public class TracedRail
     {
         Shape = shape;
         Location = location;
+    }
+
+    public TracedRail(Block block)
+    {
+        Shape = getRailShapeFromLocation(block);
+        Location = block.getLocation();
     }
 
     public Rail.Shape getShape()
@@ -65,7 +72,7 @@ public class TracedRail
 
     private Rail.Shape getRailShapeFromLocation(Block block)
     {
-        if(block.getBlockData().getMaterial() != Material.RAIL)
+        if(!RailUtils.isRail(block))
             return null;
 
         return ((Rail) block.getBlockData()).getShape();
