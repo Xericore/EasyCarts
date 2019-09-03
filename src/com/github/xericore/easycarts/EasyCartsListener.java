@@ -80,8 +80,7 @@ public class EasyCartsListener implements Listener
 			Location cartLocation = cart.getLocation();
 			Block blockUnderCart = cartLocation.getBlock();
 
-			// We won't do anything if there's no rail under the cart
-			if(blockUnderCart.getBlockData().getMaterial() != Material.RAIL)
+			if(!RailUtils.isCartOnRails(cart))
 				return;
 
 			if (!config.getBoolean("MinecartCollisions"))
@@ -91,11 +90,13 @@ public class EasyCartsListener implements Listener
 
 			if(Utils.isCartSlowAndDirectionUnknown(cart))
 			{
-				cart.setVelocity(cartVelocity.multiply(config.getDouble("MaxPushSpeedPercent")));
+				pushCartFaster(cart);
 				return;
 			}
 
-			// ------------------------------- SLOW DOWN CART IF CART IS APPROACHING A SLOPE OR A CURVE -----------------------------
+			boolean isCartAtIntersection = handleIntersection(cart);
+			if (isCartAtIntersection)
+				return;
 
 			BlockFace cartFacing = Utils.getCartBlockFaceDirection(cart);
 
@@ -104,17 +105,12 @@ public class EasyCartsListener implements Listener
 
 			List<TracedRail> tracedRails = _railTracer.traceRails(blockUnderCart, cartFacing, 5);
 
-			RailsAhead railsAhead = getRailsAhead(tracedRails);
+			RailsAhead railsAhead = RailUtils.getRailsAhead(tracedRails);
 
 			if(railsAhead == null)
 				return;
 
 			logger.info("railsAhead: " + railsAhead);
-
-
-			boolean isCartAtIntersection = handleIntersection(cart);
-			if (isCartAtIntersection)
-				return;
 
 			UUID cartId = cart.getUniqueId();
 
@@ -145,7 +141,16 @@ public class EasyCartsListener implements Listener
                     }
                     else
                     {
-                        boostCartOnPoweredRails(cart, blockUnderCart);
+						boolean isPoweredRail = (blockUnderCart.getType() == Material.POWERED_RAIL);
+
+						if (isPoweredRail)
+						{
+							boostCartOnPoweredRail(cart);
+						}
+						else
+						{
+							pushCartFaster(cart);
+						}
                     }
                     break;
 			}
@@ -169,6 +174,15 @@ public class EasyCartsListener implements Listener
 		}
 	}
 
+	private void boostCartOnPoweredRail(RideableMinecart cart)
+	{
+		cart.setMaxSpeed(CartSpeed.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
+		Vector boostedVelocity = cart.getVelocity().clone().multiply(config.getDouble("PoweredRailBoostPercent") / 100);
+		cart.setVelocity(boostedVelocity);
+
+		logger.info("BOOSTING cart on powered rails: " + cart.getUniqueId() + ", to speed: "+ boostedVelocity);
+	}
+
 	private boolean handleIntersection(RideableMinecart cart)
 	{
 		Vector cartVelocity = cart.getVelocity();
@@ -187,19 +201,6 @@ public class EasyCartsListener implements Listener
 			stopCartAndShowMessageToPlayer(cart);
 
 		return false;
-	}
-
-	private RailsAhead getRailsAhead(List<TracedRail> tracedRails) {
-		RailsAhead railsAhead;
-		railsAhead = RailUtils.areAllRailsConnectedStraightOrDiagonal(tracedRails) ? RailsAhead.SafeForSpeedup : RailsAhead.Derailing;
-
-		for (TracedRail tracedRail : tracedRails)
-		{
-			if(tracedRail.isIntersection())
-				return RailsAhead.Intersection;
-		}
-
-		return railsAhead;
 	}
 
 	private void slowDownCart(RideableMinecart cart)
@@ -261,34 +262,13 @@ public class EasyCartsListener implements Listener
 		}
 	}
 
-	private void boostCartOnPoweredRails(RideableMinecart cart, Block blockUnderCart)
+	private void pushCartFaster(RideableMinecart cart)
 	{
-		Vector cartVelocity = cart.getVelocity();
-
-		boolean isPoweredBlock = (blockUnderCart.getType() == Material.POWERED_RAIL);
-		// Only boost carts if they have not been slowed down by slopes already.
-		// This disables boosters that are placed within BLOCKS_LOOK_AHEAD blocks before slopes or curves.
-		// Also, boosters on slopes will only apply the default minecraft boost, because if we make them stronger here, the cart
-		// reverses.
-		if (isPoweredBlock)
-		{
-			cart.setMaxSpeed(CartSpeed.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
-			cartVelocity.multiply(config.getDouble("PoweredRailBoostPercent") / 100);
-			cart.setVelocity(cartVelocity);
-		}
-		else
-		{
-			pushCartFaster(cart, cartVelocity);
-		}
-	}
-
-	private void pushCartFaster(RideableMinecart cart, Vector cartVelocity)
-	{
-		Double cartSpeed = cartVelocity.length();
+		Double cartSpeed = cart.getVelocity().length();
 		if (cartSpeed < (CartSpeed.MINECART_VANILLA_PUSH_SPEED * config.getDouble("MaxPushSpeedPercent") / 100))
 		{
 			// Boost default/auto minecart speed
-			cart.setVelocity(cartVelocity.multiply(config.getDouble("MaxPushSpeedPercent") / 100));
+			cart.setVelocity(cart.getVelocity().clone().multiply(config.getDouble("MaxPushSpeedPercent") / 100));
 		}
 	}
 

@@ -193,49 +193,43 @@ public class RailUtils
         return false;
     }
 
-    public static RailsAhead getRailsAhead(RideableMinecart cart)
+    public static boolean isCartOnRails(RideableMinecart cart)
     {
-        Location cartLocation = cart.getLocation();
-        Block blockUnderCart = cartLocation.getBlock();
+        if(isRail(cart.getLocation().getBlock()))
+            return true;
 
-        Location locationInFront = cartLocation.clone();
+        return false;
+    }
 
-        BlockFace cartFacing = Utils.getCartBlockFaceDirection(cart);
-
-        if(cartFacing == null)
-            return null;
-
-        Vector cartDirection = Utils.getDirectionFromBlockFace(cartFacing);
-
-        // We won't do anything if there's no rail under the cart
-        Rails railUnderCart = null;
-        try
+    public static boolean isRail(Block block)
+    {
+        switch (block.getBlockData().getMaterial())
         {
-            railUnderCart = (Rails) blockUnderCart.getState().getData();
-        } catch (ClassCastException e)
-        {
-            return RailsAhead.Derailing;
+            case RAIL:
+            case ACTIVATOR_RAIL:
+            case POWERED_RAIL:
+            case DETECTOR_RAIL:
+                return true;
+            default:
+                return false;
         }
+    }
 
-        for (int i = 1; i < BLOCKS_LOOK_AHEAD; i++)
+    public static RailsAhead getRailsAhead(List<TracedRail> tracedRails)
+    {
+        RailsAhead railsAhead;
+        railsAhead = RailUtils.areAllRailsConnectedStraightOrDiagonal(tracedRails) ? RailsAhead.SafeForSpeedup : RailsAhead.Derailing;
+
+        if(tracedRails.size() <= 3)
+            railsAhead = RailsAhead.Derailing;
+
+        for (TracedRail tracedRail : tracedRails)
         {
-            locationInFront.add(cartDirection.multiply(i));
-            Rails railInFront = getRailInFront(locationInFront);
-
-            if (railInFront == null)
-                continue;
-
-            if(isDirectionChangeAhead(railUnderCart, railInFront))
-            {
-                return RailsAhead.Derailing;
-            }
-            else if (CartSpeed.isCartTooFastToDetectIntersection(cart) && isIntersection(locationInFront, cartDirection))
-            {
+            if(tracedRail.isIntersection())
                 return RailsAhead.Intersection;
-            }
         }
 
-        return RailsAhead.SafeForSpeedup;
+        return railsAhead;
     }
 
     public static boolean isDirectionChangeAhead(Rails railUnderCart, Rails railInFront)

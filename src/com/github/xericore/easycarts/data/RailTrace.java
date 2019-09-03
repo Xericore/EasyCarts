@@ -1,5 +1,6 @@
 package com.github.xericore.easycarts.data;
 
+import com.github.xericore.easycarts.utilities.RailUtils;
 import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -52,7 +53,7 @@ public class RailTrace
 
     private TracedRail getTracedRailFromBlock(Block block)
     {
-        if(block.getBlockData().getMaterial() != Material.RAIL)
+        if(!RailUtils.isRail(block))
             return null;
 
         Rail nextRail = (Rail) block.getBlockData();

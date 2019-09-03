@@ -19,7 +19,7 @@ public class RailTracer
         _traceLength = traceLength;
         _tracedRailShapes.clear();
 
-        if(initialBlock.getBlockData().getMaterial() != Material.RAIL)
+        if(!RailUtils.isRail(initialBlock))
             return _tracedRailShapes;
 
         traceNextRailRecursive(initialBlock, initialFacing);

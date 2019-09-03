@@ -1,5 +1,6 @@
 package com.github.xericore.easycarts;
 
+import com.github.xericore.easycarts.data.RailsAhead;
 import com.github.xericore.easycarts.data.TracedRail;
 import com.github.xericore.easycarts.utilities.RailTracer;
 import com.github.xericore.easycarts.utilities.RailUtils;
@@ -42,16 +43,8 @@ public class DebugClickListener implements Listener
             easyCartsPlugin.logger.info("BlockData: " + event.getClickedBlock().getBlockData());
             easyCartsPlugin.logger.info("Material: " + event.getClickedBlock().getBlockData().getMaterial());
 
-            switch (event.getClickedBlock().getBlockData().getMaterial())
-            {
-                case RAIL:
-                case ACTIVATOR_RAIL:
-                case POWERED_RAIL:
-                case DETECTOR_RAIL:
-                    break;
-                default:
-                    return;
-            }
+            if(!RailUtils.isRail(event.getClickedBlock()))
+                return;
 
             Rail railData = (Rail) event.getClickedBlock().getBlockData();
             easyCartsPlugin.logger.info("Shape: " + railData.getShape());
@@ -79,9 +72,9 @@ public class DebugClickListener implements Listener
         for (TracedRail railShape : tracedRails)
             easyCartsPlugin.logger.info("   " + railShape.getShape());
 
-        boolean areAllRailsConnectedStraight = RailUtils.areAllRailsConnectedStraightOrDiagonal(tracedRails);
+        RailsAhead railsAhead = RailUtils.getRailsAhead(tracedRails);
 
-        easyCartsPlugin.logger.info("Is Safe For Speedup: " + areAllRailsConnectedStraight);
+        easyCartsPlugin.logger.info("Rails Ahead: " + railsAhead);
     }
 
 }
