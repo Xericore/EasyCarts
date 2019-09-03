@@ -41,6 +41,9 @@ public class RailTracer
 
             RailTrace nextTrace = new RailTrace(block, facing);
 
+            if(nextTrace.getNextTracedRail() == null)
+                return;
+
             _tracedRailShapes.add(nextTrace.getNextTracedRail());
 
             traceNextRailRecursive(nextTrace.getNextBlock(), nextTrace.getNextFacing());

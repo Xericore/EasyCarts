@@ -29,6 +29,9 @@ public class RailTrace
 
         TracedRail nextTracedRail = getNextTracedRail();
 
+        if(nextTracedRail == null)
+            return;
+
         _nextFacing = getNextFacingFromRailShape(nextTracedRail.getShape(), adjustedInitialFacing);
     }
 
