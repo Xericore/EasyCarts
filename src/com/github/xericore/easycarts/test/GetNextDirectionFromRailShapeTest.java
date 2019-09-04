@@ -16,9 +16,37 @@ public class GetNextDirectionFromRailShapeTest
     }
 
     @Test
+    public void getNextFacingFromRailShape_given_railNS_facingNorthEast_returnsNorth()
+    {
+        BlockFace nextFacing = RailTrace.getNextFacingFromRailShape(Rail.Shape.NORTH_SOUTH, BlockFace.NORTH_EAST);
+        Assert.assertEquals(BlockFace.NORTH, nextFacing);
+    }
+
+    @Test
+    public void getNextFacingFromRailShape_given_railNS_facingNorthWest_returnsNorth()
+    {
+        BlockFace nextFacing = RailTrace.getNextFacingFromRailShape(Rail.Shape.NORTH_SOUTH, BlockFace.NORTH_WEST);
+        Assert.assertEquals(BlockFace.NORTH, nextFacing);
+    }
+
+    @Test
     public void getNextFacingFromRailShape_given_railNS_facingSouth_returnsSouth()
     {
         BlockFace nextFacing = RailTrace.getNextFacingFromRailShape(Rail.Shape.NORTH_SOUTH, BlockFace.SOUTH);
+        Assert.assertEquals(BlockFace.SOUTH, nextFacing);
+    }
+
+    @Test
+    public void getNextFacingFromRailShape_given_railNS_facingSouthEast_returnsSouth()
+    {
+        BlockFace nextFacing = RailTrace.getNextFacingFromRailShape(Rail.Shape.NORTH_SOUTH, BlockFace.SOUTH_EAST);
+        Assert.assertEquals(BlockFace.SOUTH, nextFacing);
+    }
+
+    @Test
+    public void getNextFacingFromRailShape_given_railNS_facingSouthWest_returnsSouth()
+    {
+        BlockFace nextFacing = RailTrace.getNextFacingFromRailShape(Rail.Shape.NORTH_SOUTH, BlockFace.SOUTH_WEST);
         Assert.assertEquals(BlockFace.SOUTH, nextFacing);
     }
 
@@ -44,9 +72,37 @@ public class GetNextDirectionFromRailShapeTest
     }
 
     @Test
+    public void getNextFacingFromRailShape_given_railEW_facingSouthEast_returnsEast()
+    {
+        BlockFace nextFacing = RailTrace.getNextFacingFromRailShape(Rail.Shape.EAST_WEST, BlockFace.SOUTH_EAST);
+        Assert.assertEquals(BlockFace.EAST, nextFacing);
+    }
+
+    @Test
+    public void getNextFacingFromRailShape_given_railEW_facingNorthEast_returnsEast()
+    {
+        BlockFace nextFacing = RailTrace.getNextFacingFromRailShape(Rail.Shape.EAST_WEST, BlockFace.NORTH_EAST);
+        Assert.assertEquals(BlockFace.EAST, nextFacing);
+    }
+
+    @Test
     public void getNextFacingFromRailShape_given_railEW_facingWest_returnsWest()
     {
         BlockFace nextFacing = RailTrace.getNextFacingFromRailShape(Rail.Shape.EAST_WEST, BlockFace.WEST);
+        Assert.assertEquals(BlockFace.WEST, nextFacing);
+    }
+
+    @Test
+    public void getNextFacingFromRailShape_given_railEW_facingNorthWest_returnsWest()
+    {
+        BlockFace nextFacing = RailTrace.getNextFacingFromRailShape(Rail.Shape.EAST_WEST, BlockFace.NORTH_WEST);
+        Assert.assertEquals(BlockFace.WEST, nextFacing);
+    }
+
+    @Test
+    public void getNextFacingFromRailShape_given_railEW_facingSouthWest_returnsWest()
+    {
+        BlockFace nextFacing = RailTrace.getNextFacingFromRailShape(Rail.Shape.EAST_WEST, BlockFace.SOUTH_WEST);
         Assert.assertEquals(BlockFace.WEST, nextFacing);
     }
 

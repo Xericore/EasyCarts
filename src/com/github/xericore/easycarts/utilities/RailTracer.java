@@ -43,7 +43,10 @@ public class RailTracer
             RailTrace nextTrace = new RailTrace(block, facing);
 
             if(nextTrace.getNextTracedRail() == null)
+            {
+                _traceLength = 0;
                 return;
+            }
 
             _tracedRailShapes.add(nextTrace.getNextTracedRail());
 

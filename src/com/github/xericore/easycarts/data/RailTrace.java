@@ -65,17 +65,38 @@ public class RailTrace
         if(currentRailShape == null)
             return null;
 
-        double rotateAround = 0d;
-
         switch (currentRailShape)
         {
             case NORTH_SOUTH:
+            case ASCENDING_NORTH:
+            case ASCENDING_SOUTH:
+                switch (initialFacing)
+                {
+                    case NORTH:
+                    case NORTH_EAST:
+                    case NORTH_WEST:
+                        return BlockFace.NORTH;
+                    case SOUTH:
+                    case SOUTH_WEST:
+                    case SOUTH_EAST:
+                        return BlockFace.SOUTH;
+                }
+                break;
             case EAST_WEST:
             case ASCENDING_EAST:
             case ASCENDING_WEST:
-            case ASCENDING_NORTH:
-            case ASCENDING_SOUTH:
-                return initialFacing;
+                switch (initialFacing)
+                {
+                    case EAST:
+                    case NORTH_EAST:
+                    case SOUTH_EAST:
+                        return BlockFace.EAST;
+                    case WEST:
+                    case SOUTH_WEST:
+                    case NORTH_WEST:
+                        return BlockFace.WEST;
+                }
+                break;
             case SOUTH_EAST:
                 switch (initialFacing)
                 {
@@ -138,8 +159,6 @@ public class RailTrace
                 break;
         }
 
-        Vector previousDirection = Utils.getDirectionFromBlockFace(initialFacing);
-        Vector newDirection = previousDirection.clone().rotateAroundY(rotateAround);
-        return Utils.getBlockFaceFromDirection(newDirection);
+        return initialFacing;
     }
 }
