@@ -6,7 +6,10 @@ import com.github.xericore.easycarts.utilities.CartSpeed;
 import com.github.xericore.easycarts.utilities.RailTracer;
 import com.github.xericore.easycarts.utilities.RailUtils;
 import com.github.xericore.easycarts.utilities.Utils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -21,7 +24,6 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.util.Vector;
 
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,8 +37,6 @@ public class EasyCartsListener implements Listener
 	public static EasyCarts easyCartsPlugin;
 	private static FileConfiguration config = null;
 	private final RailTracer _railTracer;
-	private DecimalFormat decimalFormat = new DecimalFormat("##.00");
-
 
 	private HashMap<UUID, Double> previousSpeed = new HashMap<UUID, Double>();
 
@@ -112,10 +112,6 @@ public class EasyCartsListener implements Listener
 			if(railsAhead == null)
 				return;
 
-			logger.info("railsAhead: " + railsAhead);
-
-			//logger.info("speed: " + decimalFormat.format(cart.getVelocity().length()) + "/" + decimalFormat.format(cart.getMaxSpeed()));
-
 			UUID cartId = cart.getUniqueId();
 
 			switch (railsAhead)
@@ -185,8 +181,6 @@ public class EasyCartsListener implements Listener
 		cart.setVelocity(boostedVelocity);
 
 		previousSpeed.remove(cart.getUniqueId());
-
-		logger.info("BOOSTING cart on powered rails: " + cart.getUniqueId() + ", to speed: "+ boostedVelocity.length());
 	}
 
 	private boolean handleIntersection(RideableMinecart cart)

@@ -121,43 +121,6 @@ public class RailUtils
         return false;
     }
 
-    public static boolean isStraightRail(Rails rails)
-    {
-        return !rails.isCurve();
-    }
-
-    public static Rails getRailInFront(Location testLoc)
-    {
-        try
-        {
-            // Slopes that go down/fall have the blocks underneath the current y-level
-            Location testLocUnder = testLoc.clone().subtract(0, 1, 0);
-
-            if (testLoc.getBlock().getType() == Material.RAIL)
-            {
-                // Detects rising slope
-                return (Rails) testLoc.getBlock().getState().getData();
-            }
-            else if (testLocUnder.getBlock().getType() == Material.RAIL)
-            {
-                // Detects falling slope
-                return (Rails) testLocUnder.getBlock().getState().getData();
-            }
-            else if (testLoc.getBlock().getType() == Material.POWERED_RAIL)
-            {
-                return (PoweredRail) testLoc.getBlock().getState().getData();
-            }
-            else if (testLocUnder.getBlock().getType() == Material.POWERED_RAIL)
-            {
-                return (PoweredRail) testLocUnder.getBlock().getState().getData();
-            }
-        } catch (ClassCastException e)
-        {
-            // no valid rail found
-        }
-        return null;
-    }
-
     public static boolean areAllRailsConnectedStraightOrDiagonal(List<TracedRail> tracedRails)
     {
         int tracedRailsCount = 0;
@@ -230,12 +193,5 @@ public class RailUtils
         }
 
         return railsAhead;
-    }
-
-    public static boolean isDirectionChangeAhead(Rails railUnderCart, Rails railInFront)
-    {
-        return (isStraightRail(railUnderCart) && railInFront.isCurve()) ||
-                (railUnderCart.isCurve() && isStraightRail(railInFront)) ||
-                railInFront.isOnSlope();
     }
 }

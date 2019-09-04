@@ -3,7 +3,6 @@ package com.github.xericore.easycarts.data;
 import com.github.xericore.easycarts.utilities.RailUtils;
 import com.github.xericore.easycarts.utilities.Utils;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rail;
@@ -28,11 +27,6 @@ public class TracedRail
     public Rail.Shape getShape()
     {
         return Shape;
-    }
-
-    public org.bukkit.Location getLocation()
-    {
-        return Location;
     }
 
     public boolean isIntersection()
