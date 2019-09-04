@@ -52,8 +52,8 @@ public class TracedRail
                 Block northBlock = Location.clone().add(Utils.getDirectionFromBlockFace(BlockFace.NORTH)).getBlock();
                 Block southBlock = Location.clone().add(Utils.getDirectionFromBlockFace(BlockFace.SOUTH)).getBlock();
 
-                if(getRailShapeFromLocation(northBlock) == Rail.Shape.EAST_WEST ||
-                        getRailShapeFromLocation(southBlock) == Rail.Shape.EAST_WEST)
+                if(getRailShapeFromLocation(northBlock) == Rail.Shape.NORTH_SOUTH ||
+                        getRailShapeFromLocation(southBlock) == Rail.Shape.NORTH_SOUTH)
                     return true;
 
                 break;
