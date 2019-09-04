@@ -199,7 +199,7 @@ public class EasyCartsListener implements Listener
 			return true;
 		}
 
-		if (RailUtils.isIntersection(cart.getLocation(), cartVelocity))
+		if (RailUtils.isIntersection(cart.getLocation()))
 			stopCartAndShowMessageToPlayer(cart);
 
 		return false;

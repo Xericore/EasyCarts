@@ -8,11 +8,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rail;
 import org.bukkit.entity.minecart.RideableMinecart;
-import org.bukkit.material.PoweredRail;
 import org.bukkit.material.Rails;
 import org.bukkit.util.Vector;
 
 import java.util.List;
+
+import static org.bukkit.block.data.Rail.Shape.*;
 
 public class RailUtils
 {
@@ -84,40 +85,38 @@ public class RailUtils
         return false;
     }
 
-    /**
-     * It's not a valid intersection if the rail left or right to our location is not normal (90°) to the rail we are moving/standing on.
-     *
-     * @param myLocation
-     * @param movementDirection
-     * @return
-     */
-    public static boolean isIntersection(Location myLocation, Vector movementDirection)
+    public static boolean isIntersection(Location location)
     {
-        if (isFlatRail(myLocation))
+        switch (getRailShapeFromBlock(location.getBlock()))
         {
-            // Search for intersection
-            Location front = myLocation.clone().add(movementDirection.normalize());
-            Location back = myLocation.clone().subtract(movementDirection.normalize());
-            Location left = myLocation.clone().add(movementDirection.getZ(), 0, -movementDirection.getX()); // go one left
-            Location right = myLocation.clone().add(-movementDirection.getZ(), 0, movementDirection.getX()); // go one right
+            case NORTH_SOUTH:
+                Block eastBlock = location.clone().add(Utils.getDirectionFromBlockFace(BlockFace.EAST)).getBlock();
+                Block westBlock = location.clone().add(Utils.getDirectionFromBlockFace(BlockFace.WEST)).getBlock();
 
-            if (isRailPerpendicular(myLocation, left) && isRailPerpendicular(myLocation, right))
-            {
-                return true;
-            } else if ((isRailPerpendicular(myLocation, left)
-                    && (isRailParallel(myLocation, front) || isRailParallel(myLocation, back)))
-                    || (isRailPerpendicular(myLocation, right)
-                    && (isRailParallel(myLocation, front) || isRailParallel(myLocation, back))))
-            {
-                return true;
-            } else if ((isRailParallel(myLocation, left)
-                    && (isRailPerpendicular(myLocation, front) || isRailPerpendicular(myLocation, back)))
-                    || (isRailParallel(myLocation, right)
-                    && (isRailPerpendicular(myLocation, front) || isRailPerpendicular(myLocation, back))))
-            {
-                return true;
-            }
+                if(getRailShapeFromBlock(eastBlock) == EAST_WEST ||
+                        getRailShapeFromBlock(westBlock) == EAST_WEST)
+                    return true;
+
+                break;
+            case EAST_WEST:
+                Block northBlock = location.clone().add(Utils.getDirectionFromBlockFace(BlockFace.NORTH)).getBlock();
+                Block southBlock = location.clone().add(Utils.getDirectionFromBlockFace(BlockFace.SOUTH)).getBlock();
+
+                if(getRailShapeFromBlock(northBlock) == NORTH_SOUTH ||
+                        getRailShapeFromBlock(southBlock) == NORTH_SOUTH)
+                    return true;
+
+                break;
+            case ASCENDING_EAST:
+            case ASCENDING_WEST:
+            case ASCENDING_NORTH:
+            case ASCENDING_SOUTH:
+            case SOUTH_EAST:
+            case SOUTH_WEST:
+            case NORTH_WEST:
+            case NORTH_EAST:
         }
+
         return false;
     }
 
@@ -140,9 +139,9 @@ public class RailUtils
     {
         switch (thisShape) {
             case NORTH_SOUTH:
-                return otherShape == Rail.Shape.NORTH_SOUTH;
+                return otherShape == NORTH_SOUTH;
             case EAST_WEST:
-                return otherShape == Rail.Shape.EAST_WEST;
+                return otherShape == EAST_WEST;
             case SOUTH_EAST:
                 return otherShape == Rail.Shape.NORTH_WEST;
             case SOUTH_WEST:
@@ -193,5 +192,13 @@ public class RailUtils
         }
 
         return railsAhead;
+    }
+
+    public static Rail.Shape getRailShapeFromBlock(Block block)
+    {
+        if(!RailUtils.isRail(block))
+            return null;
+
+        return ((Rail) block.getBlockData()).getShape();
     }
 }
