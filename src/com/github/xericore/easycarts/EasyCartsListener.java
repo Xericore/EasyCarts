@@ -191,7 +191,9 @@ public class EasyCartsListener implements Listener
 		if (Double.isNaN(cartVelocity.length()))
 			return true;
 
-		if (isCartAtIntersection(cart) && (cartVelocity.lengthSquared() > 0))
+		boolean didPlayerNudgeCartForward = cartVelocity.lengthSquared() > 0;
+
+		if (isCartAtIntersection(cart) && didPlayerNudgeCartForward)
 		{
 			continueCartAfterIntersection(cart);
 			return true;
