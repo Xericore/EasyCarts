@@ -54,37 +54,6 @@ public class RailUtils
         }
     }
 
-    public static boolean isRailPerpendicular(Location myLocation, Location otherLocation)
-    {
-        Block myBlock = myLocation.getBlock();
-        Block otherBlock = otherLocation.getBlock();
-        if (otherBlock.getType() == Material.RAIL)
-        {
-            if (myBlock.getData() == (byte) 0 && otherBlock.getData() == (byte) 1)
-            {
-                return true;
-            } else if (myBlock.getData() == (byte) 1 && otherBlock.getData() == (byte) 0)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isRailParallel(Location myLocation, Location otherLocation)
-    {
-        Block myBlock = myLocation.getBlock();
-        Block otherBlock = otherLocation.getBlock();
-        if (otherBlock.getType() == Material.RAIL)
-        {
-            if (myBlock.getData() == otherBlock.getData())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static boolean isIntersection(Location location)
     {
         switch (getRailShapeFromBlock(location.getBlock()))
