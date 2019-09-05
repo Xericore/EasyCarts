@@ -31,7 +31,7 @@ public class MyVehicleCollisionListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onVehicleCollision(final VehicleEntityCollisionEvent event)
     {
-        RideableMinecart cart = Utils.getValidMineCart(event.getVehicle(), true);
+        RideableMinecart cart = Utils.getRideableMineCartWithPlayerInside(event.getVehicle());
         if (cart == null)
         {
             return;

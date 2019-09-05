@@ -19,19 +19,28 @@ public class Utils
 		return cart.getVelocity().length() <= SlowCartVelocityWhereDirectionIsUnknown;
 	}
 
-	public static RideableMinecart getValidMineCart(Vehicle vehicle, boolean mustHavePassenger)
+	public static RideableMinecart getRideableMineCart(Vehicle vehicle)
 	{
 		RideableMinecart cart = null;
 
 		if (!(vehicle instanceof RideableMinecart))
 			return null;
+
 		cart = (RideableMinecart) vehicle;
 
-		Entity firstPassenger = GetFirstPassenger(cart);
-		if (firstPassenger == null)
+		return cart;
+	}
+
+	public static RideableMinecart getRideableMineCartWithPlayerInside(Vehicle vehicle)
+	{
+		RideableMinecart cart = getRideableMineCart(vehicle);
+
+		if(cart == null || cart.isEmpty())
 			return null;
 
-		if (mustHavePassenger && (cart.isEmpty() || !(firstPassenger instanceof Player)))
+		Entity firstPassenger = GetFirstPassenger(cart);
+
+		if (firstPassenger == null || !(firstPassenger instanceof Player))
 			return null;
 
 		return cart;

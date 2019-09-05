@@ -24,6 +24,8 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.util.Vector;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,11 +41,14 @@ public class EasyCartsListener implements Listener
 	private final RailTracer _railTracer;
 
 	private HashMap<UUID, Double> previousSpeed = new HashMap<UUID, Double>();
+	private NumberFormat _formatter = new DecimalFormat("#0");
 
 	// Needed to automatically delete newly created carts on intersections.
 	private HashSet<UUID> removeOnExitMinecartIds = new HashSet<UUID>();
 
 	private HashMap<UUID, SpeedAndYaw> cartsAtIntersection = new HashMap<UUID, SpeedAndYaw>();
+	private double _totalDelta;
+	private float _frameCount;
 
 	public EasyCartsListener(EasyCarts theInstance)
 	{
@@ -55,7 +60,7 @@ public class EasyCartsListener implements Listener
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onMyVehicleCreate(VehicleCreateEvent event)
 	{
-		RideableMinecart cart = Utils.getValidMineCart(event.getVehicle(), false);
+		RideableMinecart cart = Utils.getRideableMineCart(event.getVehicle());
 		if (cart == null)
 			return;
 
@@ -68,14 +73,20 @@ public class EasyCartsListener implements Listener
 		}
 
 		cart.setSlowWhenEmpty(config.getBoolean("SlowWhenEmpty"));
+
+		logger.info("Benchmark reset.");
+		_frameCount = 0;
+		_totalDelta = 0;
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onMyVehicleMove(VehicleMoveEvent event)
 	{
+		long startTime = System.nanoTime();
+
 		try
 		{
-			RideableMinecart cart = Utils.getValidMineCart(event.getVehicle(), true);
+			RideableMinecart cart = Utils.getRideableMineCartWithPlayerInside(event.getVehicle());
 			if (cart == null)
 				return;
 
@@ -168,6 +179,15 @@ public class EasyCartsListener implements Listener
 			logger.severe("Error in onMyVehicleMove.");
 			logger.severe(e.toString());
 		}
+
+		long endTime = System.nanoTime();
+
+		long deltaInNs = endTime-startTime;
+		_frameCount++;
+		_totalDelta += deltaInNs;
+
+		if(_frameCount % 20 == 0)
+			logger.info("Average execution time: " + _formatter.format(_totalDelta/(_frameCount*1000)) + " microseconds");
 	}
 
 	private void boostCartOnPoweredRail(RideableMinecart cart)
@@ -231,8 +251,6 @@ public class EasyCartsListener implements Listener
 		cart.setMaxSpeed(CartSpeed.MINECART_VANILLA_MAX_SPEED * config.getDouble("MaxSpeedPercent") / 100);
 		Vector newVel = cart.getVelocity().normalize().multiply(previousSpeed.get(cartId));
 		cart.setVelocity(newVel);
-
-		logger.info("restoreCartSpeed: " + cartId + ", to speed: "+ previousSpeed.get(cartId));
 
 		previousSpeed.remove(cartId);
 	}
