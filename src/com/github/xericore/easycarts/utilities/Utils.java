@@ -19,18 +19,6 @@ public class Utils
 		return cart.getVelocity().length() <= SlowCartVelocityWhereDirectionIsUnknown;
 	}
 
-	public static RideableMinecart getRideableMineCart(Vehicle vehicle)
-	{
-		RideableMinecart cart = null;
-
-		if (!(vehicle instanceof RideableMinecart))
-			return null;
-
-		cart = (RideableMinecart) vehicle;
-
-		return cart;
-	}
-
 	public static RideableMinecart getRideableMineCartWithPlayerInside(Vehicle vehicle)
 	{
 		RideableMinecart cart = getRideableMineCart(vehicle);
@@ -42,6 +30,18 @@ public class Utils
 
 		if (firstPassenger == null || !(firstPassenger instanceof Player))
 			return null;
+
+		return cart;
+	}
+
+	public static RideableMinecart getRideableMineCart(Vehicle vehicle)
+	{
+		RideableMinecart cart = null;
+
+		if (!(vehicle instanceof RideableMinecart))
+			return null;
+
+		cart = (RideableMinecart) vehicle;
 
 		return cart;
 	}
@@ -293,7 +293,7 @@ public class Utils
 		return event.getTo().getY() - event.getFrom().getY() < 0;
 	}
 
-	public static void pushNearbyEntities(RideableMinecart cart, Location cartLocation)
+	public static void pushNearbyEntities(RideableMinecart cart)
 	{
 		// To avoid collision, the entity must be located at least 1.0 block away from the cart.
 		// The entities will be moved to this distance if they are within the search box when the cart is moving.
@@ -334,8 +334,8 @@ public class Utils
 
 				// The vector between the current cart location and the entity location, needed to determine which direction to
 				// move the entity to.
-				Vector cartToEntity = new Vector(entityLocation.getX() - cartLocation.getX(), 0,
-						entityLocation.getZ() - cartLocation.getZ());
+				Vector cartToEntity = new Vector(entityLocation.getX() - cart.getLocation().getX(), 0,
+						entityLocation.getZ() - cart.getLocation().getZ());
 
 				// The cross product vector will point up- or downwards depending on the location of the second vector
 				if (cartVector.crossProduct(cartToEntity).getY() > 0)

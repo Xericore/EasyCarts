@@ -87,23 +87,16 @@ public class EasyCartsListener implements Listener
 		try
 		{
 			RideableMinecart cart = Utils.getRideableMineCartWithPlayerInside(event.getVehicle());
-			if (cart == null)
-				return;
 
-			Location cartLocation = cart.getLocation();
-			Block blockUnderCart = cartLocation.getBlock();
-
-			if(!RailUtils.isCartOnRails(cart))
+			if(cart == null || !RailUtils.isCartOnRails(cart))
 				return;
 
 			if (!config.getBoolean("MinecartCollisions"))
-				Utils.pushNearbyEntities(cart, cartLocation);
-
-			Vector cartVelocity = cart.getVelocity();
+				Utils.pushNearbyEntities(cart);
 
 			if(Utils.isCartSlowAndDirectionUnknown(cart))
 			{
-				pushCartFaster(cart);
+				autoPushCart(cart);
 				return;
 			}
 
@@ -115,6 +108,8 @@ public class EasyCartsListener implements Listener
 
 			if(cartFacing == null)
 				return;
+
+			Block blockUnderCart = cart.getLocation().getBlock();
 
 			List<TracedRail> tracedRails = _railTracer.traceRails(blockUnderCart, cartFacing, 5);
 
@@ -152,12 +147,10 @@ public class EasyCartsListener implements Listener
                     }
                     else
                     {
-						boolean isPoweredRail = (blockUnderCart.getType() == Material.POWERED_RAIL);
-
-						if (isPoweredRail)
+						if (blockUnderCart.getType() == Material.POWERED_RAIL)
 							boostCartOnPoweredRail(cart);
 						else
-							pushCartFaster(cart);
+							autoPushCart(cart);
                     }
                     break;
 			}
@@ -167,12 +160,11 @@ public class EasyCartsListener implements Listener
 				if (config.getBoolean("AutoBoostOnSlope") && Utils.isMovingUp(event))
 				{
 					// Speed up carts on rising slopes so they don't slow down as quickly.
-					cart.setVelocity(cartVelocity.multiply(config.getDouble("MaxPushSpeedPercent")));
+					cart.setVelocity(cart.getVelocity().multiply(config.getDouble("MaxPushSpeedPercent")));
 				}
 				previousSpeed.remove(cartId);
 				return;
 			}
-
 		}
 		catch (Exception e)
 		{
@@ -281,14 +273,14 @@ public class EasyCartsListener implements Listener
 		}
 	}
 
-	private void pushCartFaster(RideableMinecart cart)
+	private void autoPushCart(RideableMinecart cart)
 	{
 		Double cartSpeed = cart.getVelocity().length();
-		if (cartSpeed < (CartSpeed.MINECART_VANILLA_PUSH_SPEED * config.getDouble("MaxPushSpeedPercent") / 100))
-		{
-			// Boost default/auto minecart speed
-			cart.setVelocity(cart.getVelocity().clone().multiply(config.getDouble("MaxPushSpeedPercent") / 100));
-		}
+
+		double autoPushMultiplier = config.getDouble("MaxPushSpeedPercent") / 100;
+
+		if (cartSpeed < CartSpeed.MINECART_VANILLA_PUSH_SPEED * autoPushMultiplier)
+			cart.setVelocity(cart.getVelocity().clone().multiply(autoPushMultiplier));
 	}
 
 	private void stopCartAndShowMessageToPlayer(RideableMinecart cart)
