@@ -100,8 +100,8 @@ public class EasyCartsListener implements Listener
 				return;
 			}
 
-			boolean isCartAtIntersection = handleIntersection(cart);
-			if (isCartAtIntersection)
+			boolean isCartStoppedAtIntersection = handleCartsAtIntersection(cart);
+			if (isCartStoppedAtIntersection)
 				return;
 
 			BlockFace cartFacing = Utils.getCartBlockFaceDirection(cart);
@@ -113,22 +113,16 @@ public class EasyCartsListener implements Listener
 
 			List<TracedRail> tracedRails = _railTracer.traceRails(blockUnderCart, cartFacing, 5);
 
-			RailsAhead railsAhead = RailUtils.getRailsAhead(tracedRails);
-
-			if(railsAhead == null)
-				return;
-
-			UUID cartId = cart.getUniqueId();
+			RailsAhead railsAhead = RailUtils.getRailsAhead(tracedRails, 3);
 
 			switch (railsAhead)
 			{
 				case Derailing:
-					if (RailUtils.isSlopedRail(blockUnderCart) && Utils.isMovingDown(event))
-					{
-						// Don't do anything if we are on a downward slope
+                    // Wait for next vehicle move event if we are on a downward slope
+					if (RailUtils.isSlopedRail(blockUnderCart) && Utils.isCartMovingDown(event))
 						return;
-					}
-					else if(!isCartSlowedDown(cart))
+
+					if(!isCartSlowedDown(cart))
 					{
 						slowDownCart(cart);
 						return;
@@ -162,7 +156,7 @@ public class EasyCartsListener implements Listener
 					// Speed up carts on rising slopes so they don't slow down as quickly.
 					cart.setVelocity(cart.getVelocity().multiply(config.getDouble("MaxPushSpeedPercent")));
 				}
-				previousSpeed.remove(cartId);
+				previousSpeed.remove(cart.getUniqueId());
 				return;
 			}
 		}
@@ -195,7 +189,7 @@ public class EasyCartsListener implements Listener
 		previousSpeed.remove(cart.getUniqueId());
 	}
 
-	private boolean handleIntersection(RideableMinecart cart)
+	private boolean handleCartsAtIntersection(RideableMinecart cart)
 	{
 		Vector cartVelocity = cart.getVelocity();
 

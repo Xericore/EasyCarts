@@ -146,12 +146,14 @@ public class RailUtils
         }
     }
 
-    public static RailsAhead getRailsAhead(List<TracedRail> tracedRails)
+    public static RailsAhead getRailsAhead(List<TracedRail> tracedRails, int minRailsCount)
     {
         RailsAhead railsAhead;
         railsAhead = RailUtils.areAllRailsConnectedStraightOrDiagonal(tracedRails) ? RailsAhead.SafeForSpeedup : RailsAhead.Derailing;
 
-        if(tracedRails.size() <= 3)
+        minRailsCount = minRailsCount <= 0 ? 3 : minRailsCount;
+
+        if(tracedRails.size() <= minRailsCount)
             railsAhead = RailsAhead.Derailing;
 
         for (TracedRail tracedRail : tracedRails)

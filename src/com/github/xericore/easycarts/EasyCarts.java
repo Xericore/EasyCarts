@@ -39,7 +39,7 @@ public class EasyCarts extends JavaPlugin
 	{
 		getServer().getPluginManager().registerEvents(this.myMinecartListener, this);
 		getServer().getPluginManager().registerEvents(this.myVehicleCollisionListener, this);
-		//getServer().getPluginManager().registerEvents(this.myDebugClickListener, this);
+		getServer().getPluginManager().registerEvents(this.myDebugClickListener, this);
 
 		if (getConfig().getBoolean("StopStartOnLeftClick"))
 			getServer().getPluginManager().registerEvents(this.myPlayerClickListener, this);

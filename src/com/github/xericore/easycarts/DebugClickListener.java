@@ -72,7 +72,7 @@ public class DebugClickListener implements Listener
         for (TracedRail railShape : tracedRails)
             easyCartsPlugin.logger.info("   " + railShape.getShape());
 
-        RailsAhead railsAhead = RailUtils.getRailsAhead(tracedRails);
+        RailsAhead railsAhead = RailUtils.getRailsAhead(tracedRails, traceLength);
 
         easyCartsPlugin.logger.info("Rails Ahead: " + railsAhead);
     }

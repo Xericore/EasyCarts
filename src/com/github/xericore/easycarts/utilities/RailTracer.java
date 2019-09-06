@@ -11,11 +11,11 @@ import java.util.List;
 public class RailTracer
 {
     private List<TracedRail> _tracedRailShapes = new ArrayList<>();
-    private int _traceLength;
+    private int _maxTraceLength;
 
-    public List<TracedRail> traceRails(Block initialBlock, BlockFace initialFacing, int traceLength)
+    public List<TracedRail> traceRails(Block initialBlock, BlockFace initialFacing, int maxTraceLength)
     {
-        _traceLength = traceLength;
+        _maxTraceLength = maxTraceLength;
         _tracedRailShapes.clear();
 
         if(!RailUtils.isRail(initialBlock))
@@ -30,13 +30,13 @@ public class RailTracer
 
     private void traceNextRailRecursive(Block block, BlockFace facing)
     {
-        _traceLength--;
+        _maxTraceLength--;
 
-        while (_traceLength > 0)
+        while (_maxTraceLength > 0)
         {
             if(facing == null || block == null)
             {
-                _traceLength = 0;
+                _maxTraceLength = 0;
                 return;
             }
 
@@ -44,7 +44,7 @@ public class RailTracer
 
             if(nextTrace.getNextTracedRail() == null)
             {
-                _traceLength = 0;
+                _maxTraceLength = 0;
                 return;
             }
 

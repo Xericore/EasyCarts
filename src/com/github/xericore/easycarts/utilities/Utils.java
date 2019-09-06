@@ -288,7 +288,7 @@ public class Utils
 		return event.getTo().getY() - event.getFrom().getY() > 0;
 	}
 
-	public static boolean isMovingDown(VehicleMoveEvent event)
+	public static boolean isCartMovingDown(VehicleMoveEvent event)
 	{
 		return event.getTo().getY() - event.getFrom().getY() < 0;
 	}
