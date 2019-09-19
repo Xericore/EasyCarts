@@ -40,7 +40,7 @@ public class EasyCarts extends JavaPlugin
 	{
 		try
 		{
-			org.bstats.bukkit.Metrics metrics = new org.bstats.bukkit.Metrics(this);
+			Metrics metrics = new Metrics(this);
 		}
 		catch (Exception e)
 		{
