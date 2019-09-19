@@ -10,12 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
-/**
- * @author Xericore
- */
 public class EasyCarts extends JavaPlugin
 {
-
 	// public static MinecartIntersectionTest plugin;
 	public final Logger logger = Logger.getLogger("Minecraft");
 
