@@ -3,6 +3,7 @@ package com.github.xericore.easycarts;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -45,11 +46,11 @@ public class EasyCarts extends JavaPlugin
 	{
 		try
 		{
-			MetricsLite metrics = new MetricsLite(this);
-			metrics.start();
-		} catch (IOException e)
+			Metrics metrics = new Metrics(this);
+		}
+		catch (Exception e)
 		{
-			logger.info("Couldn't submit metrics to mcstats.org.");
+			logger.info("Couldn't submit metrics to bstats.org.");
 		}
 	}
 
