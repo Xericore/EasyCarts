@@ -89,41 +89,6 @@ public class RailUtils
         return false;
     }
 
-    public static boolean areAllRailsConnectedStraightOrDiagonal(List<TracedRail> tracedRails)
-    {
-        int tracedRailsCount = 0;
-
-        for (int i = 0; i < tracedRails.size()-1; i++)
-        {
-            tracedRailsCount++;
-
-            if(RailUtils.areRailsConnectedStraight(tracedRails.get(i).getShape(), tracedRails.get(i+1).getShape()) == false)
-                return false;
-        }
-
-        return tracedRailsCount >= tracedRails.size() - 1;
-    }
-
-    public static boolean areRailsConnectedStraight(Rail.Shape thisShape, Rail.Shape otherShape)
-    {
-        switch (thisShape) {
-            case NORTH_SOUTH:
-                return otherShape == NORTH_SOUTH;
-            case EAST_WEST:
-                return otherShape == EAST_WEST;
-            case SOUTH_EAST:
-                return otherShape == Rail.Shape.NORTH_WEST;
-            case SOUTH_WEST:
-                return otherShape == Rail.Shape.NORTH_EAST;
-            case NORTH_WEST:
-                return otherShape == Rail.Shape.SOUTH_EAST;
-            case NORTH_EAST:
-                return otherShape == Rail.Shape.SOUTH_WEST;
-        }
-
-        return false;
-    }
-
     public static boolean isCartOnRails(RideableMinecart cart)
     {
         if(isRail(cart.getLocation().getBlock()))
@@ -148,21 +113,44 @@ public class RailUtils
 
     public static RailsAhead getRailsAhead(List<TracedRail> tracedRails, int minRailsCount)
     {
-        RailsAhead railsAhead;
-        railsAhead = RailUtils.areAllRailsConnectedStraightOrDiagonal(tracedRails) ? RailsAhead.SafeForSpeedup : RailsAhead.Derailing;
+        for (int i = 0; i < tracedRails.size(); i++)
+        {
+            if((i < tracedRails.size() - 1) &&
+                    RailUtils.areRailsConnectedStraight(tracedRails.get(i).getShape(), tracedRails.get(i+1).getShape()) == false)
+            {
+                return RailsAhead.Derailing;
+            }
+
+            if(tracedRails.get(i).isIntersection())
+                return RailsAhead.Intersection;
+        }
 
         minRailsCount = minRailsCount <= 0 ? 3 : minRailsCount;
 
         if(tracedRails.size() <= minRailsCount)
-            railsAhead = RailsAhead.Derailing;
+            return RailsAhead.Derailing;
 
-        for (TracedRail tracedRail : tracedRails)
-        {
-            if(tracedRail.isIntersection())
-                return RailsAhead.Intersection;
+        return RailsAhead.SafeForSpeedup;
+    }
+
+    public static boolean areRailsConnectedStraight(Rail.Shape thisShape, Rail.Shape otherShape)
+    {
+        switch (thisShape) {
+            case NORTH_SOUTH:
+                return otherShape == NORTH_SOUTH;
+            case EAST_WEST:
+                return otherShape == EAST_WEST;
+            case SOUTH_EAST:
+                return otherShape == Rail.Shape.NORTH_WEST;
+            case SOUTH_WEST:
+                return otherShape == Rail.Shape.NORTH_EAST;
+            case NORTH_WEST:
+                return otherShape == Rail.Shape.SOUTH_EAST;
+            case NORTH_EAST:
+                return otherShape == Rail.Shape.SOUTH_WEST;
         }
 
-        return railsAhead;
+        return false;
     }
 
     public static Rail.Shape getRailShapeFromBlock(Block block)
