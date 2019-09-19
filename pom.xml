@@ -83,7 +83,7 @@
 						<goal>copy-resources</goal>
 					</goals>
 					<configuration>
-						<outputDirectory>E:\Games\Minecraft\_Server\EasyCartsTest\plugins</outputDirectory>
+						<outputDirectory>E:\Games\Minecraft\Server\EasyCartsTest\plugins</outputDirectory>
 						<resources>
 							<resource>
 								<directory>/target/</directory>
