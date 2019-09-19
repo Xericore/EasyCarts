@@ -1,9 +1,7 @@
 package com.github.xericore.easycarts;
 
-import java.io.IOException;
 import java.util.logging.Logger;
 
-import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -13,10 +11,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class EasyCarts extends JavaPlugin
 {
-	// public static MinecartIntersectionTest plugin;
 	public final Logger logger = Logger.getLogger("Minecraft");
 
-	// Define Listener classes
 	public final EasyCartsListener myMinecartListener = new EasyCartsListener(this);
 	public final PlayerClickListener myPlayerClickListener = new PlayerClickListener(this);
 	public final MyVehicleCollisionListener myVehicleCollisionListener = new MyVehicleCollisionListener(this);
@@ -44,11 +40,11 @@ public class EasyCarts extends JavaPlugin
 	{
 		try
 		{
-			Metrics metrics = new Metrics(this);
+			org.bstats.bukkit.Metrics metrics = new org.bstats.bukkit.Metrics(this);
 		}
 		catch (Exception e)
 		{
-			logger.info("Couldn't submit metrics to bstats.org.");
+			logger.info("Couldn't submit metrics to bStats.org.");
 		}
 	}
 
