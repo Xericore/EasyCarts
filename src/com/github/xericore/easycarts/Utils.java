@@ -28,6 +28,7 @@ public class Utils
 
 		if (!(vehicle instanceof RideableMinecart))
 			return null;
+
 		cart = (RideableMinecart) vehicle;
 
 		Entity firstPassenger = GetFirstPassenger(cart);

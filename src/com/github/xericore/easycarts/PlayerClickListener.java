@@ -3,6 +3,7 @@ package com.github.xericore.easycarts;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,30 +26,30 @@ public class PlayerClickListener implements Listener
 	@EventHandler(priority = EventPriority.LOW)
 	public void onMyPlayerInteract(PlayerInteractEvent event)
 	{
-
 		if (!config.getBoolean("StopStartOnLeftClick"))
 			return;
 
-		Player player = (Player) event.getPlayer();
+		Player player = event.getPlayer();
 
 		if (!player.isInsideVehicle())
-		{
 			return;
-		}
 
-		Vehicle cart = (Vehicle) player.getVehicle();
+		if (event.getAction() != Action.LEFT_CLICK_AIR)
+			return;
 
-		if (event.getAction() == Action.LEFT_CLICK_AIR)
+		if (!(player.getVehicle() instanceof RideableMinecart))
+			return;
+
+		RideableMinecart cart = (RideableMinecart) player.getVehicle();
+
+		if (cart.getVelocity().length() <= 0)
 		{
-
-			if (cart.getVelocity().length() <= 0)
-			{
-				cart.setVelocity(Utils.getUnitVectorFromYaw(player.getLocation().getYaw())
-						.multiply((Utils.MINECART_VANILLA_PUSH_SPEED * config.getDouble("MaxPushSpeedPercent") / 100)));
-			} else
-			{
-				cart.setVelocity(new Vector(0, 0, 0));
-			}
+			cart.setVelocity(Utils.getUnitVectorFromYaw(player.getLocation().getYaw())
+					.multiply((Utils.MINECART_VANILLA_PUSH_SPEED * config.getDouble("MaxPushSpeedPercent") / 100)));
+		}
+		else
+		{
+			cart.setVelocity(new Vector(0, 0, 0));
 		}
 	}
 }
