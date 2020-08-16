@@ -45,11 +45,11 @@ public class EasyCarts extends JavaPlugin
 	{
 		try
 		{
-			MetricsLite metrics = new MetricsLite(this);
-			metrics.start();
-		} catch (IOException e)
+			Metrics metrics = new Metrics(this);
+		}
+		catch (Exception e)
 		{
-			logger.info("Couldn't submit metrics to mcstats.org.");
+			logger.info("Couldn't submit metrics to bStats.org.");
 		}
 	}
 
