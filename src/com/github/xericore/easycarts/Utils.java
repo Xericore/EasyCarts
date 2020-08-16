@@ -158,10 +158,10 @@ public class Utils
 	{
 
 		if (yaw < 0)
-		{ // Map all negative values to positives. E.g. -45� = +315�
+		{ // Map all negative values to positives. E.g. -45 degree = +315 degree
 			yaw = yaw + 360;
 		}
-		yaw = yaw % 360; // crop value, e.g. if it's 460� --> 100�
+		yaw = yaw % 360; // crop value, e.g. if it's 460 degree --> 100 degree
 
 		float straightAngle = 90;
 

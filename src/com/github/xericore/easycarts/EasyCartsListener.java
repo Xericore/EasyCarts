@@ -200,7 +200,7 @@ public class EasyCartsListener implements Listener
 		// Then it looks like we are moving e.g. left, then right, then diagonal and we cannot distinguish between this
 		// and a real straight movement.
 		// Luckily, the getLocation().getDirection() is unaffected by this. However, for some unknown reason we have to
-		// rotate that vector 90° clockwise to get the correct direction.
+		// rotate that vector 90 degree clockwise to get the correct direction.
 		Vector cartVector = (new Vector(-cart.getLocation().getDirection().getZ(), 0, cart.getLocation().getDirection().getX()))
 				.normalize();
 
@@ -398,7 +398,6 @@ public class EasyCartsListener implements Listener
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onVehicleCollision(final VehicleEntityCollisionEvent event)
 	{
-
 		RideableMinecart cart = Utils.getValidMineCart(event.getVehicle(), true);
 		if (cart == null)
 		{
