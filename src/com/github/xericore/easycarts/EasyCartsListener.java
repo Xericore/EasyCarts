@@ -6,6 +6,9 @@ import com.github.xericore.easycarts.utilities.CartSpeed;
 import com.github.xericore.easycarts.utilities.RailTracer;
 import com.github.xericore.easycarts.utilities.RailUtils;
 import com.github.xericore.easycarts.utilities.Utils;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -15,6 +18,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -265,10 +269,12 @@ public class EasyCartsListener implements Listener
 		if (config.getBoolean("ShowIntersectionMessage"))
 		{
 			Entity firstPassenger = Utils.GetFirstPassenger(cart);
-			if (firstPassenger == null)
+			if (firstPassenger == null || !(firstPassenger instanceof Player))
 				return;
 
-			firstPassenger.sendMessage(ChatColor.GRAY + config.getString("IntersectionMessageText"));
+			Player player = (Player) firstPassenger;
+			TextComponent actionbarText = new TextComponent(config.getString("IntersectionMessageText"));
+			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionbarText);
 		}
 	}
 
