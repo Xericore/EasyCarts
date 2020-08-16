@@ -1,61 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>EasyCarts</groupId>
-  <artifactId>EasyCarts</artifactId>
-  <version>1.13.2</version>
-  <name>EasyCarts</name>
-  <description>Spigot Plugin for Minecraft</description>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>EasyCarts</groupId>
+	<artifactId>EasyCarts</artifactId>
+	<version>2.0</version>
+	<name>EasyCarts</name>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<description>Spigot Plugin for Minecraft to travel quickly and easily with minecarts.</description>
 	<repositories>
-	    <repository>
-	        <id>spigot-repo</id>
-	        <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-	    </repository>
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
 	</repositories>
 	<dependencies>
-	    <!--Spigot API-->
-	    <dependency>
-	           <groupId>org.spigotmc</groupId>
-	           <artifactId>spigot-api</artifactId>
-	           <version>1.13.2-R0.1-SNAPSHOT</version>
-	           <scope>provided</scope>
-	    </dependency>
-	    <!--Bukkit API-->
-	    <dependency>
-	            <groupId>org.bukkit</groupId>
-	            <artifactId>bukkit</artifactId>
-	            <version>1.13.2-R0.1-SNAPSHOT</version>
-	            <scope>provided</scope>
-	    </dependency>
+		<!--Spigot API-->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.16.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
-  <build>
-	  <resources>
-	      <resource>
-	          <targetPath>.</targetPath>
-	          <filtering>true</filtering>
-	          <directory>${basedir}</directory>
-	          <includes>
-	              <include>plugin.yml</include>
-	          </includes>
-	      </resource>
-	      <resource>
-	          <targetPath>.</targetPath>
-	          <filtering>false</filtering>
-	          <directory>${basedir}</directory>
-	          <includes>
-	              <include>config.yml</include>
-	          </includes>
-	      </resource>
-	  </resources>
-    <sourceDirectory>src</sourceDirectory>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.5.1</version>
-        <configuration>
-	      <source>1.8</source>
-	      <target>1.8</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<build>
+		<resources>
+			<resource>
+				<targetPath>.</targetPath>
+				<filtering>true</filtering>
+				<directory>${basedir}</directory>
+				<includes>
+					<include>plugin.yml</include>
+				</includes>
+			</resource>
+			<resource>
+				<targetPath>.</targetPath>
+				<filtering>false</filtering>
+				<directory>${basedir}</directory>
+				<includes>
+					<include>config.yml</include>
+				</includes>
+			</resource>
+		</resources>
+		<sourceDirectory>src</sourceDirectory>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<id>copy-files-on-build</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>E:\Games\Minecraft\Server\EasyCartsTest\plugins</outputDirectory>
+							<resources>
+								<resource>
+									<directory>/target/</directory>
+									<include>*.jar</include>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
