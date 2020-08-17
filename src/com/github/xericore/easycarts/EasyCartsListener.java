@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -264,7 +266,7 @@ public class EasyCartsListener implements Listener
 		// The new cart location will be the old location +1 block in the player look direction.
 		Location newCartLocation = cart.getLocation().clone().add(locationOffset);
 
-		if (newCartLocation.getBlock().getState().getType() == Material.RAIL)
+		if (newCartLocation.getBlock().getState().getType() == Material.RAILS)
 		{
 			if (beforeStop.getSpeed() < 0.1d)
 			{
@@ -308,7 +310,9 @@ public class EasyCartsListener implements Listener
 			if (firstPassenger == null)
 				return;
 
-			firstPassenger.sendMessage(ChatColor.GRAY + config.getString("IntersectionMessageText"));
+			Player player = (Player) firstPassenger;
+			TextComponent actionbarText = new TextComponent(config.getString("IntersectionMessageText"));
+			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionbarText);
 		}
 	}
 
@@ -392,7 +396,7 @@ public class EasyCartsListener implements Listener
 	 * The work around is to move the entities before they collide with the cart. Other players will not be moved. However, if a player
 	 * blocks the path, the cart will come to a stop.
 	 * 
-	 * @see https://bukkit.org/threads/trouble-cancelling-vehicleentitycollisionevent.285269/
+	 * See https://bukkit.org/threads/trouble-cancelling-vehicleentitycollisionevent.285269/
 	 * @param event
 	 */
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
