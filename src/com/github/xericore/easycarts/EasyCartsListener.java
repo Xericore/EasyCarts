@@ -266,7 +266,7 @@ public class EasyCartsListener implements Listener
 		// The new cart location will be the old location +1 block in the player look direction.
 		Location newCartLocation = cart.getLocation().clone().add(locationOffset);
 
-		if (newCartLocation.getBlock().getState().getType() == Material.RAILS)
+		if (newCartLocation.getBlock().getState().getType() == Material.RAIL)
 		{
 			if (beforeStop.getSpeed() < 0.1d)
 			{
