@@ -9,7 +9,6 @@ import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Pose;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -18,7 +17,6 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
@@ -514,12 +512,6 @@ public class MockedRideableMinecart implements RideableMinecart
     }
 
     @Override
-    public Pose getPose()
-    {
-        return null;
-    }
-
-    @Override
     public Spigot spigot()
     {
         return null;
@@ -663,11 +655,5 @@ public class MockedRideableMinecart implements RideableMinecart
     public void setOp(boolean b)
     {
 
-    }
-
-    @Override
-    public PersistentDataContainer getPersistentDataContainer()
-    {
-        return null;
     }
 }
