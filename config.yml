@@ -44,3 +44,6 @@ AutoBoostOnSlope: true
 
 # If true, players can stop and start carts by left clicking into the air. Default is true.
 StopStartOnLeftClick: true
+
+# If true, the Minecart will not stop and wait for left click but continue when going through intersection
+ContinueOnCurve: false
