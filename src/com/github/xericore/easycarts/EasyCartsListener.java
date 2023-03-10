@@ -120,29 +120,24 @@ public class EasyCartsListener implements Listener
 
 					if (railInFront != null)
 					{
-
-						if (railInFront.isCurve() || railInFront.isOnSlope())
-						{
-							if (railUnderCart.isOnSlope() && Utils.isMovingDown(event))
-							{
-								// Don't do anything if we are on a downward slope
-								return;
-							} else
-							{
-								previousSpeed.put(cartId, cart.getVelocity().length());
-								slowedCarts.add(cartId);
-								slowDownCart(cart, MAX_SAFE_DERAIL_SPEED);
+							if (railInFront.isCurve() || railInFront.isOnSlope()) {
+								if (railUnderCart.isOnSlope() && Utils.isMovingDown(event)) {
+									// Don't do anything if we are on a downward slope
+									return;
+								} else {
+									previousSpeed.put(cartId, cart.getVelocity().length());
+									slowedCarts.add(cartId);
+									slowDownCart(cart, MAX_SAFE_DERAIL_SPEED);
+									return;
+								}
+							} else if ((cartVelocity.length() > MAX_SAFE_INTERSECTION_SPEED)
+									&& Utils.isIntersection(locationInFront, cartDirection)) {
+								// Slow down before intersections, otherwise the VehicleMoveEvent might
+								// come too late and we will miss the intersection
+								slowDownCart(cart, MAX_SAFE_INTERSECTION_SPEED);
 								return;
 							}
-						} else if ((cartVelocity.length() > MAX_SAFE_INTERSECTION_SPEED)
-								&& Utils.isIntersection(locationInFront, cartDirection))
-						{
-							// Slow down before intersections, otherwise the VehicleMoveEvent might
-							// come too late and we will miss the intersection
-							slowDownCart(cart, MAX_SAFE_INTERSECTION_SPEED);
-							return;
 						}
-					}
 				}
 			}
 
@@ -180,9 +175,10 @@ public class EasyCartsListener implements Listener
 				return;
 			}
 
-			if (Utils.isIntersection(cartLocation, cartVelocity))
-			{
-				stopCartAndShowMessageToPlayer(cart);
+			if(!config.getBoolean("ContinueOnCurve")) {
+				if (Utils.isIntersection(cartLocation, cartVelocity)) {
+					stopCartAndShowMessageToPlayer(cart);
+				}
 			}
 		} catch (Exception e)
 		{

@@ -64,7 +64,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>E:\Games\Minecraft\Server\EasyCartsTest\plugins</outputDirectory>
+							<outputDirectory>C:\Users\Synta\Desktop\fiverr\EasyCarts\build</outputDirectory>
 							<resources>
 								<resource>
 									<directory>/target/</directory>
