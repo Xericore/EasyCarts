@@ -96,8 +96,21 @@ public class EasyCarts extends JavaPlugin
 					sender.sendMessage(ChatColor.GRAY + "MaxSpeedPercent is set to " + this.getConfig().getDouble("MaxSpeedPercent"));
 					break;
 				case "slowwhenempty":
-					if (args.length >= 1)
-						this.getConfig().set("SlowWhenEmpty", !this.getConfig().getBoolean("SlowWhenEmpty"));
+					if (args.length >= 2)
+						switch (args[1])
+						{
+						case "true":
+							this.getConfig().set("SlowWhenEmpty", true);
+							break;
+						case "false":
+							this.getConfig().set("SlowWhenEmpty", false);
+							break;
+						case "toggle":
+							this.getConfig().set("SlowWhenEmpty", !this.getConfig().getBoolean("SlowWhenEmpty"));
+							break;
+						default:
+							throw new IllegalArgumentException("Use true, false or toggle");
+						}
 					sender.sendMessage(ChatColor.GRAY + "SlowWhenEmpty is set to " + this.getConfig().getBoolean("SlowWhenEmpty"));
 					break;
 				case "reload":
